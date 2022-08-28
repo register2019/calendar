@@ -1,0 +1,656 @@
+<template>
+  <div @click="openCalendar" class="calendarInput">
+    <input type="text" v-model="startDateTime" />
+    <span>至</span>
+    <input type="text" v-model="endDateTime" />
+  </div>
+  <Teleport to="body">
+    <div class="calendar" v-show="calendarPanel" ref="calendarRef">
+      <div class="calendar-header">
+        <div class="calendar-header-left">
+          <input type="text" v-model="modelLeftInput" />
+          <TimePicker v-model="startTimePicker" />
+        </div>
+        <div>&gt;</div>
+        <div class="calendar-header-right">
+          <input type="text" v-model="modelRightInput" />
+          <TimePicker v-model="endTimePicker" />
+        </div>
+      </div>
+
+      <div class="calendar-content">
+        <div class="calendar-content-left">
+          <div class="calendar-content-left-top">
+            <div class="calendar-content-left-top-icon">
+              <span @click="clickBefore('year')">&lt;&lt;</span>
+              <span @click="clickBefore('month')">&lt;</span>
+            </div>
+            <div class="calendar-content-left-top-date">
+              {{ leftDate }}
+            </div>
+          </div>
+          <div>
+            <table>
+              <thead>
+                <tr>
+                  <th v-for="item in tableHeader" :key="item">{{ item }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(list, index) in leftTds" :key="index">
+                  <td
+                    v-for="td in list"
+                    :key="td"
+                    :class="[
+                      selectedRangeBg(td),
+                      selectedDateBoundary(td, 0),
+                      selectedDateBoundary(td, 1),
+                    ]"
+                  >
+                    <div :class="beforeAndAfterStyle(td, 'curr')">
+                      <span
+                        :class="[
+                          selectedStartDate === td.value ? 'selectedDate' : '',
+                          selectedDate(td),
+                        ]"
+                        @mouseenter="selectedRangeStyle(td)"
+                        @click="selectDate(td, 'left')"
+                        >{{ td.value }}</span
+                      >
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="calendar-content-right">
+          <div class="calendar-content-right-top">
+            <div class="calendar-content-right-top-date">{{ rightDate }}</div>
+            <div class="calendar-content-right-top-icon">
+              <span @click="clickAfter('month')"> &gt; </span>
+              <span @click="clickAfter('year')"> &gt;&gt; </span>
+            </div>
+          </div>
+          <div>
+            <table>
+              <thead>
+                <tr>
+                  <th v-for="item in tableHeader" :key="item">{{ item }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(list, index) in rightTds" :key="index">
+                  <td
+                    v-for="td in list"
+                    :key="td"
+                    :class="[
+                      selectedRangeBg(td),
+                      selectedDateBoundary(td, 0),
+                      selectedDateBoundary(td, 1),
+                    ]"
+                  >
+                    <div>
+                      <span
+                        :class="[beforeAndAfterStyle(td), selectedDate(td)]"
+                        @mouseenter="selectedRangeStyle(td)"
+                        @click="selectDate(td, 'right')"
+                        >{{ td.value }}</span
+                      >
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="calendar-footer">
+        <button @click="cancelBtn">取消</button>
+        <button @click="submitBtn">确定</button>
+      </div>
+    </div>
+  </Teleport>
+</template>
+
+<script lang="ts" setup>
+import { ref, reactive, watch, computed, onMounted } from "vue";
+import { onClickOutSide } from "../utils/onClickOutside";
+import { tableHeader } from "../utils/constants";
+import {
+  getCurrAdjacentMonth,
+  timeFormat,
+  unlinkBefore,
+  unlinkAfter,
+  getCurrPageDays,
+  IDate,
+  dateFormat,
+  clickPrevOrNext,
+} from "../utils/dateTimePicker";
+import TimePicker from "../components/TimePicker/index.vue";
+
+const currDate = new Date().getDate();
+
+const calendarPanel = ref(false);
+const calendarRef = ref();
+
+const selectedStartDate = ref<number>();
+
+const startDateTime = ref<string>();
+const endDateTime = ref<string>();
+const startTimePicker = ref<string>();
+const endTimePicker = ref<string>();
+
+const selectedDateList = ref<number[]>([1661090509502, 1661090509502]);
+
+const openCalendar = () => {
+  calendarPanel.value = true;
+};
+
+onClickOutSide(calendarRef, () => {
+  calendarPanel.value = false;
+});
+
+type Props = {
+  unlinkPanels?: boolean; // 是否取消左右日期间的联动 默认是联动的
+};
+const props = withDefaults(defineProps<Props>(), {
+  unlinkPanels: false,
+});
+
+const { leftYear, leftMonth, rightYear, rightMonth } = getCurrAdjacentMonth();
+
+let leftDateYear = ref(leftYear);
+let leftDateMonth = ref(leftMonth);
+let rightDateYear = ref(rightYear);
+let rightDateMonth = ref(rightMonth);
+
+let leftTds = ref<any[][]>([]);
+let rightTds = ref<any[][]>([]);
+
+let unlinkLeft = ref(false);
+let unlinkRight = ref(false);
+
+let modelLeftInput = ref();
+let modelRightInput = ref();
+
+let isCompleteSelection = ref(false);
+
+const clickAfter = (category: string) => {
+  unlinkRight.value = true;
+  if (unlinkLeft.value) {
+    unlinkLeft.value = false;
+  }
+  if (category === "month") {
+    rightDateMonth.value++;
+    if (props.unlinkPanels) {
+      const { month, year } = unlinkAfter(
+        rightDateMonth.value,
+        rightDateYear.value
+      );
+      rightDateMonth.value = month;
+      rightDateYear.value = year;
+    } else {
+      leftDateMonth.value++;
+      const { month: rightMonth, year: rightYear } = unlinkAfter(
+        rightDateMonth.value,
+        rightDateYear.value
+      );
+      rightDateMonth.value = rightMonth;
+      rightDateYear.value = rightYear;
+      const { month: leftMonth, year: leftYear } = unlinkAfter(
+        leftDateMonth.value,
+        leftDateYear.value
+      );
+      leftDateMonth.value = leftMonth;
+      leftDateYear.value = leftYear;
+    }
+  } else if (category === "year") {
+    rightDateYear.value++;
+    if (!props.unlinkPanels) {
+      leftDateYear.value++;
+    }
+  }
+  initArr();
+};
+
+const clickBefore = (category: string) => {
+  unlinkLeft.value = true;
+  if (unlinkRight.value) {
+    unlinkRight.value = false;
+  }
+  if (category === "month") {
+    leftDateMonth.value--;
+    if (props.unlinkPanels) {
+      const { month, year } = unlinkBefore(
+        leftDateMonth.value,
+        leftDateYear.value
+      );
+      leftDateMonth.value = month;
+      leftDateYear.value = year;
+    } else {
+      rightDateMonth.value--;
+      const { month: leftMonth, year: leftYear } = unlinkBefore(
+        leftDateMonth.value,
+        leftDateYear.value
+      );
+      leftDateYear.value = leftYear;
+      leftDateMonth.value = leftMonth;
+      const { month: rightMonth, year: rightYear } = unlinkBefore(
+        rightDateMonth.value,
+        rightDateYear.value
+      );
+      rightDateYear.value = rightYear;
+      rightDateMonth.value = rightMonth;
+    }
+  } else if (category === "year") {
+    leftDateYear.value--;
+    if (!props.unlinkPanels) {
+      rightDateYear.value--;
+    }
+  }
+  initArr();
+};
+
+type SelectedDateTimeRange = {
+  val: number;
+  isInit: boolean;
+};
+let selectedDateTimeRange = ref<SelectedDateTimeRange[]>([]);
+const selectDate = (td: IDate, category: string) => {
+  let year = category === "left" ? leftDateYear.value : rightDateYear.value;
+  let month = timeFormat(
+    category === "left" ? leftDateMonth.value : rightDateMonth.value
+  );
+  let day = timeFormat(td.value);
+  const { month: currMonth, year: currYear } = clickPrevOrNext(
+    td,
+    year,
+    Number(month)
+  );
+
+  const timeStamp = new Date(currYear + "-" + currMonth + "-" + day).getTime();
+  if (selectedDateList.value.length > 2) {
+    selectedDateList.value = [];
+    selectedDateList.value?.push(timeStamp);
+  } else {
+    if (selectedDateList.value.length === 0) {
+      selectedDateList.value?.push(timeStamp);
+    } else {
+      if (timeStamp >= selectedDateList.value[0]) {
+        selectedDateList.value?.push(timeStamp);
+        updateDateTime(selectedDateList.value);
+      } else {
+        selectedDateList.value?.unshift(timeStamp);
+        updateDateTime(selectedDateList.value);
+      }
+    }
+  }
+  selectedRange(td);
+};
+
+const selectedRange = (td: IDate) => {
+  // 记录存储的开始时间和结束时间
+  if (selectedDateTimeRange.value.length === 0) {
+    selectedDateTimeRange.value.push({ val: td.timestamp, isInit: true });
+  } else if (selectedDateTimeRange.value.length === 2) {
+    isCompleteSelection.value = true;
+    const findIsInitIsAllTrue = selectedDateTimeRange.value.find(
+      (item) => item.isInit === false
+    );
+
+    if (findIsInitIsAllTrue === undefined) {
+      selectedDateTimeRange.value = [];
+      selectedDateTimeRange.value.push({
+        isInit: true,
+        val: td.timestamp,
+      });
+      isCompleteSelection.value = false;
+    }
+
+    if (selectedDateTimeRange.value.length === 2) {
+      selectedDateTimeRange.value = selectedDateTimeRange.value.map((item) => {
+        if (item.isInit) {
+          return item;
+        } else {
+          item.isInit = true;
+          return item;
+        }
+      });
+    }
+  }
+};
+
+function updateDateTime(dateList: number[]) {
+  modelLeftInput.value = dateFormat(dateList[0]);
+  modelRightInput.value = dateFormat(dateList[1]);
+}
+
+onMounted(() => {
+  updateDateTime(selectedDateList.value);
+});
+
+for (let i = 0; i < 6; i++) {
+  leftTds.value[i] = new Array();
+  rightTds.value[i] = new Array();
+}
+const initArr = () => {
+  for (let i = 0; i < 6; i++) {
+    if (!props.unlinkPanels) {
+      leftTds.value[i] = new Array();
+      rightTds.value[i] = new Array();
+    } else {
+      if (unlinkLeft.value) {
+        leftTds.value[i] = new Array();
+      } else {
+        rightTds.value[i] = new Array();
+      }
+    }
+  }
+};
+
+watch(
+  [leftDateYear, leftDateMonth],
+  (val) => {
+    let i = 0;
+    getCurrPageDays(val[0], val[1]).forEach((tds, index) => {
+      if ((index + 1) % 7 === 0) {
+        leftTds.value[i].push(tds);
+        i++;
+      } else {
+        leftTds.value[i].push(tds);
+      }
+    });
+  },
+  {
+    immediate: true,
+  }
+);
+watch(
+  [rightDateYear, rightDateMonth],
+  (val) => {
+    let i = 0;
+    getCurrPageDays(val[0], val[1]).forEach((tds, index) => {
+      if ((index + 1) % 7 === 0) {
+        rightTds.value[i].push(tds);
+        i++;
+      } else {
+        rightTds.value[i].push(tds);
+      }
+    });
+  },
+  {
+    immediate: true,
+  }
+);
+
+const leftDate = computed(() => {
+  return leftDateYear.value + "年" + timeFormat(leftDateMonth.value) + "月";
+});
+const rightDate = computed(() => {
+  return rightDateYear.value + "年" + timeFormat(rightDateMonth.value) + "月";
+});
+
+const beforeAndAfterStyle = (td: IDate, curr?: string) => {
+  if (td.category === "prev" || td.category === "next") {
+    return "prevAndNext";
+  } else {
+    if (td.category === "curr" && td.value === currDate && curr) {
+      return "todayStyle";
+    }
+    return "";
+  }
+};
+
+const selectedRangeStyle = (td: IDate) => {
+  if (selectedDateTimeRange.value.length === 0 || isCompleteSelection.value)
+    return;
+
+  if (selectedDateTimeRange.value.length === 1) {
+    if (td.timestamp < selectedDateTimeRange.value[0].val) {
+      selectedDateTimeRange.value.unshift({ val: td.timestamp, isInit: false });
+    } else {
+      selectedDateTimeRange.value.push({ val: td.timestamp, isInit: false });
+    }
+  } else {
+    const findInitNum = selectedDateTimeRange.value.find((item) => item.isInit);
+    const findInitNumIndex = selectedDateTimeRange.value.findIndex(
+      (item) => item.isInit
+    );
+
+    if (findInitNumIndex === 0 && td.timestamp <= findInitNum?.val!) {
+      selectedDateTimeRange.value.pop();
+      selectedDateTimeRange.value.unshift({ val: td.timestamp, isInit: false });
+    } else if (findInitNumIndex === 0) {
+      selectedDateTimeRange.value[1].val = td.timestamp;
+    }
+    if (findInitNumIndex === 1 && td.timestamp >= findInitNum?.val!) {
+      selectedDateTimeRange.value.shift();
+      selectedDateTimeRange.value.push({ val: td.timestamp, isInit: false });
+    } else if (findInitNumIndex === 1) {
+      selectedDateTimeRange.value[0].val = td.timestamp;
+    }
+  }
+
+  if (selectedDateTimeRange.value.length === 2) {
+    if (
+      selectedDateTimeRange.value[0].val <= td.timestamp &&
+      td.timestamp <= selectedDateTimeRange.value[1].val
+    ) {
+      return "selectedRangeBg";
+    }
+  }
+};
+
+const cancelBtn = () => {
+  calendarPanel.value = false;
+};
+
+const submitBtn = () => {
+  startDateTime.value =
+    dateFormat(selectedDateTimeRange.value[0].val) +
+    " " +
+    startTimePicker.value;
+  endDateTime.value =
+    dateFormat(selectedDateTimeRange.value[1].val) + " " + endTimePicker.value;
+  calendarPanel.value = false;
+};
+
+/**
+ * 被选中的开始和结束之间的日期样式
+ * @param td
+ */
+const selectedRangeBg = (td: IDate) => {
+  if (
+    td.category === "curr" &&
+    selectedDateTimeRange.value &&
+    selectedDateTimeRange.value.length === 2 &&
+    td.timestamp < selectedDateTimeRange.value[1].val &&
+    td.timestamp > selectedDateTimeRange.value[0].val
+  ) {
+    return "selectedRangeBg";
+  }
+  return "";
+};
+/**
+ * 被选中的开始和结束的背景颜色
+ * @param td
+ * @param index
+ */
+const selectedDateBoundary = (td: IDate, index: number) => {
+  if (
+    index === 0 &&
+    td.category === "curr" &&
+    selectedDateTimeRange.value &&
+    selectedDateTimeRange.value.length === 2 &&
+    td.timestamp === selectedDateTimeRange.value[index].val
+  ) {
+    return "selectedDateLeftBoundary";
+  } else if (
+    index === 1 &&
+    td.category === "curr" &&
+    selectedDateTimeRange.value &&
+    selectedDateTimeRange.value.length === 2 &&
+    td.timestamp === selectedDateTimeRange.value[index].val
+  ) {
+    return "selectedDateRightBoundary";
+  }
+  return "";
+};
+
+/**
+ * 被选中的开始和结束的样式
+ * @param td
+ */
+const selectedDate = (td: IDate) => {
+  if (
+    td.category === "curr" &&
+    selectedDateTimeRange &&
+    selectedDateTimeRange.value.length === 2 &&
+    (td.timestamp === selectedDateTimeRange.value[1].val ||
+      td.timestamp === selectedDateTimeRange.value[0].val)
+  ) {
+    return "selectedDate";
+  }
+  return "";
+};
+</script>
+
+<style lang="scss" scoped>
+$common-border: 1px solid #ebeef5;
+input {
+  outline: none;
+  border: none;
+}
+table {
+  min-width: 291px;
+  border-spacing: 0px 10px !important;
+  td {
+    text-align: center;
+    cursor: pointer;
+    height: 38px;
+    width: 38px;
+    font-size: 12px;
+  }
+}
+.calendarInput {
+  border: 1px solid #dcdfe6;
+  padding: 5px;
+  min-width: 320px;
+  display: inline-flex;
+  span {
+    margin: 0px 15px;
+  }
+}
+.calendar {
+  width: 646px;
+  border: $common-border;
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+    &-left,
+    &-right {
+      margin: 5px;
+      display: flex;
+      input {
+        border: $common-border;
+        margin-right: 10px;
+      }
+      input,
+      TimePicker {
+        width: 50%;
+      }
+    }
+  }
+  &-content {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #ebeef5;
+    border-bottom: 1px solid #ebeef5;
+    &-left,
+    &-right {
+      width: 50%;
+      padding: 16px;
+    }
+    &-left {
+      border-right: 1px solid #e4e4e4;
+      &-top {
+        display: flex;
+        margin-bottom: 10px;
+        &-date {
+          margin-left: 50px;
+        }
+        &-icon {
+          span {
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+    &-right {
+      &-top {
+        display: flex;
+        justify-content: right;
+        margin-bottom: 10px;
+        &-date {
+          margin-right: 50px;
+        }
+        &-icon {
+          span {
+            margin-left: 10px;
+          }
+        }
+      }
+    }
+  }
+  &-footer {
+    display: flex;
+    justify-content: right;
+    margin: 10px 0;
+    button {
+      border: $common-border;
+      background-color: #fff;
+      color: #409eff;
+      padding: 5px 15px;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+  }
+}
+.calendar-content-left-top-icon,
+.calendar-content-right-top-icon {
+  cursor: pointer;
+  user-select: none;
+}
+.prevAndNext {
+  color: #a8abb2;
+}
+
+.todayStyle {
+  color: #409eff;
+}
+.selectedDate {
+  width: 24px;
+  height: 24px;
+  background-color: #409eff;
+  color: #fff;
+  border-radius: 50%;
+  display: inline-block;
+  line-height: 24px;
+}
+.selectedDateLeftBoundary {
+  background-color: #f2f6fc;
+  border-top-left-radius: 50%;
+  border-bottom-left-radius: 50%;
+}
+.selectedDateRightBoundary {
+  background-color: #f2f6fc;
+  border-top-right-radius: 50%;
+  border-bottom-right-radius: 50%;
+}
+.selectedRangeBg {
+  background-color: #f2f6fc;
+}
+</style>
