@@ -26,9 +26,13 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, computed, onMounted } from "vue";
+import { ref, watch, computed, onMounted, defineComponent } from "vue";
 import { onClickOutSide } from "../../utils/onClickOutside";
 import { selectedTime, ulList } from "../../utils/timePicker";
+
+defineOptions({
+  name: "TimePicker",
+});
 
 const timePickerStatus = ref(false);
 const timePickerRef = ref();

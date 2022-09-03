@@ -116,8 +116,8 @@
 
 <script lang="ts" setup>
 import { ref, reactive, watch, computed, onMounted } from "vue";
-import { onClickOutSide } from "../utils/onClickOutside";
-import { tableHeader } from "../utils/constants";
+import { onClickOutSide } from "../../utils/onClickOutside";
+import { tableHeader } from "../../utils/constants";
 import {
   getCurrAdjacentMonth,
   timeFormat,
@@ -127,8 +127,12 @@ import {
   IDate,
   dateFormat,
   clickPrevOrNext,
-} from "../utils/dateTimePicker";
-import TimePicker from "../components/TimePicker/index.vue";
+} from "../../utils/dateTimePicker";
+import TimePicker from "../../components/TimePicker/index.vue";
+
+defineOptions({
+  name: "Calendar",
+});
 
 const currDate = new Date().getDate();
 

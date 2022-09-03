@@ -1,0 +1,13 @@
+{
+  "name": "default-calendar",
+  "private": false,
+  "version": "0.0.2",
+  "description": "自定义日历组件",
+  "main": "default-calendar.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
