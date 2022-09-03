@@ -9,7 +9,7 @@ export default defineConfig({
   build: {
     outDir: "default-calendar",
     lib: {
-      entry: path.resolve(__dirname, "./src/components/index.ts"),
+      entry: path.resolve(__dirname, "./src/components/index"),
       name: "default-calendar",
       fileName: "default-calendar",
     },

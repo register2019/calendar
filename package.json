@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vueuse/core": "^9.1.1",
+    "default-calendar": "^0.0.4",
     "sass": "^1.54.5",
     "vue": "^3.2.37"
   },

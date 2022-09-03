@@ -26,8 +26,9 @@
 </template>
 
 <script lang="ts" setup>
+import { onClickOutside } from "@vueuse/core";
 import { ref, watch, computed, onMounted, defineComponent } from "vue";
-import { onClickOutSide } from "../../utils/onClickOutside";
+
 import { selectedTime, ulList } from "../../utils/timePicker";
 
 defineOptions({
@@ -85,7 +86,7 @@ const inputFocus = () => {
     });
   }, 200);
 };
-onClickOutSide(timePickerRef, () => {
+onClickOutside(timePickerRef, () => {
   timePickerStatus.value = false;
 });
 watch(inputValue, (val) => {

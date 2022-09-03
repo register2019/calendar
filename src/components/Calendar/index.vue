@@ -116,7 +116,7 @@
 
 <script lang="ts" setup>
 import { ref, reactive, watch, computed, onMounted } from "vue";
-import { onClickOutSide } from "../../utils/onClickOutside";
+import { onClickOutside } from "@vueuse/core";
 import { tableHeader } from "../../utils/constants";
 import {
   getCurrAdjacentMonth,
@@ -152,7 +152,7 @@ const openCalendar = () => {
   calendarPanel.value = true;
 };
 
-onClickOutSide(calendarRef, () => {
+onClickOutside(calendarRef, () => {
   calendarPanel.value = false;
 });
 
