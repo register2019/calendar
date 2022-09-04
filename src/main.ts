@@ -1,8 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-// import Calendar from "./components/index";
-import "default-calendar/style.css";
-import Calendar from "default-calendar";
+import Calendar from "./components/index";
+// import "default-calendar/style.css";
 
 const app = createApp(App);
 app.use(Calendar);

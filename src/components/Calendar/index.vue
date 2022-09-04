@@ -1,36 +1,36 @@
 <template>
-  <div @click="openCalendar" class="calendarInput">
-    <input type="text" v-model="startDateTime" />
+  <div @click="openCalendar" class="dc-calendar-input">
+    <input type="text" class="dc-input" v-model="startDateTime" />
     <span>至</span>
-    <input type="text" v-model="endDateTime" />
+    <input type="text" class="dc-input" v-model="endDateTime" />
   </div>
   <Teleport to="body">
-    <div class="calendar" v-show="calendarPanel" ref="calendarRef">
-      <div class="calendar-header">
-        <div class="calendar-header-left">
-          <input type="text" v-model="modelLeftInput" />
-          <TimePicker v-model="startTimePicker" />
-        </div>
-        <div>&gt;</div>
-        <div class="calendar-header-right">
-          <input type="text" v-model="modelRightInput" />
-          <TimePicker v-model="endTimePicker" />
-        </div>
+    <div class="dc-calendar" v-show="calendarPanel" ref="calendarRef">
+      <div class="dc-calendar-header">
+        <span class="dc-calendar-header-left">
+          <input type="text" class="dc-input" v-model="modelLeftInput" />
+          <TimePicker class="dc-timepicker" v-model="startTimePicker" />
+        </span>
+        <span class="dc-calendar-header-separator">&gt;</span>
+        <span class="dc-calendar-header-right">
+          <input type="text" class="dc-input" v-model="modelRightInput" />
+          <TimePicker class="dc-timepicker" v-model="endTimePicker" />
+        </span>
       </div>
 
-      <div class="calendar-content">
-        <div class="calendar-content-left">
-          <div class="calendar-content-left-top">
-            <div class="calendar-content-left-top-icon">
+      <div class="dc-calendar-content">
+        <div class="dc-calendar-content-left">
+          <div class="dc-calendar-content-left-top">
+            <div class="dc-calendar-content-left-top-icon">
               <span @click="clickBefore('year')">&lt;&lt;</span>
               <span @click="clickBefore('month')">&lt;</span>
             </div>
-            <div class="calendar-content-left-top-date">
+            <div class="dc-calendar-content-left-top-date">
               {{ leftDate }}
             </div>
           </div>
           <div>
-            <table>
+            <table class="dc-table">
               <thead>
                 <tr>
                   <th v-for="item in tableHeader" :key="item">{{ item }}</th>
@@ -45,12 +45,15 @@
                       selectedRangeBg(td),
                       selectedDateBoundary(td, 0),
                       selectedDateBoundary(td, 1),
+                      tdStyle,
                     ]"
                   >
                     <div :class="beforeAndAfterStyle(td, 'curr')">
                       <span
                         :class="[
-                          selectedStartDate === td.value ? 'selectedDate' : '',
+                          selectedStartDate === td.value
+                            ? 'dc-selected-date'
+                            : '',
                           selectedDate(td),
                         ]"
                         @mouseenter="selectedRangeStyle(td)"
@@ -64,16 +67,18 @@
             </table>
           </div>
         </div>
-        <div class="calendar-content-right">
-          <div class="calendar-content-right-top">
-            <div class="calendar-content-right-top-date">{{ rightDate }}</div>
-            <div class="calendar-content-right-top-icon">
+        <div class="dc-calendar-content-right">
+          <div class="dc-calendar-content-right-top">
+            <div class="dc-calendar-content-right-top-date">
+              {{ rightDate }}
+            </div>
+            <div class="dc-calendar-content-right-top-icon">
               <span @click="clickAfter('month')"> &gt; </span>
               <span @click="clickAfter('year')"> &gt;&gt; </span>
             </div>
           </div>
           <div>
-            <table>
+            <table class="dc-table">
               <thead>
                 <tr>
                   <th v-for="item in tableHeader" :key="item">{{ item }}</th>
@@ -88,6 +93,7 @@
                       selectedRangeBg(td),
                       selectedDateBoundary(td, 0),
                       selectedDateBoundary(td, 1),
+                      tdStyle,
                     ]"
                   >
                     <div>
@@ -106,7 +112,7 @@
         </div>
       </div>
 
-      <div class="calendar-footer">
+      <div class="dc-calendar-footer">
         <button @click="cancelBtn">取消</button>
         <button @click="submitBtn">确定</button>
       </div>
@@ -133,6 +139,8 @@ import TimePicker from "../../components/TimePicker/index.vue";
 defineOptions({
   name: "Calendar",
 });
+
+const tdStyle = "dc-td";
 
 const currDate = new Date().getDate();
 
@@ -282,12 +290,19 @@ const selectDate = (td: IDate, category: string) => {
     if (selectedDateList.value.length === 0) {
       selectedDateList.value?.push(timeStamp);
     } else {
-      if (timeStamp >= selectedDateList.value[0]) {
-        selectedDateList.value?.push(timeStamp);
-        updateDateTime(selectedDateList.value);
+      if (selectedDateList.value.length < 2) {
+        if (timeStamp >= selectedDateList.value[0]) {
+          selectedDateList.value?.push(timeStamp);
+          modelRightInput.value = dateFormat(timeStamp);
+        } else {
+          selectedDateList.value?.unshift(timeStamp);
+          modelLeftInput.value = dateFormat(timeStamp);
+        }
       } else {
-        selectedDateList.value?.unshift(timeStamp);
-        updateDateTime(selectedDateList.value);
+        selectedDateList.value = [];
+        selectedDateList.value?.push(timeStamp);
+        modelLeftInput.value = dateFormat(timeStamp);
+        modelRightInput.value = dateFormat(timeStamp);
       }
     }
   }
@@ -398,10 +413,10 @@ const rightDate = computed(() => {
 
 const beforeAndAfterStyle = (td: IDate, curr?: string) => {
   if (td.category === "prev" || td.category === "next") {
-    return "prevAndNext";
+    return "dc-prev-and-next";
   } else {
     if (td.category === "curr" && td.value === currDate && curr) {
-      return "todayStyle";
+      return "dc-today-style";
     }
     return "";
   }
@@ -442,7 +457,7 @@ const selectedRangeStyle = (td: IDate) => {
       selectedDateTimeRange.value[0].val <= td.timestamp &&
       td.timestamp <= selectedDateTimeRange.value[1].val
     ) {
-      return "selectedRangeBg";
+      return "dc-selected-range-bg";
     }
   }
 };
@@ -473,7 +488,7 @@ const selectedRangeBg = (td: IDate) => {
     td.timestamp < selectedDateTimeRange.value[1].val &&
     td.timestamp > selectedDateTimeRange.value[0].val
   ) {
-    return "selectedRangeBg";
+    return "dc-selected-range-bg";
   }
   return "";
 };
@@ -490,7 +505,7 @@ const selectedDateBoundary = (td: IDate, index: number) => {
     selectedDateTimeRange.value.length === 2 &&
     td.timestamp === selectedDateTimeRange.value[index].val
   ) {
-    return "selectedDateLeftBoundary";
+    return "dc-selected-date-left-boundary";
   } else if (
     index === 1 &&
     td.category === "curr" &&
@@ -498,7 +513,7 @@ const selectedDateBoundary = (td: IDate, index: number) => {
     selectedDateTimeRange.value.length === 2 &&
     td.timestamp === selectedDateTimeRange.value[index].val
   ) {
-    return "selectedDateRightBoundary";
+    return "dc-selected-date-right-boundary";
   }
   return "";
 };
@@ -511,11 +526,11 @@ const selectedDate = (td: IDate) => {
   if (
     td.category === "curr" &&
     selectedDateTimeRange &&
-    selectedDateTimeRange.value.length === 2 &&
-    (td.timestamp === selectedDateTimeRange.value[1].val ||
-      td.timestamp === selectedDateTimeRange.value[0].val)
+    selectedDateTimeRange.value.length !== 0 &&
+    (td.timestamp === selectedDateTimeRange.value[1]?.val ||
+      td.timestamp === selectedDateTimeRange.value[0]?.val)
   ) {
-    return "selectedDate";
+    return "dc-selected-date";
   }
   return "";
 };
@@ -523,14 +538,15 @@ const selectedDate = (td: IDate) => {
 
 <style lang="scss" scoped>
 $common-border: 1px solid #ebeef5;
-input {
+.dc-input {
   outline: none;
   border: none;
+  width: 100%;
 }
-table {
+.dc-table {
   min-width: 291px;
   border-spacing: 0px 10px !important;
-  td {
+  .dc-td {
     text-align: center;
     cursor: pointer;
     height: 38px;
@@ -538,7 +554,7 @@ table {
     font-size: 12px;
   }
 }
-.calendarInput {
+.dc-calendar-input {
   border: 1px solid #dcdfe6;
   padding: 5px;
   min-width: 320px;
@@ -547,11 +563,12 @@ table {
     margin: 0px 15px;
   }
 }
-.calendar {
+.dc-calendar {
   width: 646px;
   border: $common-border;
   &-header {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     padding: 5px;
     &-left,
@@ -563,9 +580,12 @@ table {
         margin-right: 10px;
       }
       input,
-      TimePicker {
-        width: 50%;
+      :deep(.dc-timepicker) {
+        width: 100%;
       }
+    }
+    &-separator {
+      margin: 0 10px 0 15px;
     }
   }
   &-content {
@@ -575,7 +595,7 @@ table {
     border-bottom: 1px solid #ebeef5;
     &-left,
     &-right {
-      width: 50%;
+      width: 49%;
       padding: 16px;
     }
     &-left {
@@ -623,19 +643,19 @@ table {
     }
   }
 }
-.calendar-content-left-top-icon,
-.calendar-content-right-top-icon {
+.dc-calendar-content-left-top-icon,
+.dc-calendar-content-right-top-icon {
   cursor: pointer;
   user-select: none;
 }
-.prevAndNext {
+.dc-prev-and-next {
   color: #a8abb2;
 }
 
-.todayStyle {
+.dc-today-style {
   color: #409eff;
 }
-.selectedDate {
+.dc-selected-date {
   width: 24px;
   height: 24px;
   background-color: #409eff;
@@ -644,17 +664,17 @@ table {
   display: inline-block;
   line-height: 24px;
 }
-.selectedDateLeftBoundary {
+.dc-selected-date-left-boundary {
   background-color: #f2f6fc;
   border-top-left-radius: 50%;
   border-bottom-left-radius: 50%;
 }
-.selectedDateRightBoundary {
+.dc-selected-date-right-boundary {
   background-color: #f2f6fc;
   border-top-right-radius: 50%;
   border-bottom-right-radius: 50%;
 }
-.selectedRangeBg {
+.dc-selected-range-bg {
   background-color: #f2f6fc;
 }
 </style>

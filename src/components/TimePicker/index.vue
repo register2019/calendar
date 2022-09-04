@@ -1,13 +1,24 @@
 <template>
   <div>
     <div @click="inputFocus">
-      <input type="text" v-model="inputRef" autocomplete="off" />
+      <input
+        type="text"
+        class="dc-input"
+        v-model="inputRef"
+        autocomplete="off"
+      />
     </div>
 
-    <div v-if="timePickerStatus" ref="timePickerRef" class="outer">
-      <div class="time-picker">
-        <ul v-for="item in showUlNum" :key="item.count" :id="item.id">
+    <div v-if="timePickerStatus" ref="timePickerRef" class="dc-outer">
+      <div class="dc-time-picker">
+        <ul
+          class="dc-ul"
+          v-for="item in showUlNum"
+          :key="item.count"
+          :id="item.id"
+        >
           <li
+            class="dc-li"
             v-for="list in item.count"
             :key="list"
             :ref="item.liRef"
@@ -17,9 +28,9 @@
           </li>
         </ul>
       </div>
-      <div class="footer">
-        <button @click="cancelBtn">取消</button>
-        <button @click="submitBtn">确定</button>
+      <div class="dc-footer">
+        <a class="dc-footer-cancel" @click="cancelBtn">取消</a>
+        <a class="dc-footer-submit" @click="submitBtn">确定</a>
       </div>
     </div>
   </div>
@@ -62,12 +73,12 @@ let showUlNum = computed(() => {
 });
 let inputValue = computed(() => {
   if (!props.showCategory.includes("seco")) {
-    return currHour.value + " : " + currMinu.value;
+    return currHour.value + ":" + currMinu.value;
   } else if (!props.showCategory.includes("hour")) {
-    return currMinu.value + " : " + currSeco.value;
+    return currMinu.value + ":" + currSeco.value;
   }
 
-  return currHour.value + " : " + currMinu.value + " : " + currSeco.value;
+  return currHour.value + ":" + currMinu.value + ":" + currSeco.value;
 });
 
 const timeFormat = (num: number) => {
@@ -123,39 +134,43 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 $common-border: 1px solid #ebeef5;
-input {
+.dc-input {
   outline: none;
   border: $common-border;
+  width: 100%;
 }
-.outer {
+.dc-outer {
   position: absolute;
   background-color: #fff;
   border: 1px solid #e4e7ed;
 }
-.time-picker {
+.dc-time-picker {
   display: flex;
   height: 170px;
   width: 160px;
   overflow: hidden;
   border-bottom: 1px solid #e4e7ed;
 }
-.footer {
+.dc-footer {
   display: flex;
   justify-content: right;
   margin: 10px 0;
-  button {
-    border: $common-border;
+  &-cancel,
+  &-submit {
     background-color: #fff;
-    color: #409eff;
-    padding: 5px 15px;
+    font-size: 12px;
     margin: 0 5px;
     cursor: pointer;
+    letter-spacing: 5px;
+  }
+  &-submit {
+    color: #409eff;
   }
 }
-.time-picker::before,
-.time-picker::after {
+.dc-time-picker::before,
+.dc-time-picker::after {
   content: "";
-  top: 50%;
+  top: 40%;
   position: absolute;
   margin: -16px 12% 0 12%;
   height: 32px;
@@ -168,7 +183,7 @@ input {
   border-top: 1px solid #e4e7ed;
   border-bottom: 1px solid #e4e7ed;
 }
-ul {
+.dc-ul {
   overflow: hidden;
   scroll-snap-type: y mandatory;
   flex: 1;
@@ -177,30 +192,31 @@ ul {
   z-index: 101;
   text-align: center;
 }
-ul::-webkit-scrollbar {
+.dc-ul::-webkit-scrollbar {
   width: 5px;
   background-color: none;
 }
-ul::-webkit-scrollbar-thumb {
+.dc-ul::-webkit-scrollbar-thumb {
   background-color: #eeeeee;
   border-radius: 10px;
 }
-ul::before,
-ul::after {
+.dc-ul::before,
+.dc-ul::after {
   content: "";
   display: block;
   width: 100%;
-  height: 65px;
+  height: 68px;
 }
-ul:hover {
+.dc-ul:hover {
   overflow-y: auto;
 }
-li {
+.dc-li {
   list-style: none;
   text-align: center;
   width: 40px;
   height: 32px;
   line-height: 32px;
+  font-size: 12px;
   scroll-snap-align: center;
   cursor: pointer;
   user-select: none;
