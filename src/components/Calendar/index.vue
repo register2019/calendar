@@ -1,11 +1,16 @@
 <template>
-  <div @click="openCalendar" class="dc-calendar-input">
+  <div @click="openCalendar" class="dc-calendar-input" ref="calendarInput">
     <input type="text" class="dc-input" v-model="startDateTime" />
     <span>至</span>
     <input type="text" class="dc-input" v-model="endDateTime" />
   </div>
   <Teleport to="body">
-    <div class="dc-calendar" v-show="calendarPanel" ref="calendarRef">
+    <div
+      class="dc-calendar"
+      :style="calendarStyle"
+      v-show="calendarPanel"
+      ref="calendarRef"
+    >
       <div class="dc-calendar-header">
         <span class="dc-calendar-header-left">
           <input type="text" class="dc-input" v-model="modelLeftInput" />
@@ -121,8 +126,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch, computed, onMounted } from "vue";
-import { onClickOutside } from "@vueuse/core";
+import { ref, watch, computed, onMounted, CSSProperties } from "vue";
+import { onClickOutside, useElementBounding } from "@vueuse/core";
 import { tableHeader } from "../../utils/constants";
 import {
   getCurrAdjacentMonth,
@@ -156,7 +161,27 @@ const endTimePicker = ref<string>();
 
 const selectedDateList = ref<number[]>([1661090509502, 1661090509502]);
 
+const calendarInput = ref(null);
+const calendarStyle = ref<CSSProperties>({
+  position: "absolute",
+  top: "",
+  left: "",
+});
 const openCalendar = () => {
+  const {
+    top: inputTop,
+    left: inputLeft,
+    height: inputHeight,
+    bottom: inputBottom,
+  } = useElementBounding(calendarInput);
+  const { height: panelHeight } = useElementBounding(calendarRef);
+  if (inputBottom.value > panelHeight.value) {
+    calendarStyle.value.top = inputTop.value + inputHeight.value + 10 + "px";
+  } else {
+    calendarStyle.value.top = inputTop.value - panelHeight.value - 10 + "px";
+  }
+  calendarStyle.value.left = inputLeft.value + "px";
+
   calendarPanel.value = true;
 };
 
@@ -534,18 +559,25 @@ const selectedDate = (td: IDate) => {
   }
   return "";
 };
+
+const theme = {
+  color: "red",
+};
 </script>
 
 <style lang="scss" scoped>
 $common-border: 1px solid #ebeef5;
+
 .dc-input {
   outline: none;
   border: none;
   width: 100%;
 }
+
 .dc-table {
   min-width: 291px;
   border-spacing: 0px 10px !important;
+
   .dc-td {
     text-align: center;
     cursor: pointer;
@@ -554,58 +586,72 @@ $common-border: 1px solid #ebeef5;
     font-size: 12px;
   }
 }
+
 .dc-calendar-input {
   border: 1px solid #dcdfe6;
   padding: 5px;
   min-width: 320px;
   display: inline-flex;
+
   span {
     margin: 0px 15px;
   }
 }
+
 .dc-calendar {
   width: 646px;
   border: $common-border;
+
   &-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 5px;
+
     &-left,
     &-right {
       margin: 5px;
       display: flex;
+
       input {
         border: $common-border;
         margin-right: 10px;
       }
+
       input,
       :deep(.dc-timepicker) {
         width: 100%;
       }
     }
+
     &-separator {
       margin: 0 10px 0 15px;
     }
   }
+
   &-content {
     display: flex;
     justify-content: space-between;
-    border-top: 1px solid #ebeef5;
-    border-bottom: 1px solid #ebeef5;
+    border-top: $common-border;
+    border-bottom: $common-border;
+
     &-left,
     &-right {
       width: 49%;
       padding: 16px;
     }
+
     &-left {
       border-right: 1px solid #e4e4e4;
+
       &-top {
         display: flex;
         margin-bottom: 10px;
+
         &-date {
           margin-left: 50px;
         }
+
         &-icon {
           span {
             margin-right: 10px;
@@ -613,14 +659,17 @@ $common-border: 1px solid #ebeef5;
         }
       }
     }
+
     &-right {
       &-top {
         display: flex;
         justify-content: right;
         margin-bottom: 10px;
+
         &-date {
           margin-right: 50px;
         }
+
         &-icon {
           span {
             margin-left: 10px;
@@ -629,10 +678,12 @@ $common-border: 1px solid #ebeef5;
       }
     }
   }
+
   &-footer {
     display: flex;
     justify-content: right;
     margin: 10px 0;
+
     button {
       border: $common-border;
       background-color: #fff;
@@ -643,11 +694,13 @@ $common-border: 1px solid #ebeef5;
     }
   }
 }
+
 .dc-calendar-content-left-top-icon,
 .dc-calendar-content-right-top-icon {
   cursor: pointer;
   user-select: none;
 }
+
 .dc-prev-and-next {
   color: #a8abb2;
 }
@@ -655,6 +708,7 @@ $common-border: 1px solid #ebeef5;
 .dc-today-style {
   color: #409eff;
 }
+
 .dc-selected-date {
   width: 24px;
   height: 24px;
@@ -664,16 +718,19 @@ $common-border: 1px solid #ebeef5;
   display: inline-block;
   line-height: 24px;
 }
+
 .dc-selected-date-left-boundary {
   background-color: #f2f6fc;
   border-top-left-radius: 50%;
   border-bottom-left-radius: 50%;
 }
+
 .dc-selected-date-right-boundary {
   background-color: #f2f6fc;
   border-top-right-radius: 50%;
   border-bottom-right-radius: 50%;
 }
+
 .dc-selected-range-bg {
   background-color: #f2f6fc;
 }
