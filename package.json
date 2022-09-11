@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@default/components": "link:package\\components",
+    "@default/utils": "link:package\\utils",
     "@vueuse/core": "^9.1.1",
     "default-calendar": "^0.0.4",
     "sass": "^1.54.5",
@@ -17,9 +19,11 @@
   "devDependencies": {
     "@types/node": "^18.7.14",
     "@vitejs/plugin-vue": "^3.0.3",
-    "typescript": "^4.6.4",
+    "rollup-plugin-visualizer": "^5.8.1",
+    "typescript": "^4.7.4",
     "unplugin-vue-define-options": "^0.11.1",
     "vite": "^3.0.7",
+    "vite-plugin-dts": "^1.4.1",
     "vue-tsc": "^0.39.5"
   }
 }
