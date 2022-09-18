@@ -1,5 +1,5 @@
 <template>
-  <input type="text" class="dc-input" autocomplete="off" />
+  <input type="text" class="dc-input" autocomplete="off" v-model="modelValue" />
 </template>
 
 <script lang="ts">
@@ -11,14 +11,9 @@ export default {
 import { ref, reactive, watch, computed, Ref, onMounted } from "vue";
 
 type Props = {
-  modelValue: Ref;
+  modelValue: string;
 };
-const props = defineProps<Props>();
-const emit = defineEmits(["update:modelValue"]);
-
-onMounted(() => {
-  emit("update:modelValue", props.modelValue);
-});
+defineProps<Props>();
 </script>
 
 <style lang="scss" scoped>

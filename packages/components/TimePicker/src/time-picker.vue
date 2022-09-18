@@ -1,7 +1,10 @@
 <template>
   <div>
-    <!-- <input type="text" class="dc-input" autocomplete="off" /> -->
-    <DefaultInput @click="inputFocus" v-model="inputRef" />
+    <DefaultInput
+      class="dc-dialog-input"
+      @click="inputFocus"
+      v-model="inputRef"
+    />
 
     <div v-if="timePickerStatus" ref="timePickerRef" class="dc-outer">
       <div class="dc-time-picker">
@@ -130,15 +133,9 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-$common-border: 1px solid #dcdfe6;
-$common-input-padding: 0 15px;
-.dc-input {
-  outline: none;
-  border: $common-border;
-  height: 40px;
-  line-height: 40px;
-  width: 100%;
-  padding: $common-input-padding;
+.dc-dialog-input {
+  height: 32px;
+  line-height: 32px;
 }
 .dc-outer {
   position: absolute;

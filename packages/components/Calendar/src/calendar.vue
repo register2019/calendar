@@ -22,7 +22,11 @@
         </span>
         <span class="dc-calendar-header-separator">&gt;</span>
         <span class="dc-calendar-header-right">
-          <input type="text" class="dc-input" v-model="modelRightInput" />
+          <DefaultInput
+            type="text"
+            class="dc-dialog-input"
+            v-model="modelRightInput"
+          />
           <DefaultTimePicker class="dc-timepicker" v-model="endTimePicker" />
         </span>
       </div>
@@ -378,10 +382,7 @@ function updateDateTime(dateList: number[]) {
   modelLeftInput.value = dateFormat(dateList[0]);
   modelRightInput.value = dateFormat(dateList[1]);
 }
-
-onMounted(() => {
-  updateDateTime(selectedDateList.value);
-});
+updateDateTime(selectedDateList.value);
 
 for (let i = 0; i < 6; i++) {
   leftTds.value[i] = new Array();
