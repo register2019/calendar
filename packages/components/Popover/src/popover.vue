@@ -18,9 +18,15 @@
   </Teleport>
 </template>
 
+<script lang="ts">
+export default {
+  name: "DefaultPopover",
+};
+</script>
+
 <script lang="ts" setup>
 import { ref, onMounted, reactive, watch, computed, CSSProperties } from "vue";
-import { tooltipPosition } from "../../utils/dom";
+import { tooltipPosition } from "../../../utils";
 
 const contentRef = ref();
 const triggerRef = ref();

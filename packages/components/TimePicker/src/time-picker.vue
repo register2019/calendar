@@ -1,13 +1,7 @@
 <template>
   <div>
-    <div @click="inputFocus">
-      <input
-        type="text"
-        class="dc-input"
-        v-model="inputRef"
-        autocomplete="off"
-      />
-    </div>
+    <!-- <input type="text" class="dc-input" autocomplete="off" /> -->
+    <DefaultInput @click="inputFocus" v-model="inputRef" />
 
     <div v-if="timePickerStatus" ref="timePickerRef" class="dc-outer">
       <div class="dc-time-picker">
@@ -36,15 +30,18 @@
   </div>
 </template>
 
+<script lang="ts">
+export default {
+  name: "DefaultTimePicker",
+};
+</script>
+
 <script lang="ts" setup>
 import { onClickOutside } from "@vueuse/core";
 import { ref, watch, computed, onMounted, defineComponent } from "vue";
 
-import { selectedTime, ulList } from "../../utils/timePicker";
-
-defineOptions({
-  name: "TimePicker",
-});
+import { selectedTime, ulList } from "../../../utils";
+import DefaultInput from "../../Input/src/input.vue";
 
 const timePickerStatus = ref(false);
 const timePickerRef = ref();
@@ -57,7 +54,7 @@ const currSeco = ref("00");
 type Props = {
   showCategory?: string[];
   isMountBody?: boolean;
-  modelValue: string;
+  modelValue?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -133,11 +130,15 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-$common-border: 1px solid #ebeef5;
+$common-border: 1px solid #dcdfe6;
+$common-input-padding: 0 15px;
 .dc-input {
   outline: none;
   border: $common-border;
+  height: 40px;
+  line-height: 40px;
   width: 100%;
+  padding: $common-input-padding;
 }
 .dc-outer {
   position: absolute;

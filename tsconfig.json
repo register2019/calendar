@@ -12,8 +12,19 @@
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
-    "types": ["unplugin-vue-define-options"]
+    "declaration": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "package/**/*.ts", "package/**/*.d.ts"],
+  "include": [
+    "src/**/*.ts", 
+    "src/**/*.d.ts", 
+    "src/**/*.tsx", 
+    "src/**/*.vue",
+    "packages/**/*.ts",
+    "packages/**/*.d.ts",
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

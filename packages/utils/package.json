@@ -1,0 +1,14 @@
+{
+  "name": "@default/utils",
+  "version": "0.0.10",
+  "description": "",
+  "main": "index.ts",
+  "module": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "types": "index.d.ts",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

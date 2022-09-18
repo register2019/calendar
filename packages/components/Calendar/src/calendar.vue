@@ -13,13 +13,17 @@
     >
       <div class="dc-calendar-header">
         <span class="dc-calendar-header-left">
-          <input type="text" class="dc-input" v-model="modelLeftInput" />
-          <TimePicker class="dc-timepicker" v-model="startTimePicker" />
+          <DefaultInput
+            type="text"
+            class="dc-dialog-input"
+            v-model="modelLeftInput"
+          />
+          <DefaultTimePicker class="dc-timepicker" v-model="startTimePicker" />
         </span>
         <span class="dc-calendar-header-separator">&gt;</span>
         <span class="dc-calendar-header-right">
           <input type="text" class="dc-input" v-model="modelRightInput" />
-          <TimePicker class="dc-timepicker" v-model="endTimePicker" />
+          <DefaultTimePicker class="dc-timepicker" v-model="endTimePicker" />
         </span>
       </div>
 
@@ -125,11 +129,16 @@
   </Teleport>
 </template>
 
+<script lang="ts">
+export default {
+  name: "DefaultCalendar",
+};
+</script>
 <script lang="ts" setup>
-import { ref, watch, computed, onMounted, CSSProperties } from "vue";
+import { ref, watch, computed, onMounted, CSSProperties, Ref } from "vue";
 import { onClickOutside, useElementBounding } from "@vueuse/core";
-import { tableHeader } from "../../utils/constants";
 import {
+  tableHeader,
   getCurrAdjacentMonth,
   timeFormat,
   unlinkBefore,
@@ -138,12 +147,9 @@ import {
   IDate,
   dateFormat,
   clickPrevOrNext,
-} from "../../utils/dateTimePicker";
-import TimePicker from "../../components/TimePicker/index.vue";
-
-defineOptions({
-  name: "Calendar",
-});
+} from "../../../utils";
+import DefaultTimePicker from "../../TimePicker/src/time-picker.vue";
+import DefaultInput from "../../Input/src/input.vue";
 
 const tdStyle = "dc-td";
 
@@ -191,10 +197,12 @@ onClickOutside(calendarRef, () => {
 
 type Props = {
   unlinkPanels?: boolean; // 是否取消左右日期间的联动 默认是联动的
+  modelValue?: Ref<number>[];
 };
 const props = withDefaults(defineProps<Props>(), {
   unlinkPanels: false,
 });
+const emit = defineEmits(["update:modelValue", "onClick"]);
 
 const { leftYear, leftMonth, rightYear, rightMonth } = getCurrAdjacentMonth();
 
@@ -499,6 +507,14 @@ const submitBtn = () => {
   endDateTime.value =
     dateFormat(selectedDateTimeRange.value[1].val) + " " + endTimePicker.value;
   calendarPanel.value = false;
+
+  const emitParentComponentVal = [
+    selectedDateTimeRange.value[0].val,
+    selectedDateTimeRange.value[1].val,
+  ];
+  emit("update:modelValue", emitParentComponentVal);
+
+  emit("onClick", emitParentComponentVal);
 };
 
 /**
@@ -572,6 +588,11 @@ $common-border: 1px solid #ebeef5;
   outline: none;
   border: none;
   width: 100%;
+}
+
+.dc-dialog-input {
+  height: 32px;
+  line-height: 32px;
 }
 
 .dc-table {
