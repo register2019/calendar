@@ -67,7 +67,6 @@ const props = withDefaults(defineProps<Props>(), {
   isMountBody: true,
   modelValue: "",
 });
-console.log(props.size);
 
 const emit = defineEmits(["update:modelValue"]);
 
