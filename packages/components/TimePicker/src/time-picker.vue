@@ -2,6 +2,7 @@
   <div>
     <DefaultInput
       class="dc-dialog-input"
+      :size="size"
       @click="inputFocus"
       v-model="inputRef"
     />
@@ -58,6 +59,7 @@ type Props = {
   showCategory?: string[];
   isMountBody?: boolean;
   modelValue?: string;
+  size?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -65,6 +67,7 @@ const props = withDefaults(defineProps<Props>(), {
   isMountBody: true,
   modelValue: "",
 });
+console.log(props.size);
 
 const emit = defineEmits(["update:modelValue"]);
 

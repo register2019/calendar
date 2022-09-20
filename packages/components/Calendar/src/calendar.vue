@@ -13,21 +13,21 @@
     >
       <div class="dc-calendar-header">
         <span class="dc-calendar-header-left">
-          <DefaultInput
-            type="text"
-            class="dc-dialog-input"
-            v-model="modelLeftInput"
-          />
-          <DefaultTimePicker class="dc-timepicker" v-model="startTimePicker" />
+          <span>
+            <DefaultInput size="small" v-model="modelLeftInput" />
+          </span>
+          <span>
+            <DefaultTimePicker size="small" v-model="startTimePicker" />
+          </span>
         </span>
         <span class="dc-calendar-header-separator">&gt;</span>
         <span class="dc-calendar-header-right">
-          <DefaultInput
-            type="text"
-            class="dc-dialog-input"
-            v-model="modelRightInput"
-          />
-          <DefaultTimePicker class="dc-timepicker" v-model="endTimePicker" />
+          <span>
+            <DefaultInput size="small" v-model="modelRightInput" />
+          </span>
+          <span>
+            <DefaultTimePicker size="small" v-model="endTimePicker" />
+          </span>
         </span>
       </div>
 
@@ -588,12 +588,6 @@ $common-border: 1px solid #ebeef5;
 .dc-input {
   outline: none;
   border: none;
-  width: 100%;
-}
-
-.dc-dialog-input {
-  height: 32px;
-  line-height: 32px;
 }
 
 .dc-table {
@@ -625,24 +619,15 @@ $common-border: 1px solid #ebeef5;
   border: $common-border;
 
   &-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     padding: 5px;
+    display: table;
 
     &-left,
     &-right {
-      margin: 5px;
-      display: flex;
-
-      input {
-        border: $common-border;
-        margin-right: 10px;
-      }
-
-      input,
-      :deep(.dc-timepicker) {
-        width: 100%;
+      display: table-cell;
+      span {
+        display: table-cell;
+        padding: 0 5px;
       }
     }
 
