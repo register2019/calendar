@@ -1,8 +1,9 @@
 <template>
-  <DefaultCalendar
-    v-model="selectedTimeRange"
-    @onClick="getSelectedTimeRange"
-  />
+	<!-- <DefaultCalendar
+		v-model="selectedTimeRange"
+		@onClick="getSelectedTimeRange"
+	/> -->
+	<DefaultTimeSelect />
 </template>
 
 <script lang="ts" setup>
@@ -10,7 +11,7 @@ import { ref, reactive, watch, computed } from "vue";
 const selectedTimeRange = ref<number[]>([]);
 
 const getSelectedTimeRange = (val: number[]) => {
-  console.log(val);
+	console.log(val);
 };
 </script>
 

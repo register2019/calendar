@@ -18,7 +18,7 @@ export default {
 import { ref, reactive, watch, computed, Ref, onMounted } from "vue";
 
 type Props = {
-  modelValue: string;
+  modelValue?: string;
   size?: string;
 };
 const { size } = withDefaults(defineProps<Props>(), {
