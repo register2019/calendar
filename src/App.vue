@@ -1,9 +1,9 @@
 <template>
-	<!-- <DefaultCalendar
+	<DefaultCalendar
 		v-model="selectedTimeRange"
 		@onClick="getSelectedTimeRange"
-	/> -->
-	<DefaultTimeSelect />
+	/>
+	<!-- <DefaultTimeSelect /> -->
 </template>
 
 <script lang="ts" setup>

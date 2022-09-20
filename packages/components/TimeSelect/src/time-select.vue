@@ -1,6 +1,10 @@
 <template>
 	<div>
-		<DefaultInput v-model="currSelectedTime" @click="openTimeSelectPanel" />
+		<DefaultInput
+			:size="size"
+			v-model="currSelectedTime"
+			@click="openTimeSelectPanel"
+		/>
 		<div v-show="isShowTimeSelectPanel" ref="timeSelectRef" class="time-select">
 			<div
 				v-for="(item, index) in initTimeSelectPanel(pickerOptions)"
@@ -26,9 +30,12 @@ import { onClickOutside } from "@vueuse/core";
 import { initTimeSelectPanel, PickerOptions } from "../../../utils/timeSelect";
 
 type Props = {
+	modelValue?: string;
 	pickerOptions?: PickerOptions;
+	size?: string;
 };
 
+const emit = defineEmits(["update:modelValue"]);
 const { pickerOptions } = withDefaults(defineProps<Props>(), {
 	pickerOptions: (): PickerOptions => ({
 		start: "08:30",
@@ -48,9 +55,10 @@ onClickOutside(timeSelectRef, () => {
 	isShowTimeSelectPanel.value = false;
 });
 
-const currSelectedTime = ref("");
+const currSelectedTime = ref("08:30");
 const selectTime = (time: string) => {
 	currSelectedTime.value = time;
+	emit("update:modelValue", currSelectedTime.value);
 	isShowTimeSelectPanel.value = false;
 };
 const initSelectedTimeStyle = (val: string) => {
@@ -62,12 +70,13 @@ const initSelectedTimeStyle = (val: string) => {
 </script>
 <style lang="scss" scoped>
 .time-select {
-	position: relative;
+	position: absolute;
+	background-color: #fff;
 	height: 200px;
+	min-width: 140px;
 	overflow: auto;
 	border: 1px solid #d3d3d3;
 	border-radius: 5px;
-	margin-top: 10px;
 	&-item {
 		padding: 8px 10px;
 		font-size: 14px;
