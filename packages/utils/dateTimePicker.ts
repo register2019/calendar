@@ -60,6 +60,7 @@ export const initCalendarPanel = (dateTime: Date[]) => {
 			midRightYear = rightYear + 1;
 			midRightMonth = 1;
 		} else {
+			midRightYear = rightYear;
 			midRightMonth = Number(rightMonth) + 1;
 		}
 	}
