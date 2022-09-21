@@ -479,6 +479,16 @@ const initArr = () => {
 };
 
 watch(
+  modelRightInput,
+  (val) => {
+    console.log("----->", val);
+  },
+  {
+    immediate: true,
+    deep: true,
+  }
+);
+watch(
   [leftDateYear, leftDateMonth],
   (val) => {
     let i = 0;
