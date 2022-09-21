@@ -17,8 +17,12 @@
 						<DefaultInput size="small" v-model="modelLeftInput" />
 					</span>
 					<span>
-						<DefaultTimeSelect size="small" v-model="startTimeSelect" />
-						<!-- <DefaultTimePicker size="small" v-model="startTimePicker" /> -->
+						<DefaultTimeSelect
+							v-if="timeType === 'Select'"
+							size="small"
+							v-model="startTimeSelect"
+						/>
+						<DefaultTimePicker v-else size="small" v-model="startTimePicker" />
 					</span>
 				</span>
 				<span class="dc-calendar-header-separator">&gt;</span>
@@ -27,8 +31,12 @@
 						<DefaultInput size="small" v-model="modelRightInput" />
 					</span>
 					<span>
-						<DefaultTimeSelect size="small" v-model="endTimeSelect" />
-						<!-- <DefaultTimePicker size="small" v-model="endTimePicker" /> -->
+						<DefaultTimeSelect
+							v-if="timeType === 'Select'"
+							size="small"
+							v-model="endTimeSelect"
+						/>
+						<DefaultTimePicker v-else size="small" v-model="endTimePicker" />
 					</span>
 				</span>
 			</div>
@@ -207,9 +215,11 @@ onClickOutside(calendarRef, () => {
 type Props = {
 	unlinkPanels?: boolean; // 是否取消左右日期间的联动 默认是联动的
 	modelValue?: Ref<number>[];
+	timeType?: string; // 默认是Picker 可选值为Picker和Select
 };
-const props = withDefaults(defineProps<Props>(), {
+const { unlinkPanels, timeType } = withDefaults(defineProps<Props>(), {
 	unlinkPanels: false,
+	timeType: "Picker",
 });
 const emit = defineEmits(["update:modelValue", "onClick"]);
 
@@ -238,7 +248,7 @@ const clickAfter = (category: string) => {
 	}
 	if (category === "month") {
 		rightDateMonth.value++;
-		if (props.unlinkPanels) {
+		if (unlinkPanels) {
 			const { month, year } = unlinkAfter(
 				rightDateMonth.value,
 				rightDateYear.value
@@ -262,7 +272,7 @@ const clickAfter = (category: string) => {
 		}
 	} else if (category === "year") {
 		rightDateYear.value++;
-		if (!props.unlinkPanels) {
+		if (!unlinkPanels) {
 			leftDateYear.value++;
 		}
 	}
@@ -276,7 +286,7 @@ const clickBefore = (category: string) => {
 	}
 	if (category === "month") {
 		leftDateMonth.value--;
-		if (props.unlinkPanels) {
+		if (unlinkPanels) {
 			const { month, year } = unlinkBefore(
 				leftDateMonth.value,
 				leftDateYear.value
@@ -300,7 +310,7 @@ const clickBefore = (category: string) => {
 		}
 	} else if (category === "year") {
 		leftDateYear.value--;
-		if (!props.unlinkPanels) {
+		if (!unlinkPanels) {
 			rightDateYear.value--;
 		}
 	}
@@ -395,7 +405,7 @@ for (let i = 0; i < 6; i++) {
 }
 const initArr = () => {
 	for (let i = 0; i < 6; i++) {
-		if (!props.unlinkPanels) {
+		if (!unlinkPanels) {
 			leftTds.value[i] = new Array();
 			rightTds.value[i] = new Array();
 		} else {
@@ -516,7 +526,7 @@ const submitBtn = () => {
 		startTimeSelect.value;
 	// endDateTime.value =
 	// 	dateFormat(selectedDateTimeRange.value[1].val) + " " + endTimePicker.value;
-  endDateTime.value =
+	endDateTime.value =
 		dateFormat(selectedDateTimeRange.value[1].val) + " " + endTimeSelect.value;
 	calendarPanel.value = false;
 
