@@ -149,7 +149,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { ref, watch, computed, onMounted, CSSProperties, Ref } from "vue";
+import { ref, watch, computed, CSSProperties } from "vue";
 import { onClickOutside, useElementBounding } from "@vueuse/core";
 import {
 	tableHeader,
@@ -161,6 +161,10 @@ import {
 	IDate,
 	dateFormat,
 	clickPrevOrNext,
+	dateTimeFormat,
+	initCalendarPanel,
+	getTimeUtils,
+	dateToTimeStamp,
 } from "../../../utils";
 import DefaultTimePicker from "../../TimePicker/src/time-picker.vue";
 import DefaultInput from "../../Input/src/input.vue";
@@ -190,23 +194,6 @@ const calendarStyle = ref<CSSProperties>({
 	top: "",
 	left: "",
 });
-const openCalendar = () => {
-	const {
-		top: inputTop,
-		left: inputLeft,
-		height: inputHeight,
-		bottom: inputBottom,
-	} = useElementBounding(calendarInput);
-	const { height: panelHeight } = useElementBounding(calendarRef);
-	if (inputBottom.value > panelHeight.value) {
-		calendarStyle.value.top = inputTop.value + inputHeight.value + 10 + "px";
-	} else {
-		calendarStyle.value.top = inputTop.value - panelHeight.value - 10 + "px";
-	}
-	calendarStyle.value.left = inputLeft.value + "px";
-
-	calendarPanel.value = true;
-};
 
 onClickOutside(calendarRef, () => {
 	calendarPanel.value = false;
@@ -214,21 +201,23 @@ onClickOutside(calendarRef, () => {
 
 type Props = {
 	unlinkPanels?: boolean; // 是否取消左右日期间的联动 默认是联动的
-	modelValue?: Ref<number>[];
+	modelValue?: Date[];
 	timeType?: string; // 默认是Picker 可选值为Picker和Select
 };
-const { unlinkPanels, timeType } = withDefaults(defineProps<Props>(), {
-	unlinkPanels: false,
-	timeType: "Picker",
-});
+const { unlinkPanels, timeType, modelValue } = withDefaults(
+	defineProps<Props>(),
+	{
+		unlinkPanels: false,
+		modelValue: (): Date[] => [],
+		timeType: "Picker",
+	}
+);
 const emit = defineEmits(["update:modelValue", "onClick"]);
 
-const { leftYear, leftMonth, rightYear, rightMonth } = getCurrAdjacentMonth();
-
-let leftDateYear = ref(leftYear);
-let leftDateMonth = ref(leftMonth);
-let rightDateYear = ref(rightYear);
-let rightDateMonth = ref(rightMonth);
+let leftDateYear = ref(0);
+let leftDateMonth = ref(0);
+let rightDateYear = ref(0);
+let rightDateMonth = ref(0);
 
 let leftTds = ref<any[][]>([]);
 let rightTds = ref<any[][]>([]);
@@ -240,6 +229,60 @@ let modelLeftInput = ref();
 let modelRightInput = ref();
 
 let isCompleteSelection = ref(false);
+
+let selectedDateTimeRange = ref<SelectedDateTimeRange[]>([]);
+
+if (modelValue.length !== 0) {
+	// 有默认时间
+	startDateTime.value = dateTimeFormat(modelValue[0]);
+	endDateTime.value = dateTimeFormat(modelValue[1]);
+	const { leftYear, leftMonth, rightYear, rightMonth } =
+		initCalendarPanel(modelValue);
+	leftDateYear.value = leftYear;
+	leftDateMonth.value = Number(leftMonth);
+	rightDateYear.value = rightYear;
+	rightDateMonth.value = Number(rightMonth);
+
+	const {
+		hour: leftHour,
+		minu: leftMinu,
+		seco: leftSeco,
+	} = getTimeUtils(modelValue[0]);
+	const {
+		hour: rightHour,
+		minu: rightMinu,
+		seco: rightSeco,
+	} = getTimeUtils(modelValue[0]);
+
+	// 初始化日期
+	updateDateTime([
+		dateToTimeStamp(modelValue[0]),
+		dateToTimeStamp(modelValue[1]),
+	]);
+
+	// 初始化时间
+	startTimePicker.value = leftHour + ":" + leftMinu + ":" + leftSeco;
+	endTimePicker.value = rightHour + ":" + rightMinu + ":" + rightSeco;
+
+	// selectedDateTimeRange.value = [
+	// 	{
+	// 		val: dateToTimeStamp(modelValue[0]),
+	// 		isInit: true,
+	// 	},
+	// 	{
+	// 		val: dateToTimeStamp(modelValue[1]),
+	// 		isInit: true,
+	// 	},
+	// ];
+} else {
+	// 没有默认时间
+	const { leftYear, leftMonth, rightYear, rightMonth } = getCurrAdjacentMonth();
+	leftDateYear.value = leftYear;
+	leftDateMonth.value = leftMonth;
+	rightDateYear.value = rightYear;
+	rightDateMonth.value = rightMonth;
+	updateDateTime(selectedDateList.value);
+}
 
 const clickAfter = (category: string) => {
 	unlinkRight.value = true;
@@ -321,7 +364,7 @@ type SelectedDateTimeRange = {
 	val: number;
 	isInit: boolean;
 };
-let selectedDateTimeRange = ref<SelectedDateTimeRange[]>([]);
+
 const selectDate = (td: IDate, category: string) => {
 	let year = category === "left" ? leftDateYear.value : rightDateYear.value;
 	let month = timeFormat(
@@ -393,12 +436,31 @@ const selectedRange = (td: IDate) => {
 	}
 };
 
+/**
+ * 更新面板日期
+ */
 function updateDateTime(dateList: number[]) {
 	modelLeftInput.value = dateFormat(dateList[0]);
 	modelRightInput.value = dateFormat(dateList[1]);
 }
-updateDateTime(selectedDateList.value);
 
+const openCalendar = () => {
+	const {
+		top: inputTop,
+		left: inputLeft,
+		height: inputHeight,
+		bottom: inputBottom,
+	} = useElementBounding(calendarInput);
+	const { height: panelHeight } = useElementBounding(calendarRef);
+	if (inputBottom.value > panelHeight.value) {
+		calendarStyle.value.top = inputTop.value + inputHeight.value + 10 + "px";
+	} else {
+		calendarStyle.value.top = inputTop.value - panelHeight.value - 10 + "px";
+	}
+	calendarStyle.value.left = inputLeft.value + "px";
+
+	calendarPanel.value = true;
+};
 for (let i = 0; i < 6; i++) {
 	leftTds.value[i] = new Array();
 	rightTds.value[i] = new Array();
@@ -516,18 +578,16 @@ const cancelBtn = () => {
 };
 
 const submitBtn = () => {
-	// startDateTime.value =
-	// 	dateFormat(selectedDateTimeRange.value[0].val) +
-	// 	" " +
-	// 	startTimePicker.value;
+	const startTime =
+		timeType === "Select" ? startTimeSelect.value : startTimePicker.value;
+	const endTime =
+		timeType === "Select" ? endTimeSelect.value : endTimePicker.value;
+
 	startDateTime.value =
-		dateFormat(selectedDateTimeRange.value[0].val) +
-		" " +
-		startTimeSelect.value;
-	// endDateTime.value =
-	// 	dateFormat(selectedDateTimeRange.value[1].val) + " " + endTimePicker.value;
+		dateFormat(selectedDateTimeRange.value[0].val) + " " + startTime;
+
 	endDateTime.value =
-		dateFormat(selectedDateTimeRange.value[1].val) + " " + endTimeSelect.value;
+		dateFormat(selectedDateTimeRange.value[1].val) + " " + endTime;
 	calendarPanel.value = false;
 
 	const emitParentComponentVal = [
@@ -596,10 +656,6 @@ const selectedDate = (td: IDate) => {
 		return "dc-selected-date";
 	}
 	return "";
-};
-
-const theme = {
-	color: "red",
 };
 </script>
 

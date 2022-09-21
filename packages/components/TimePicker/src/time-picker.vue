@@ -57,7 +57,7 @@ const currSeco = ref("00");
 
 type Props = {
 	showCategory?: string[];
-	isMountBody?: boolean;
+	isMountBody?: boolean; // 是否挂载到body中 默认挂载到body
 	modelValue?: string;
 	size?: string;
 };
