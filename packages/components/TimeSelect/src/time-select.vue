@@ -4,12 +4,17 @@
 			:size="size"
 			v-model="currSelectedTime"
 			@click="openTimeSelectPanel"
+			ref="timeSelectInputRef"
 		/>
-		<div v-show="isShowTimeSelectPanel" ref="timeSelectRef" class="time-select">
+		<div
+			v-show="isShowTimeSelectPanel"
+			ref="timeSelectRef"
+			class="dc-time-select"
+		>
 			<div
 				v-for="(item, index) in initTimeSelectPanel(pickerOptions)"
 				:key="index"
-				:class="['time-select-item', initSelectedTimeStyle(item)]"
+				:class="['dc-time-select-item', initSelectedTimeStyle(item)]"
 				@click="selectTime(item)"
 			>
 				{{ item }}
@@ -26,7 +31,7 @@ export default {
 <script lang="ts" setup>
 import { ref, reactive, watch, onMounted, computed } from "vue";
 import DefaultInput from "../../Input/src/input.vue";
-import { onClickOutside } from "@vueuse/core";
+import { onClickOutside, useElementBounding } from "@vueuse/core";
 import { initTimeSelectPanel, PickerOptions } from "../../../utils/timeSelect";
 
 type Props = {
@@ -47,8 +52,14 @@ const { pickerOptions } = withDefaults(defineProps<Props>(), {
 const isShowTimeSelectPanel = ref(false);
 const timeSelectRef = ref();
 
+// 获取time-select输入框的size
+const timeSelectInputRef = ref(null);
+// 动态设置time-select-panel的宽度
+const timeSelectPanelWidth = ref("");
 const openTimeSelectPanel = () => {
 	isShowTimeSelectPanel.value = true;
+	const { width } = useElementBounding(timeSelectInputRef);
+	timeSelectPanelWidth.value = width.value + "px";
 };
 
 onClickOutside(timeSelectRef, () => {
@@ -63,44 +74,49 @@ const selectTime = (time: string) => {
 };
 const initSelectedTimeStyle = (val: string) => {
 	if (currSelectedTime.value === val) {
-		return "currSelectedTimeStyle";
+		return "dc-currSelectedTimeStyle";
 	}
 	return "";
 };
 </script>
 <style lang="scss" scoped>
-.time-select {
-	position: absolute;
-	background-color: #fff;
-	height: 200px;
-	min-width: 140px;
-	overflow: auto;
-	border: 1px solid #d3d3d3;
-	border-radius: 5px;
-	&-item {
-		padding: 8px 10px;
-		font-size: 14px;
-		line-height: 20px;
-		cursor: pointer;
+.dc {
+	&-time-select {
+		position: absolute;
+		background-color: #fff;
+		height: 200px;
+		min-width: 140px;
+		width: v-bind(timeSelectPanelWidth);
+		overflow: overlay; // 设置滚动条位于hover效果的上方
+		border: 1px solid #d3d3d3;
+		border-radius: 5px;
+		&-item {
+			padding: 8px 10px;
+			font-size: 14px;
+			line-height: 20px;
+			cursor: pointer;
+		}
+		&-item:hover {
+			background-color: #f5f7fa;
+			font-weight: 700;
+		}
 	}
-	&-item:hover {
-		background-color: #f5f7fa;
+	&-time-select::-webkit-scrollbar {
+		width: 6px;
+		display: block;
+	}
+	&-time-select:hover::-webkit-scrollbar {
+		display: block;
+	}
+	&-time-select::-webkit-scrollbar-thumb {
+		background-color: #eeeeee;
+		width: 5px;
+		border-radius: 5px;
+		border-right: 1px solid #fff;
+	}
+	&-currSelectedTimeStyle {
+		color: #409eff;
 		font-weight: 700;
 	}
-}
-.time-select::-webkit-scrollbar {
-	position: absolute;
-	width: 10px;
-	z-index: 10;
-}
-.time-select::-webkit-scrollbar-thumb {
-	background-color: #eeeeee;
-	border: 1px solid #fff;
-	border-radius: 5px;
-}
-
-.currSelectedTimeStyle {
-	color: #409eff;
-	font-weight: 700;
 }
 </style>
