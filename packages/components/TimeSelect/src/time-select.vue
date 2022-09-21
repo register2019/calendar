@@ -89,11 +89,14 @@ const initSelectedTimeStyle = (val: string) => {
 	}
 }
 .time-select::-webkit-scrollbar {
-	width: 5px;
+	position: absolute;
+	width: 10px;
+	z-index: 10;
 }
 .time-select::-webkit-scrollbar-thumb {
 	background-color: #eeeeee;
-	border-radius: 10px;
+	border: 1px solid #fff;
+	border-radius: 5px;
 }
 
 .currSelectedTimeStyle {
