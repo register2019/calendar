@@ -405,6 +405,7 @@ const selectDate = (td: IDate, category: string) => {
 	selectedRange(td);
 };
 
+// 是否是点击日历面板选择日期 主要用于区别输入框修改日期 日历面板更新的情况
 const isSelectedDateRange = ref(false);
 const selectedRange = (td: IDate) => {
 	isSelectedDateRange.value = true;
