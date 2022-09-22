@@ -287,4 +287,73 @@ export const dateArrayToTimeStampArray = (dateArr: Date[]) => [
  * @param sinDate
  * @returns
  */
-export const dateToTimeStamp = (sinDate: Date) => new Date(sinDate).getTime();
+export const dateToTimeStamp = (sinDate: Date | string) =>
+	new Date(sinDate).getTime();
+
+/**
+ * 日期格式是否符合格式
+ * @param val
+ * @returns
+ */
+export const determineTheDateFormat = (val: string) => {
+	const midVal = val.split("-");
+	if (
+		midVal[0].split("").length === 4 &&
+		Number(midVal[0]) > 1970 &&
+		midVal[1].split("").length === 2 &&
+		Number(midVal[1]) <= 12 &&
+		Number(midVal[1]) > 0 &&
+		midVal[2].split("").length === 2 &&
+		Number(midVal[2]) <=
+			new Date(Number(midVal[0]), Number(midVal[1]), 0).getDate() &&
+		Number(midVal[2]) > 0
+	) {
+		return true;
+	}
+	return false;
+};
+
+export type UpdatePanelDate = {
+	category: string;
+	updateYear: number;
+	updateMonth: number;
+};
+/**
+ * 根据修改的日历面板的开始年、月或者结束的年、月来更新日历面板
+ * @param val
+ * @returns
+ */
+export const updatePanelDate = (val: UpdatePanelDate) => {
+	const { category, updateYear, updateMonth } = val;
+	const midCategory = category.split("-");
+	if (midCategory[0] === "left" && midCategory[1] === "year") {
+		// 左侧的年份更新 同时右侧年份更新 年份保持相同即可 月份差距为1
+		const { year, month } = unlinkAfter(updateMonth + 1, updateYear);
+		return {
+			afterTheYear: year,
+			afterTheMonth: month,
+		};
+	} else if (midCategory[0] === "left" && midCategory[1] === "month") {
+		// 左侧的月份更新 同时右侧月份更新
+		const { year, month } = unlinkAfter(updateMonth + 1, updateYear);
+		return {
+			afterTheYear: year,
+			afterTheMonth: month,
+		};
+	} else if (midCategory[0] === "right" && midCategory[1] === "year") {
+		// 右侧年份更新 同时左侧年份更新 年份保持相同 月份差距为1
+		const { year, month } = unlinkAfter(updateMonth - 1, updateYear);
+		return {
+			afterTheYear: year,
+			afterTheMonth: month,
+		};
+	} else if (midCategory[0] === "right" && midCategory[1] === "month") {
+		// 右侧月份更新 同时左侧月份更新
+
+		const { year, month } = unlinkAfter(updateMonth - 1, updateYear);
+		return {
+			afterTheYear: year,
+			afterTheMonth: month,
+		};
+	}
+};
