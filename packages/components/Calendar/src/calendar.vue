@@ -168,6 +168,7 @@ import {
 	determineTheDateFormat,
 	updatePanelDate,
 	formatPanelDate,
+	calculateTheYearAndMonth,
 } from "../../../utils";
 import DefaultTimePicker from "../../TimePicker/src/time-picker.vue";
 import DefaultInput from "../../Input/src/input.vue";
@@ -472,6 +473,8 @@ for (let i = 0; i < 6; i++) {
 	rightTds.value[i] = new Array();
 }
 const initArr = (initLeft: string, initRight: string) => {
+	console.log(initLeft, initRight);
+
 	for (let i = 0; i < 6; i++) {
 		if (!unlinkPanels) {
 			if (initLeft === "left") {
@@ -495,6 +498,20 @@ const initArr = (initLeft: string, initRight: string) => {
 	}
 };
 
+const compareTwoDates = (val: string[]) => {
+	if (dateToTimeStamp(val[0]) > dateToTimeStamp(val[1])) {
+		modelLeftInput.value = val[1];
+		modelRightInput.value = val[0];
+		leftDateYear.value = Number(val[1].split("-")[0]);
+		leftDateMonth.value = Number(val[1].split("-")[1]);
+		rightDateYear.value = Number(val[0].split("-")[0]);
+		rightDateMonth.value = Number(val[0].split("-")[1]);
+	} else {
+		modelLeftInput.value = val[0];
+		modelRightInput.value = val[1];
+	}
+};
+
 watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
 	let notInitLeft = "default";
 	let notInitRight = "default";
@@ -503,8 +520,6 @@ watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
 		determineTheDateFormat(newVal[1]) &&
 		!isSelectedDateRange.value
 	) {
-		const startDay = newVal[0].split("-")[2];
-		const endDay = newVal[1].split("-")[2];
 		if (newVal[0] === oldVal[0]) {
 			// 修改了右侧的日期
 			if (
@@ -512,44 +527,36 @@ watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
 				newVal[1].split("-")[2] === oldVal[1].split("-")[2]
 			) {
 				// 修改了右侧日期的月份
+				const splitNewVal = newVal[1].split("-");
+				const splitOldVal = oldVal[0].split("-");
 				const { afterTheYear, afterTheMonth } = updatePanelDate({
 					category: "right-month",
-					updateYear: Number(newVal[1].split("-")[0]),
-					updateMonth: Number(newVal[1].split("-")[1]),
+					updateYear: Number(splitNewVal[0]),
+					updateMonth: Number(splitNewVal[1]),
 				})!;
-				if (
-					leftDateYear.value === afterTheYear &&
-					leftDateMonth.value === afterTheMonth
-				) {
-					// 如果右侧修改之后 左侧需要显示的和之前的指相同 则不初始化左侧面板
-					notInitLeft = "left";
-				} else {
-					leftDateYear.value = afterTheYear;
-					leftDateMonth.value = Number(afterTheMonth);
-				}
+				rightDateYear.value = splitNewVal[0];
+				rightDateMonth.value = splitNewVal[1];
+				leftDateYear.value = afterTheYear;
+				leftDateMonth.value = afterTheMonth;
+				modelLeftInput.value =
+					afterTheYear + "-" + timeFormat(afterTheMonth) + "-" + splitOldVal[2];
 			} else if (
 				newVal[1].split("-")[1] === oldVal[1].split("-")[1] &&
 				newVal[1].split("-")[2] === oldVal[1].split("-")[2]
 			) {
 				// 修改了右侧日期的年份
-				const { afterTheYear, afterTheMonth } = updatePanelDate({
-					category: "right-year",
-					updateYear: Number(newVal[1].split("-")[0]),
-					updateMonth: Number(newVal[1].split("-")[1]),
-				})!;
-				leftDateYear.value = afterTheYear;
-				leftDateMonth.value = Number(afterTheMonth);
+				const splitNewVal = newVal[1].split("-");
+				const splitOldVal = oldVal[0].split("-");
+				leftDateYear.value = splitNewVal[0];
+				rightDateYear.value = splitNewVal[0];
+
+				modelLeftInput.value =
+					splitNewVal[0] + "-" + splitOldVal[1] + "-" + splitOldVal[2];
+			} else {
+				// 修改右侧的日期
+				compareTwoDates(newVal);
+				notInitLeft = "left";
 			}
-
-			rightDateYear.value = newVal[1].split("-")[0];
-			rightDateMonth.value = newVal[1].split("-")[1];
-
-			modelLeftInput.value =
-				leftDateYear.value +
-				"-" +
-				timeFormat(leftDateMonth.value) +
-				"-" +
-				startDay;
 		} else {
 			// 修改了左侧的日期
 			if (
@@ -557,76 +564,56 @@ watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
 				newVal[0].split("-")[2] === oldVal[0].split("-")[2]
 			) {
 				// 修改了左侧日期的月份
+				const splitNewVal = newVal[0].split("-");
+				const splitOldVal = oldVal[1].split("-");
 				const { afterTheYear, afterTheMonth } = updatePanelDate({
 					category: "left-month",
-					updateYear: Number(newVal[0].split("-")[0]),
-					updateMonth: Number(newVal[0].split("-")[1]),
+					updateYear: Number(splitNewVal[0]),
+					updateMonth: Number(splitNewVal[1]),
 				})!;
 
-				if (
-					rightDateYear.value === afterTheYear &&
-					rightDateMonth.value === afterTheMonth
-				) {
-					// 如果左侧修改之后 右侧需要显示的和之前的指相同 则不初始化右侧面板
-					notInitRight = "right";
-				} else {
-					rightDateYear.value = afterTheYear;
-					rightDateMonth.value = Number(afterTheMonth);
-				}
+				leftDateYear.value = splitNewVal[0];
+				leftDateMonth.value = splitNewVal[1];
+				rightDateYear.value = afterTheYear;
+				rightDateMonth.value = afterTheMonth;
+
+				modelRightInput.value =
+					afterTheYear + "-" + timeFormat(afterTheMonth) + "-" + splitOldVal[2];
 			} else if (
 				newVal[0].split("-")[1] === oldVal[0].split("-")[1] &&
 				newVal[0].split("-")[2] === oldVal[0].split("-")[2]
 			) {
 				// 修改了左侧日期的年份
-				rightDateYear.value = newVal[0].split("-")[0];
-				const { afterTheYear, afterTheMonth } = updatePanelDate({
-					category: "left-year",
-					updateYear: Number(newVal[0].split("-")[0]),
-					updateMonth: Number(newVal[0].split("-")[1]),
-				})!;
+				const splitNewValLeft = newVal[0].split("-");
+				const splitNewValRight = newVal[1].split("-");
+				const splitOldVal = oldVal[1].split("-");
 
-				rightDateYear.value = afterTheYear;
-				rightDateMonth.value = Number(afterTheMonth);
+				if (splitNewValLeft[0] === splitNewValRight[0]) {
+					compareTwoDates(newVal);
+				} else {
+					modelRightInput.value =
+						splitNewValLeft[0] +
+						"-" +
+						splitNewValLeft[1] +
+						"-" +
+						splitOldVal[2];
+				}
+			} else {
+				// 修改左侧的日期
+				compareTwoDates(newVal);
+				notInitLeft = "right";
 			}
-
-			leftDateYear.value = newVal[0].split("-")[0];
-			leftDateMonth.value = newVal[0].split("-")[1];
-
-			modelRightInput.value =
-				rightDateYear.value +
-				"-" +
-				timeFormat(rightDateMonth.value) +
-				"-" +
-				endDay;
 		}
-
-		const updateSelectedRangeStart =
-			leftDateYear.value +
-			"-" +
-			leftDateMonth.value +
-			"-" +
-			startDay +
-			" " +
-			startTimePicker.value;
-		const updateSelectedRangeEnd =
-			rightDateYear.value +
-			"-" +
-			rightDateMonth.value +
-			"-" +
-			endDay +
-			" " +
-			endTimePicker.value;
 		selectedDateTimeRange.value = [
 			{
-				val: dateToTimeStamp(updateSelectedRangeStart),
+				val: dateToTimeStamp(newVal[0]),
 				isInit: true,
 			},
 			{
-				val: dateToTimeStamp(updateSelectedRangeEnd),
+				val: dateToTimeStamp(newVal[1]),
 				isInit: true,
 			},
 		];
-
 		initArr(notInitLeft, notInitRight);
 	}
 });
