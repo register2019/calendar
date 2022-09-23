@@ -167,6 +167,7 @@ import {
 	dateToTimeStamp,
 	determineTheDateFormat,
 	updatePanelDate,
+	formatPanelDate,
 } from "../../../utils";
 import DefaultTimePicker from "../../TimePicker/src/time-picker.vue";
 import DefaultInput from "../../Input/src/input.vue";
@@ -524,7 +525,7 @@ watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
 					notInitLeft = "left";
 				} else {
 					leftDateYear.value = afterTheYear;
-					leftDateMonth.value = afterTheMonth;
+					leftDateMonth.value = Number(afterTheMonth);
 				}
 			} else if (
 				newVal[1].split("-")[1] === oldVal[1].split("-")[1] &&
@@ -537,14 +538,18 @@ watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
 					updateMonth: Number(newVal[1].split("-")[1]),
 				})!;
 				leftDateYear.value = afterTheYear;
-				leftDateMonth.value = afterTheMonth;
+				leftDateMonth.value = Number(afterTheMonth);
 			}
 
 			rightDateYear.value = newVal[1].split("-")[0];
 			rightDateMonth.value = newVal[1].split("-")[1];
 
 			modelLeftInput.value =
-				leftDateYear.value + "-" + leftDateMonth.value + "-" + startDay;
+				leftDateYear.value +
+				"-" +
+				timeFormat(leftDateMonth.value) +
+				"-" +
+				startDay;
 		} else {
 			// 修改了左侧的日期
 			if (
@@ -566,13 +571,14 @@ watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
 					notInitRight = "right";
 				} else {
 					rightDateYear.value = afterTheYear;
-					rightDateMonth.value = afterTheMonth;
+					rightDateMonth.value = Number(afterTheMonth);
 				}
 			} else if (
 				newVal[0].split("-")[1] === oldVal[0].split("-")[1] &&
 				newVal[0].split("-")[2] === oldVal[0].split("-")[2]
 			) {
 				// 修改了左侧日期的年份
+				rightDateYear.value = newVal[0].split("-")[0];
 				const { afterTheYear, afterTheMonth } = updatePanelDate({
 					category: "left-year",
 					updateYear: Number(newVal[0].split("-")[0]),
@@ -580,13 +586,18 @@ watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
 				})!;
 
 				rightDateYear.value = afterTheYear;
-				rightDateMonth.value = afterTheMonth;
+				rightDateMonth.value = Number(afterTheMonth);
 			}
+
 			leftDateYear.value = newVal[0].split("-")[0];
 			leftDateMonth.value = newVal[0].split("-")[1];
 
 			modelRightInput.value =
-				rightDateYear.value + "-" + rightDateMonth.value + "-" + endDay;
+				rightDateYear.value +
+				"-" +
+				timeFormat(rightDateMonth.value) +
+				"-" +
+				endDay;
 		}
 
 		const updateSelectedRangeStart =
@@ -619,46 +630,61 @@ watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
 		initArr(notInitLeft, notInitRight);
 	}
 });
+
+// 更新左侧面板 S
+const updateLeftPanel = (val: number[]) => {
+	let i = 0;
+	getCurrPageDays(val[0], val[1]).forEach((tds, index) => {
+		if ((index + 1) % 7 === 0) {
+			leftTds.value[i].push(tds);
+			i++;
+		} else {
+			leftTds.value[i].push(tds);
+		}
+	});
+};
 watch(
 	[leftDateYear, leftDateMonth],
 	(val) => {
-		let i = 0;
-		getCurrPageDays(val[0], val[1]).forEach((tds, index) => {
-			if ((index + 1) % 7 === 0) {
-				leftTds.value[i].push(tds);
-				i++;
-			} else {
-				leftTds.value[i].push(tds);
-			}
-		});
+		updateLeftPanel(val);
 	},
 	{
 		immediate: true,
 	}
 );
+// 更新右侧面板 E
+
+// 更新右侧面板 S
+const updateRightPanel = (val: number[]) => {
+	let i = 0;
+	getCurrPageDays(val[0], val[1]).forEach((tds, index) => {
+		if ((index + 1) % 7 === 0) {
+			rightTds.value[i].push(tds);
+			i++;
+		} else {
+			rightTds.value[i].push(tds);
+		}
+	});
+};
 watch(
 	[rightDateYear, rightDateMonth],
 	(val) => {
-		let i = 0;
-		getCurrPageDays(val[0], val[1]).forEach((tds, index) => {
-			if ((index + 1) % 7 === 0) {
-				rightTds.value[i].push(tds);
-				i++;
-			} else {
-				rightTds.value[i].push(tds);
-			}
-		});
+		updateRightPanel(val);
 	},
 	{
 		immediate: true,
 	}
 );
+// 更新右侧面板 E
 
 const leftDate = computed(() => {
-	return leftDateYear.value + "年" + timeFormat(leftDateMonth.value) + "月";
+	let month = formatPanelDate(leftDateMonth.value);
+
+	return leftDateYear.value + "年" + month + "月";
 });
 const rightDate = computed(() => {
-	return rightDateYear.value + "年" + timeFormat(rightDateMonth.value) + "月";
+	let month = formatPanelDate(rightDateMonth.value);
+	return rightDateYear.value + "年" + month + "月";
 });
 
 const beforeAndAfterStyle = (td: IDate, curr?: string) => {

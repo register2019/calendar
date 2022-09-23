@@ -327,22 +327,33 @@ export const updatePanelDate = (val: UpdatePanelDate) => {
 	const { category, updateYear, updateMonth } = val;
 	const midCategory = category.split("-");
 	if (midCategory[0] === "left" && midCategory[1] === "year") {
-		// 左侧的年份更新 同时右侧年份更新 年份保持相同即可 月份差距为1
-		const { year, month } = unlinkAfter(updateMonth + 1, updateYear);
+		// 左侧的年份更新 同时右侧年份更新 年份保持相同即可 月份保持不变
+
+		const { year, month } = calculateTheYearAndMonth(
+			updateYear,
+			updateMonth + 1
+		);
 		return {
 			afterTheYear: year,
 			afterTheMonth: month,
 		};
 	} else if (midCategory[0] === "left" && midCategory[1] === "month") {
 		// 左侧的月份更新 同时右侧月份更新
-		const { year, month } = unlinkAfter(updateMonth + 1, updateYear);
+		const { year, month } = calculateTheYearAndMonth(
+			updateYear,
+			updateMonth + 1
+		);
+
 		return {
 			afterTheYear: year,
 			afterTheMonth: month,
 		};
 	} else if (midCategory[0] === "right" && midCategory[1] === "year") {
 		// 右侧年份更新 同时左侧年份更新 年份保持相同 月份差距为1
-		const { year, month } = unlinkAfter(updateMonth - 1, updateYear);
+		const { year, month } = calculateTheYearAndMonth(
+			updateYear,
+			updateMonth - 1
+		);
 		return {
 			afterTheYear: year,
 			afterTheMonth: month,
@@ -350,10 +361,40 @@ export const updatePanelDate = (val: UpdatePanelDate) => {
 	} else if (midCategory[0] === "right" && midCategory[1] === "month") {
 		// 右侧月份更新 同时左侧月份更新
 
-		const { year, month } = unlinkAfter(updateMonth - 1, updateYear);
+		const { year, month } = calculateTheYearAndMonth(
+			updateYear,
+			updateMonth - 1
+		);
 		return {
 			afterTheYear: year,
 			afterTheMonth: month,
 		};
 	}
 };
+/**
+ * 根据年月变化动态计算相邻面板需要显示的日期
+ * @param year
+ * @param month
+ * @returns
+ */
+export const calculateTheYearAndMonth = (year: number, month: number) => {
+	if (month < 1) {
+		year--;
+		month = 12;
+	} else if (month > 12) {
+		year++;
+		month = 1;
+	}
+	return {
+		year,
+		month,
+	};
+};
+
+/**
+ * 格式化日历面板日期
+ * @param val
+ * @returns
+ */
+export const formatPanelDate = (val: number) =>
+	val.toString().split("").length === 2 ? val : timeFormat(val);
