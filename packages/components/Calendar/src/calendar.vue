@@ -149,7 +149,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { ref, watch, computed, CSSProperties, nextTick } from "vue";
+import { ref, watch, computed, CSSProperties } from "vue";
 import { onClickOutside, useElementBounding } from "@vueuse/core";
 import {
   tableHeader,
@@ -168,7 +168,6 @@ import {
   determineTheDateFormat,
   updatePanelDate,
   formatPanelDate,
-  calculateTheYearAndMonth,
 } from "../../../utils";
 import DefaultTimePicker from "../../TimePicker/src/time-picker.vue";
 import DefaultInput from "../../Input/src/input.vue";
@@ -469,28 +468,28 @@ const openCalendar = () => {
   calendarPanel.value = true;
 };
 for (let i = 0; i < 6; i++) {
-  leftTds.value[i] = new Array();
-  rightTds.value[i] = new Array();
+  leftTds.value[i] = [];
+  rightTds.value[i] = [];
 }
 const initArr = (initLeft: string, initRight: string) => {
   for (let i = 0; i < 6; i++) {
     if (!unlinkPanels) {
       if (initLeft === "left") {
-        rightTds.value[i] = new Array();
+        rightTds.value[i] = [];
       }
       if (initRight === "right") {
-        leftTds.value[i] = new Array();
+        leftTds.value[i] = [];
       }
 
       if (initLeft === "default" && initRight === "default") {
-        leftTds.value[i] = new Array();
-        rightTds.value[i] = new Array();
+        leftTds.value[i] = [];
+        rightTds.value[i] = [];
       }
     } else {
       if (unlinkLeft.value) {
-        leftTds.value[i] = new Array();
+        leftTds.value[i] = [];
       } else {
-        rightTds.value[i] = new Array();
+        rightTds.value[i] = [];
       }
     }
   }
@@ -805,9 +804,9 @@ const selectedDate = (td: IDate) => {
     selectedDateTimeRange &&
     selectedDateTimeRange.value.length !== 0 &&
     (dateFormat(td.timestamp) ===
-      dateFormat(selectedDateTimeRange.value[1]?.val) ||
+      dateFormat(selectedDateTimeRange.value[1]?.val!) ||
       dateFormat(td.timestamp) ===
-        dateFormat(selectedDateTimeRange.value[0]?.val))
+        dateFormat(selectedDateTimeRange.value[0]?.val!))
   ) {
     return "dc-selected-date";
   }
@@ -825,7 +824,7 @@ $common-border: 1px solid #ebeef5;
 
 .dc-table {
   min-width: 291px;
-  border-spacing: 0px 10px !important;
+  border-spacing: 0 10px !important;
 
   .dc-td {
     text-align: center;
@@ -843,7 +842,7 @@ $common-border: 1px solid #ebeef5;
   display: inline-flex;
 
   span {
-    margin: 0px 15px;
+    margin: 0 15px;
   }
 }
 
