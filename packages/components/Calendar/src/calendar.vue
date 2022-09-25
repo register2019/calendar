@@ -367,9 +367,20 @@ type SelectedDateTimeRange = {
 
 const selectDate = (td: IDate, category: string) => {
   let year = category === "left" ? leftDateYear.value : rightDateYear.value;
+  console.log(startTimePicker.value, endTimePicker.value);
+
+  if (
+    typeof startTimePicker.value === "undefined" &&
+    typeof endTimePicker.value === "undefined"
+  ) {
+    startTimePicker.value = "00:00:00";
+    endTimePicker.value = "00:00:00";
+  }
+
   let month = timeFormat(
     category === "left" ? leftDateMonth.value : rightDateMonth.value
   );
+
   let day = timeFormat(td.value);
   const { month: currMonth, year: currYear } = clickPrevOrNext(
     td,

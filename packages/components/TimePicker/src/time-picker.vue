@@ -155,10 +155,6 @@ const submitBtn = () => {
   timePickerStatus.value = false;
   initValOfInputRef = inputRef.value;
 };
-
-// onMounted(() => {
-//   emit("update:modelValue", inputRef.value);
-// });
 </script>
 
 <style lang="scss" scoped>
