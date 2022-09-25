@@ -163,11 +163,11 @@ import {
   clickPrevOrNext,
   dateTimeFormat,
   initCalendarPanel,
-  getTimeUtils,
   dateToTimeStamp,
   determineTheDateFormat,
   updatePanelDate,
   formatPanelDate,
+  getTimeUtils,
 } from "../../../utils";
 import DefaultTimePicker from "../../TimePicker/src/time-picker.vue";
 import DefaultInput from "../../Input/src/input.vue";
@@ -238,23 +238,22 @@ if (modelValue.length !== 0) {
   // 有默认时间
   startDateTime.value = dateTimeFormat(modelValue[0]);
   endDateTime.value = dateTimeFormat(modelValue[1]);
-  const { leftYear, leftMonth, rightYear, rightMonth } =
-    initCalendarPanel(modelValue);
+  const {
+    leftYear,
+    leftMonth,
+    leftHour,
+    leftMinu,
+    leftSeco,
+    rightYear,
+    rightMonth,
+    rightHour,
+    rightMinu,
+    rightSeco,
+  } = initCalendarPanel(modelValue);
   leftDateYear.value = leftYear;
   leftDateMonth.value = Number(leftMonth);
   rightDateYear.value = rightYear;
   rightDateMonth.value = Number(rightMonth);
-
-  const {
-    hour: leftHour,
-    minu: leftMinu,
-    seco: leftSeco,
-  } = getTimeUtils(modelValue[0]);
-  const {
-    hour: rightHour,
-    minu: rightMinu,
-    seco: rightSeco,
-  } = getTimeUtils(modelValue[0]);
 
   // 初始化日期
   updateDateTime([
@@ -283,7 +282,6 @@ if (modelValue.length !== 0) {
   leftDateMonth.value = leftMonth;
   rightDateYear.value = rightYear;
   rightDateMonth.value = rightMonth;
-  updateDateTime(selectedDateList.value);
 }
 
 const clickAfter = (category: string) => {
@@ -513,6 +511,7 @@ watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
   if (
     determineTheDateFormat(newVal[0]) &&
     determineTheDateFormat(newVal[1]) &&
+    modelValue.length !== 0 &&
     !isSelectedDateRange.value
   ) {
     if (newVal[0] === oldVal[0]) {
@@ -604,6 +603,20 @@ watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
       },
     ];
     initArr(notInitLeft, notInitRight);
+  }
+});
+
+watch([startTimePicker, endTimePicker], (val) => {
+  if (modelValue.length === 0) {
+    const { year, month, day } = getTimeUtils();
+    modelLeftInput.value = year + "-" + month + "-" + day;
+    modelRightInput.value = year + "-" + month + "-" + day;
+
+    if (typeof val[0] === "undefined") {
+      startTimePicker.value = val[1];
+    } else if (typeof val[1] === "undefined") {
+      endTimePicker.value = val[0];
+    }
   }
 });
 
