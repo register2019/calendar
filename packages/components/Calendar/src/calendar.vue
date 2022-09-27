@@ -172,6 +172,7 @@ import {
 import DefaultTimePicker from "../../TimePicker/src/time-picker.vue";
 import DefaultInput from "../../Input/src/input.vue";
 import DefaultTimeSelect from "../../TimeSelect/src/time-select.vue";
+import { log } from "console";
 
 const tdStyle = "dc-td";
 
@@ -826,13 +827,24 @@ const selectedDate = (td: IDate) => {
   if (
     td.category === "curr" &&
     selectedDateTimeRange &&
-    selectedDateTimeRange.value.length !== 0 &&
-    (dateFormat(td.timestamp) ===
-      dateFormat(selectedDateTimeRange.value[1]?.val!) ||
-      dateFormat(td.timestamp) ===
-        dateFormat(selectedDateTimeRange.value[0]?.val!))
+    selectedDateTimeRange.value.length !== 0
   ) {
-    return "dc-selected-date";
+    if (
+      selectedDateTimeRange.value.length === 1 &&
+      dateFormat(td.timestamp) ===
+        dateFormat(selectedDateTimeRange.value[0]?.val!)
+    ) {
+      return "dc-selected-date";
+    } else if (selectedDateTimeRange.value.length === 2) {
+      if (
+        dateFormat(td.timestamp) ===
+          dateFormat(selectedDateTimeRange.value[0]?.val!) ||
+        dateFormat(td.timestamp) ===
+          dateFormat(selectedDateTimeRange.value[1]?.val!)
+      ) {
+        return "dc-selected-date";
+      }
+    }
   }
   return "";
 };
