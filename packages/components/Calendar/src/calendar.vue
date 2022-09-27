@@ -73,12 +73,7 @@
                   >
                     <div :class="beforeAndAfterStyle(td, 'curr')">
                       <span
-                        :class="[
-                          selectedStartDate === td.value
-                            ? 'dc-selected-date'
-                            : '',
-                          selectedDate(td),
-                        ]"
+                        :class="[selectedDate(td)]"
                         @mouseenter="selectedRangeStyle(td)"
                         @click="selectDate(td, 'left')"
                         >{{ td.value }}</span
@@ -178,8 +173,6 @@ const tdStyle = "dc-td";
 
 const calendarPanel = ref(false);
 const calendarRef = ref();
-
-const selectedStartDate = ref<number>();
 
 const startDateTime = ref<string>();
 const endDateTime = ref<string>();
