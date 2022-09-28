@@ -362,8 +362,6 @@ type SelectedDateTimeRange = {
 };
 
 const selectDate = (td: IDate, category: string) => {
-	// let year = category === "left" ? leftDateYear.value : rightDateYear.value;
-
 	if (
 		typeof startTimePicker.value === "undefined" &&
 		typeof endTimePicker.value === "undefined"
@@ -371,19 +369,6 @@ const selectDate = (td: IDate, category: string) => {
 		startTimePicker.value = "00:00:00";
 		endTimePicker.value = "00:00:00";
 	}
-
-	// let month = timeFormat(
-	// 	category === "left" ? leftDateMonth.value : rightDateMonth.value
-	// );
-
-	// let day = timeFormat(td.value);
-	// const { month: currMonth, year: currYear } = clickPrevOrNext(
-	// 	td,
-	// 	year,
-	// 	Number(month)
-	// );
-
-	// const timeStamp = new Date(currYear + "-" + currMonth + "-" + day).getTime();
 	if (selectedDateList.value.length > 2) {
 		selectedDateList.value = [];
 		selectedDateList.value?.push(td.timestamp);
