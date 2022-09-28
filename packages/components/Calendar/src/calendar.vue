@@ -14,7 +14,11 @@
 			<div class="dc-calendar-header">
 				<span class="dc-calendar-header-left">
 					<span>
-						<DefaultInput size="small" v-model="modelLeftInput" />
+						<DefaultInput
+							size="small"
+							v-model="modelLeftInput"
+							:disabled="inputIsDisabled"
+						/>
 					</span>
 					<span>
 						<DefaultTimeSelect
@@ -22,13 +26,22 @@
 							size="small"
 							v-model="startTimeSelect"
 						/>
-						<DefaultTimePicker v-else size="small" v-model="startTimePicker" />
+						<DefaultTimePicker
+							v-else
+							size="small"
+							v-model="startTimePicker"
+							:disabled="inputIsDisabled"
+						/>
 					</span>
 				</span>
 				<span class="dc-calendar-header-separator">&gt;</span>
 				<span class="dc-calendar-header-right">
 					<span>
-						<DefaultInput size="small" v-model="modelRightInput" />
+						<DefaultInput
+							size="small"
+							v-model="modelRightInput"
+							:disabled="inputIsDisabled"
+						/>
 					</span>
 					<span>
 						<DefaultTimeSelect
@@ -36,7 +49,12 @@
 							size="small"
 							v-model="endTimeSelect"
 						/>
-						<DefaultTimePicker v-else size="small" v-model="endTimePicker" />
+						<DefaultTimePicker
+							v-else
+							size="small"
+							v-model="endTimePicker"
+							:disabled="inputIsDisabled"
+						/>
 					</span>
 				</span>
 			</div>
@@ -52,38 +70,36 @@
 							{{ leftDate }}
 						</div>
 					</div>
-					<div>
-						<table class="dc-table">
-							<thead>
-								<tr>
-									<th v-for="item in tableHeader" :key="item">{{ item }}</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr v-for="(list, index) in leftTds" :key="index">
-									<td
-										v-for="td in list"
-										:key="td"
-										:class="[
-											selectedRangeBg(td),
-											selectedDateBoundary(td, 0),
-											selectedDateBoundary(td, 1),
-											tdStyle,
-										]"
-									>
-										<div :class="beforeAndAfterStyle(td, 'curr')">
-											<span
-												:class="[selectedDate(td)]"
-												@mouseenter="selectedRangeStyle(td)"
-												@click="selectDate(td, 'left')"
-												>{{ td.value }}</span
-											>
-										</div>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
+					<table class="dc-table">
+						<thead>
+							<tr>
+								<th v-for="item in tableHeader" :key="item">{{ item }}</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(list, index) in leftTds" :key="index">
+								<td
+									v-for="td in list"
+									:key="td"
+									:class="[
+										selectedRangeBg(td),
+										selectedDateBoundary(td, 0),
+										selectedDateBoundary(td, 1),
+										tdStyle,
+									]"
+								>
+									<div :class="beforeAndAfterStyle(td, 'curr')">
+										<span
+											:class="[selectedDate(td)]"
+											@mouseenter="selectedRangeStyle(td)"
+											@click="selectDate(td, 'left')"
+											>{{ td.value }}</span
+										>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 				<div class="dc-calendar-content-right">
 					<div class="dc-calendar-content-right-top">
@@ -95,44 +111,46 @@
 							<span @click="clickAfter('year')"> &gt;&gt; </span>
 						</div>
 					</div>
-					<div>
-						<table class="dc-table">
-							<thead>
-								<tr>
-									<th v-for="item in tableHeader" :key="item">{{ item }}</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr v-for="(list, index) in rightTds" :key="index">
-									<td
-										v-for="td in list"
-										:key="td"
-										:class="[
-											selectedRangeBg(td),
-											selectedDateBoundary(td, 0),
-											selectedDateBoundary(td, 1),
-											tdStyle,
-										]"
-									>
-										<div>
-											<span
-												:class="[beforeAndAfterStyle(td), selectedDate(td)]"
-												@mouseenter="selectedRangeStyle(td)"
-												@click="selectDate(td, 'right')"
-												>{{ td.value }}</span
-											>
-										</div>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
+					<table class="dc-table">
+						<thead>
+							<tr>
+								<th v-for="item in tableHeader" :key="item">{{ item }}</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(list, index) in rightTds" :key="index">
+								<td
+									v-for="td in list"
+									:key="td"
+									:class="[
+										selectedRangeBg(td),
+										selectedDateBoundary(td, 0),
+										selectedDateBoundary(td, 1),
+										tdStyle,
+									]"
+								>
+									<div>
+										<span
+											:class="[beforeAndAfterStyle(td), selectedDate(td)]"
+											@mouseenter="selectedRangeStyle(td)"
+											@click="selectDate(td, 'right')"
+											>{{ td.value }}</span
+										>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 			</div>
 
 			<div class="dc-calendar-footer">
-				<button @click="cancelBtn">取消</button>
-				<button @click="submitBtn">确定</button>
+				<button @click="cancelBtn" class="dc-calendar-footer-cancel">
+					取消
+				</button>
+				<button @click="submitBtn" class="dc-calendar-footer-submit">
+					确定
+				</button>
 			</div>
 		</div>
 	</Teleport>
@@ -155,7 +173,6 @@ import {
 	getCurrPageDays,
 	IDate,
 	dateFormat,
-	clickPrevOrNext,
 	dateTimeFormat,
 	initCalendarPanel,
 	dateToTimeStamp,
@@ -167,7 +184,6 @@ import {
 import DefaultTimePicker from "../../TimePicker/src/time-picker.vue";
 import DefaultInput from "../../Input/src/input.vue";
 import DefaultTimeSelect from "../../TimeSelect/src/time-select.vue";
-import { log } from "console";
 
 const tdStyle = "dc-td";
 
@@ -181,7 +197,7 @@ const endTimePicker = ref<string>();
 const startTimeSelect = ref<string>();
 const endTimeSelect = ref<string>();
 
-const selectedDateList = ref<number[]>([1661090509502, 1661090509502]);
+const selectedDateList = ref<number[]>([]);
 
 const calendarInput = ref(null);
 const calendarStyle = ref<CSSProperties>({
@@ -229,6 +245,21 @@ let isCompleteSelection = ref(false);
 
 let selectedDateTimeRange = ref<SelectedDateTimeRange[]>([]);
 
+/**
+ * 初始化SelectedDateTimeRange
+ */
+const initSelectedDateTimeRange = (value: string[] | Date[]) => {
+	selectedDateTimeRange.value = [
+		{
+			val: dateToTimeStamp(value[0]),
+			isInit: true,
+		},
+		{
+			val: dateToTimeStamp(value[1]),
+			isInit: true,
+		},
+	];
+};
 if (modelValue && modelValue.length === 2) {
 	isCompleteSelection.value = true;
 	// 有默认时间
@@ -261,16 +292,7 @@ if (modelValue && modelValue.length === 2) {
 	startTimePicker.value = leftHour + ":" + leftMinu + ":" + leftSeco;
 	endTimePicker.value = rightHour + ":" + rightMinu + ":" + rightSeco;
 
-	selectedDateTimeRange.value = [
-		{
-			val: dateToTimeStamp(modelValue[0]),
-			isInit: true,
-		},
-		{
-			val: dateToTimeStamp(modelValue[1]),
-			isInit: true,
-		},
-	];
+	initSelectedDateTimeRange(modelValue);
 } else {
 	// 没有默认时间
 	const { leftYear, leftMonth, rightYear, rightMonth } = getCurrAdjacentMonth();
@@ -361,6 +383,7 @@ type SelectedDateTimeRange = {
 	isInit: boolean;
 };
 
+const inputIsDisabled = ref(false);
 const selectDate = (td: IDate, category: string) => {
 	if (
 		typeof startTimePicker.value === "undefined" &&
@@ -369,12 +392,16 @@ const selectDate = (td: IDate, category: string) => {
 		startTimePicker.value = "00:00:00";
 		endTimePicker.value = "00:00:00";
 	}
+
 	if (selectedDateList.value.length > 2) {
 		selectedDateList.value = [];
 		selectedDateList.value?.push(td.timestamp);
 	} else {
 		if (selectedDateList.value.length === 0) {
 			selectedDateList.value?.push(td.timestamp);
+			modelLeftInput.value = dateFormat(td.timestamp);
+			modelRightInput.value = dateFormat(td.timestamp);
+			inputIsDisabled.value = true;
 		} else {
 			if (selectedDateList.value.length < 2) {
 				if (td.timestamp >= selectedDateList.value[0]) {
@@ -384,6 +411,7 @@ const selectDate = (td: IDate, category: string) => {
 					selectedDateList.value?.unshift(td.timestamp);
 					modelLeftInput.value = dateFormat(td.timestamp);
 				}
+				inputIsDisabled.value = false;
 			} else {
 				selectedDateList.value = [];
 				selectedDateList.value?.push(td.timestamp);
@@ -392,7 +420,6 @@ const selectDate = (td: IDate, category: string) => {
 			}
 		}
 	}
-	console.log(modelLeftInput.value, modelRightInput.value);
 	selectedRange(td);
 };
 
@@ -584,16 +611,7 @@ watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
 				notInitLeft = "right";
 			}
 		}
-		selectedDateTimeRange.value = [
-			{
-				val: dateToTimeStamp(newVal[0]),
-				isInit: true,
-			},
-			{
-				val: dateToTimeStamp(newVal[1]),
-				isInit: true,
-			},
-		];
+		initSelectedDateTimeRange(newVal);
 		initArr(notInitLeft, notInitRight);
 	}
 });
@@ -813,15 +831,14 @@ const selectedDate = (td: IDate) => {
 				dateFormat(selectedDateTimeRange.value[0]?.val!)
 		) {
 			return "dc-selected-date";
-		} else if (selectedDateTimeRange.value.length === 2) {
-			if (
+		} else if (
+			selectedDateTimeRange.value.length === 2 &&
+			(dateFormat(td.timestamp) ===
+				dateFormat(selectedDateTimeRange.value[0]?.val!) ||
 				dateFormat(td.timestamp) ===
-					dateFormat(selectedDateTimeRange.value[0]?.val!) ||
-				dateFormat(td.timestamp) ===
-					dateFormat(selectedDateTimeRange.value[1]?.val!)
-			) {
-				return "dc-selected-date";
-			}
+					dateFormat(selectedDateTimeRange.value[1]?.val!))
+		) {
+			return "dc-selected-date";
 		}
 	}
 	return "";
@@ -941,10 +958,16 @@ $common-border: 1px solid #ebeef5;
 		button {
 			border: $common-border;
 			background-color: #fff;
-			color: #409eff;
+
 			padding: 5px 15px;
 			margin: 0 5px;
 			cursor: pointer;
+		}
+		&-cancel {
+			color: #000;
+		}
+		&-submit {
+			color: #409eff;
 		}
 	}
 }
