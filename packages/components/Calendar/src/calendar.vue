@@ -224,11 +224,13 @@ let unlinkRight = ref(false);
 let modelLeftInput = ref();
 let modelRightInput = ref();
 
+// 是否完成选择
 let isCompleteSelection = ref(false);
 
 let selectedDateTimeRange = ref<SelectedDateTimeRange[]>([]);
 
-if (modelValue.length !== 0) {
+if (modelValue && modelValue.length === 2) {
+	isCompleteSelection.value = true;
 	// 有默认时间
 	startDateTime.value = dateTimeFormat(modelValue[0]);
 	endDateTime.value = dateTimeFormat(modelValue[1]);
@@ -699,11 +701,7 @@ const beforeAndAfterStyle = (td: IDate, curr?: string) => {
 };
 
 const selectedRangeStyle = (td: IDate) => {
-	if (
-		selectedDateTimeRange.value.length === 0 ||
-		isCompleteSelection.value ||
-		selectedDateTimeRange.value.length === 2
-	)
+	if (selectedDateTimeRange.value.length === 0 || isCompleteSelection.value)
 		return;
 
 	if (selectedDateTimeRange.value.length === 1) {
