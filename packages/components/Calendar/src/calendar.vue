@@ -12,51 +12,17 @@
       ref="calendarRef"
     >
       <div class="dc-calendar-header">
-        <span class="dc-calendar-header-left">
-          <span>
-            <DefaultInput
-              size="small"
-              v-model="modelLeftInput"
-              :disabled="inputIsDisabled"
-            />
-          </span>
-          <span>
-            <DefaultTimeSelect
-              v-if="timeType === 'Select'"
-              size="small"
-              v-model="startTimeSelect"
-            />
-            <DefaultTimePicker
-              v-else
-              size="small"
-              v-model="startTimePicker"
-              :disabled="inputIsDisabled"
-            />
-          </span>
-        </span>
+        <PanelInput
+          v-model:date="modelLeftInput"
+          v-model:time="startTimeType"
+          :inputIsDisabled="inputIsDisabled"
+        />
         <span class="dc-calendar-header-separator">&gt;</span>
-        <span class="dc-calendar-header-right">
-          <span>
-            <DefaultInput
-              size="small"
-              v-model="modelRightInput"
-              :disabled="inputIsDisabled"
-            />
-          </span>
-          <span>
-            <DefaultTimeSelect
-              v-if="timeType === 'Select'"
-              size="small"
-              v-model="endTimeSelect"
-            />
-            <DefaultTimePicker
-              v-else
-              size="small"
-              v-model="endTimePicker"
-              :disabled="inputIsDisabled"
-            />
-          </span>
-        </span>
+        <PanelInput
+          v-model:date="modelRightInput"
+          v-model:time="endTimeType"
+          :inputIsDisabled="inputIsDisabled"
+        />
       </div>
 
       <div class="dc-calendar-content">
@@ -117,7 +83,6 @@ export default {
 import { ref, watch, computed, CSSProperties } from "vue";
 import { onClickOutside, useElementBounding } from "@vueuse/core";
 import {
-  tableHeader,
   getCurrAdjacentMonth,
   timeFormat,
   unlinkBefore,
@@ -133,10 +98,8 @@ import {
   formatPanelDate,
   getTimeUtils,
 } from "../../../utils";
-import DefaultTimePicker from "../../TimePicker/src/time-picker.vue";
-import DefaultInput from "../../Input/src/input.vue";
-import DefaultTimeSelect from "../../TimeSelect/src/time-select.vue";
 import PanelTable from "./panelTable.vue";
+import PanelInput from "./panelInput.vue";
 
 const calendarPanel = ref(false);
 const calendarRef = ref();
@@ -368,26 +331,25 @@ const selectDate = (td: IDate, category?: string) => {
   // 解决在一个面板中完成了日期选择 另一个面板没有选中 当移入另一个时出现选中的情况
   if (category == "click" && selectedDateList.value.length === 2) {
     isSelectedFinish.value = true;
+    inputIsDisabled.value = false;
   }
   if (selectedDateList.value.length < 2) {
     selectedDateList.value.push(td.timestamp);
+    modelLeftInput.value = dateFormat(selectedDateList.value[0]);
+    modelRightInput.value = dateFormat(selectedDateList.value[0]);
+    inputIsDisabled.value = true;
   } else {
     selectedDateList.value.pop();
     selectedDateList.value.push(td.timestamp);
-  }
-};
-
-watch(selectedDateList.value, (val) => {
-  if (val.length === 1) {
-    modelLeftInput.value = dateFormat(val[0]);
-    modelRightInput.value = dateFormat(val[0]);
-  } else {
-    modelLeftInput.value = dateFormat(val[0]);
-    modelRightInput.value = dateFormat(val[1]);
+    modelLeftInput.value = dateFormat(selectedDateList.value[0]);
+    modelRightInput.value = dateFormat(selectedDateList.value[1]);
   }
   startTimePicker.value = "00:00:00";
   endTimePicker.value = "00:00:00";
-});
+};
+
+const startTimeType = timeType === "Select" ? startTimeSelect : startTimePicker;
+const endTimeType = timeType === "Select" ? endTimeSelect : endTimePicker;
 
 const inputIsDisabled = ref(false);
 
@@ -472,8 +434,6 @@ watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
     modelValue.length !== 0 &&
     !isSelectedDateRange.value
   ) {
-    console.log("---->", newVal);
-
     if (newVal[0] === oldVal[0]) {
       // 修改了右侧的日期
       if (
@@ -552,7 +512,10 @@ watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
         notInitLeft = "right";
       }
     }
-    initSelectedDateTimeRange(newVal);
+    if (!inputIsDisabled) {
+      initSelectedDateTimeRange(newVal);
+    }
+
     initArr(notInitLeft, notInitRight);
   }
 });
@@ -696,16 +659,6 @@ $common-border: 1px solid #ebeef5;
   &-header {
     padding: 5px;
     display: table;
-
-    &-left,
-    &-right {
-      display: table-cell;
-      span {
-        display: table-cell;
-        padding: 0 5px;
-      }
-    }
-
     &-separator {
       margin: 0 10px 0 15px;
     }
