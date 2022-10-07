@@ -341,6 +341,7 @@ const selectDate = (td: IDate, category?: string) => {
   } else {
     selectedDateList.value.pop();
     selectedDateList.value.push(td.timestamp);
+    selectedDateList.value.sort((a, b) => a - b);
     modelLeftInput.value = dateFormat(selectedDateList.value[0]);
     modelRightInput.value = dateFormat(selectedDateList.value[1]);
   }
