@@ -11,64 +11,67 @@
       v-show="calendarPanel"
       ref="calendarRef"
     >
-      <div class="dc-calendar-header">
-        <PanelInput
-          v-model:date="modelLeftInput"
-          v-model:time="startTimeType"
-          :inputIsDisabled="inputIsDisabled"
-        />
-        <span class="dc-calendar-header-separator">&gt;</span>
-        <PanelInput
-          v-model:date="modelRightInput"
-          v-model:time="endTimeType"
-          :inputIsDisabled="inputIsDisabled"
-        />
-      </div>
-
-      <div class="dc-calendar-content">
-        <div class="dc-calendar-content-left">
-          <div class="dc-calendar-content-left-top">
-            <div class="dc-calendar-content-left-top-icon">
-              <span @click="clickBefore('year')">&lt;&lt;</span>
-              <span @click="clickBefore('month')">&lt;</span>
-            </div>
-            <div class="dc-calendar-content-left-top-date">
-              {{ leftDate }}
-            </div>
-          </div>
-          <PanelTable
-            :tds="leftTds"
-            :selectedDateList="selectedDateList"
-            :isSelectedFinish="isSelectedFinish"
-            @emit-selected-date="emitSelectedDate"
+      <PanelSider />
+      <div>
+        <div class="dc-calendar-header">
+          <PanelInput
+            v-model:date="modelLeftInput"
+            v-model:time="startTimeType"
+            :inputIsDisabled="inputIsDisabled"
+          />
+          <span class="dc-calendar-header-separator">&gt;</span>
+          <PanelInput
+            v-model:date="modelRightInput"
+            v-model:time="endTimeType"
+            :inputIsDisabled="inputIsDisabled"
           />
         </div>
-        <div class="dc-calendar-content-right">
-          <div class="dc-calendar-content-right-top">
-            <div class="dc-calendar-content-right-top-date">
-              {{ rightDate }}
-            </div>
-            <div class="dc-calendar-content-right-top-icon">
-              <span @click="clickAfter('month')"> &gt; </span>
-              <span @click="clickAfter('year')"> &gt;&gt; </span>
-            </div>
-          </div>
-          <PanelTable
-            :tds="rightTds"
-            :selectedDateList="selectedDateList"
-            :isSelectedFinish="isSelectedFinish"
-            @emit-selected-date="emitSelectedDate"
-          />
-        </div>
-      </div>
 
-      <div class="dc-calendar-footer">
-        <button @click="cancelBtn" class="dc-calendar-footer-cancel">
-          取消
-        </button>
-        <button @click="submitBtn" class="dc-calendar-footer-submit">
-          确定
-        </button>
+        <div class="dc-calendar-content">
+          <div class="dc-calendar-content-left">
+            <div class="dc-calendar-content-left-top">
+              <div class="dc-calendar-content-left-top-icon">
+                <span @click="clickBefore('year')">&lt;&lt;</span>
+                <span @click="clickBefore('month')">&lt;</span>
+              </div>
+              <div class="dc-calendar-content-left-top-date">
+                {{ leftDate }}
+              </div>
+            </div>
+            <PanelTable
+              :tds="leftTds"
+              :selectedDateList="selectedDateList"
+              :isSelectedFinish="isSelectedFinish"
+              @emit-selected-date="emitSelectedDate"
+            />
+          </div>
+          <div class="dc-calendar-content-right">
+            <div class="dc-calendar-content-right-top">
+              <div class="dc-calendar-content-right-top-date">
+                {{ rightDate }}
+              </div>
+              <div class="dc-calendar-content-right-top-icon">
+                <span @click="clickAfter('month')"> &gt; </span>
+                <span @click="clickAfter('year')"> &gt;&gt; </span>
+              </div>
+            </div>
+            <PanelTable
+              :tds="rightTds"
+              :selectedDateList="selectedDateList"
+              :isSelectedFinish="isSelectedFinish"
+              @emit-selected-date="emitSelectedDate"
+            />
+          </div>
+        </div>
+
+        <div class="dc-calendar-footer">
+          <button @click="cancelBtn" class="dc-calendar-footer-cancel">
+            取消
+          </button>
+          <button @click="submitBtn" class="dc-calendar-footer-submit">
+            确定
+          </button>
+        </div>
       </div>
     </div>
   </Teleport>
@@ -100,6 +103,7 @@ import {
 } from "../../../utils";
 import PanelTable from "./panelTable.vue";
 import PanelInput from "./panelInput.vue";
+import PanelSider from "./panelSider.vue";
 
 const calendarPanel = ref(false);
 const calendarRef = ref();
