@@ -87,7 +87,6 @@ const selectedDateBgUI = (td: IDate) => {
     ) {
       return "dc-table-selected-td start end";
     }
-    // console.log(sortSelectedDateList, td.timestamp);
 
     if (sortSelectedDateList[0] === td.timestamp) {
       return "dc-table-selected-td start";

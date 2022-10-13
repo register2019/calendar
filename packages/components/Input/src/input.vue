@@ -16,7 +16,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { ref, reactive, watch, computed, Ref, onMounted } from "vue";
+import { ref, watch, computed } from "vue";
 
 type Props = {
   modelValue?: string;
@@ -38,12 +38,6 @@ const inputHeight = computed(() => {
   return "40px";
 });
 
-watch(
-  () => props.modelValue,
-  (val) => {
-    inputValue.value = val;
-  }
-);
 watch(inputValue, (val) => {
   emit("update:modelValue", val);
 });
@@ -59,6 +53,13 @@ watch(
   },
   {
     immediate: true,
+  }
+);
+
+watch(
+  () => props.modelValue,
+  (val) => {
+    inputValue.value = val;
   }
 );
 </script>

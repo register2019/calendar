@@ -31,6 +31,8 @@ const clickShorts = (item: PickerOptions) => {
   padding: 15px 0 0 15px;
   &-item {
     padding: 5px 0;
+    cursor: pointer;
+    user-select: none;
   }
 }
 </style>

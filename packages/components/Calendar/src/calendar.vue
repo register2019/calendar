@@ -257,7 +257,11 @@ const selectedPickerOptions = (val: PickerOptions) => {
     month: startMonth,
     day: startDay,
   } = getTimeUtils(pickerTimeRange[0]);
-  const { day: endDay } = getTimeUtils(pickerTimeRange[1]);
+  const {
+    year: endYear,
+    month: endMonth,
+    day: endDay,
+  } = getTimeUtils(pickerTimeRange[1]);
   const startPicker = {
     value: Number(startDay),
     category: "curr",
@@ -283,6 +287,10 @@ const selectedPickerOptions = (val: PickerOptions) => {
   selectDate(startPicker!, "click");
   selectDate(endPicker!, "mouse");
   selectDate(endPicker!, "click");
+  // emit("update:modelValue", [
+  //   new Date(startYear, Number(startMonth), Number(startDay), 0, 0),
+  //   new Date(endYear, Number(endMonth), Number(endDay), 0, 0),
+  // ]);
 };
 
 const clickAfter = (category: string) => {
@@ -478,6 +486,7 @@ const compareTwoDates = (val: string[]) => {
 watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
   let notInitLeft = "default";
   let notInitRight = "default";
+
   if (
     determineTheDateFormat(newVal[0]) &&
     determineTheDateFormat(newVal[1]) &&
@@ -522,6 +531,7 @@ watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
         notInitRight = "left";
       }
     } else {
+      console.log(456);
       // 修改了左侧的日期
       if (
         newVal[0].split("-")[0] === oldVal[0].split("-")[0] &&

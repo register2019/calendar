@@ -1,18 +1,23 @@
 <template>
   <span class="dc-calendar-header-input">
     <span>
-      <DefaultInput size="small" v-model="date" :disabled="inputIsDisabled" />
+      <DefaultInput
+        size="small"
+        v-model="inputDate"
+        :disabled="inputIsDisabled"
+      />
     </span>
     <span>
       <DefaultTimeSelect
         v-if="timeType === 'Select'"
         size="small"
-        v-model="time"
+        v-model="inputTime"
+        :disabled="inputIsDisabled"
       />
       <DefaultTimePicker
         v-else
         size="small"
-        v-model="time"
+        v-model="inputTime"
         :disabled="inputIsDisabled"
       />
     </span>
@@ -20,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch, computed } from "vue";
+import { ref, watch } from "vue";
 import DefaultInput from "../../Input/src/input.vue";
 import DefaultTimeSelect from "../../TimeSelect/src/time-select.vue";
 import DefaultTimePicker from "../../TimePicker/src/time-picker.vue";
@@ -39,16 +44,24 @@ const props = withDefaults(defineProps<Props>(), {
 });
 const emit = defineEmits(["update:date", "update:time"]);
 
+const inputDate = ref("");
+const inputTime = ref("");
+
+watch(inputDate, (val) => {
+  emit("update:date", val);
+});
+watch(inputTime, (val) => {
+  emit("update:time", val);
+});
+
 watch(
-  () => props.date,
+  () => props,
   (val) => {
-    emit("update:date", val);
-  }
-);
-watch(
-  () => props.time,
-  (val) => {
-    emit("update:time", val);
+    inputDate.value = val.date;
+    inputTime.value = val.time!;
+  },
+  {
+    deep: true,
   }
 );
 </script>
