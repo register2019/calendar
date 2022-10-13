@@ -11,7 +11,11 @@
       v-show="calendarPanel"
       ref="calendarRef"
     >
-      <PanelSider />
+      <PanelSider
+        v-if="props.pickerOptions && props.pickerOptions.length !== 0"
+        :pickerOptions="props.pickerOptions"
+        @selected-picker-options="selectedPickerOptions"
+      />
       <div>
         <div class="dc-calendar-header">
           <PanelInput
@@ -100,10 +104,12 @@ import {
   updatePanelDate,
   formatPanelDate,
   getTimeUtils,
+  timeToOneDayStart,
 } from "../../../utils";
 import PanelTable from "./panelTable.vue";
 import PanelInput from "./panelInput.vue";
 import PanelSider from "./panelSider.vue";
+import { PickerOptions } from "./constants";
 
 const calendarPanel = ref(false);
 const calendarRef = ref();
@@ -114,7 +120,6 @@ const startTimePicker = ref<string>();
 const endTimePicker = ref<string>();
 const startTimeSelect = ref<string>();
 const endTimeSelect = ref<string>();
-
 const selectedDateList = ref<number[]>([]);
 
 const calendarInput = ref(null);
@@ -122,6 +127,7 @@ const calendarStyle = ref<CSSProperties>({
   position: "absolute",
   top: "",
   left: "",
+  width: "646px",
 });
 
 onClickOutside(calendarRef, () => {
@@ -133,16 +139,19 @@ type Props = {
   unlinkPanels?: boolean; // 是否取消左右日期间的联动 默认是联动的
   modelValue?: Date[];
   timeType?: string; // 默认是Picker 可选值为Picker和Select
+  pickerOptions?: PickerOptions[];
 };
-const { unlinkPanels, timeType, modelValue } = withDefaults(
-  defineProps<Props>(),
-  {
-    unlinkPanels: false,
-    modelValue: (): Date[] => [],
-    timeType: "Picker",
-  }
-);
+const props = withDefaults(defineProps<Props>(), {
+  unlinkPanels: false,
+  modelValue: (): Date[] => [],
+  timeType: "Picker",
+});
+
 const emit = defineEmits(["update:modelValue", "onClick"]);
+
+if (props.pickerOptions && props.pickerOptions.length > 0) {
+  calendarStyle.value.width = "766px";
+}
 
 let leftDateYear = ref(0);
 let leftDateMonth = ref(0);
@@ -197,25 +206,23 @@ const initSelectedDateTimeRange = (value: string[] | Date[]) => {
     ),
   ];
 };
-if (modelValue && modelValue.length === 2) {
+if (props.modelValue && props.modelValue.length === 2) {
   isCompleteSelection.value = true;
   // 有默认时间
-  startDateTime.value = dateTimeFormat(modelValue[0]);
-  endDateTime.value = dateTimeFormat(modelValue[1]);
+  startDateTime.value = dateTimeFormat(props.modelValue[0]);
+  endDateTime.value = dateTimeFormat(props.modelValue[1]);
   const {
     leftYear,
     leftMonth,
-    leftDay,
     leftHour,
     leftMinu,
     leftSeco,
     rightYear,
     rightMonth,
-    rightDay,
     rightHour,
     rightMinu,
     rightSeco,
-  } = initCalendarPanel(modelValue);
+  } = initCalendarPanel(props.modelValue);
   leftDateYear.value = leftYear;
   leftDateMonth.value = Number(leftMonth);
   rightDateYear.value = rightYear;
@@ -223,15 +230,15 @@ if (modelValue && modelValue.length === 2) {
 
   // 初始化日期
   updateDateTime([
-    dateToTimeStamp(modelValue[0]),
-    dateToTimeStamp(modelValue[1]),
+    dateToTimeStamp(props.modelValue[0]),
+    dateToTimeStamp(props.modelValue[1]),
   ]);
 
   // 初始化时间
   startTimePicker.value = leftHour + ":" + leftMinu + ":" + leftSeco;
   endTimePicker.value = rightHour + ":" + rightMinu + ":" + rightSeco;
 
-  initSelectedDateTimeRange(modelValue);
+  initSelectedDateTimeRange(props.modelValue);
 } else {
   // 没有默认时间
   const { leftYear, leftMonth, rightYear, rightMonth } = getCurrAdjacentMonth();
@@ -241,6 +248,21 @@ if (modelValue && modelValue.length === 2) {
   rightDateMonth.value = rightMonth;
 }
 
+const selectedPickerOptions = (val: PickerOptions) => {
+  const pickerTimeRange = val.value();
+  const allLeft = leftTds.value.flat();
+  const allRight = rightTds.value.flat();
+  const pickerLeft = allLeft.find(
+    (item) => item.timestamp === timeToOneDayStart(pickerTimeRange[0])
+  );
+  const pickerRight = allLeft.find(
+    (item) => item.timestamp === timeToOneDayStart(pickerTimeRange[1])
+  );
+  selectDate(pickerLeft!, "click");
+  selectDate(pickerRight!, "mouse");
+  selectDate(pickerRight!, "click");
+};
+
 const clickAfter = (category: string) => {
   unlinkRight.value = true;
   if (unlinkLeft.value) {
@@ -248,7 +270,7 @@ const clickAfter = (category: string) => {
   }
   if (category === "month") {
     rightDateMonth.value++;
-    if (unlinkPanels) {
+    if (props.unlinkPanels) {
       const { month, year } = unlinkAfter(
         rightDateMonth.value,
         rightDateYear.value
@@ -272,7 +294,7 @@ const clickAfter = (category: string) => {
     }
   } else if (category === "year") {
     rightDateYear.value++;
-    if (!unlinkPanels) {
+    if (!props.unlinkPanels) {
       leftDateYear.value++;
     }
   }
@@ -286,7 +308,7 @@ const clickBefore = (category: string) => {
   }
   if (category === "month") {
     leftDateMonth.value--;
-    if (unlinkPanels) {
+    if (props.unlinkPanels) {
       const { month, year } = unlinkBefore(
         leftDateMonth.value,
         leftDateYear.value
@@ -310,7 +332,7 @@ const clickBefore = (category: string) => {
     }
   } else if (category === "year") {
     leftDateYear.value--;
-    if (!unlinkPanels) {
+    if (!props.unlinkPanels) {
       rightDateYear.value--;
     }
   }
@@ -353,8 +375,9 @@ const selectDate = (td: IDate, category?: string) => {
   endTimePicker.value = "00:00:00";
 };
 
-const startTimeType = timeType === "Select" ? startTimeSelect : startTimePicker;
-const endTimeType = timeType === "Select" ? endTimeSelect : endTimePicker;
+const startTimeType =
+  props.timeType === "Select" ? startTimeSelect : startTimePicker;
+const endTimeType = props.timeType === "Select" ? endTimeSelect : endTimePicker;
 
 const inputIsDisabled = ref(false);
 
@@ -396,7 +419,7 @@ for (let i = 0; i < 6; i++) {
 }
 const initArr = (initLeft: string, initRight: string) => {
   for (let i = 0; i < 6; i++) {
-    if (!unlinkPanels) {
+    if (!props.unlinkPanels) {
       if (initLeft === "left") {
         rightTds.value[i] = [];
       }
@@ -436,7 +459,7 @@ watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
   if (
     determineTheDateFormat(newVal[0]) &&
     determineTheDateFormat(newVal[1]) &&
-    modelValue.length !== 0 &&
+    props.modelValue.length !== 0 &&
     !isSelectedDateRange.value
   ) {
     if (newVal[0] === oldVal[0]) {
@@ -526,7 +549,7 @@ watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
 });
 
 watch([startTimePicker, endTimePicker], (val) => {
-  if (modelValue.length === 0) {
+  if (props.modelValue.length === 0) {
     if (modelLeftInput.value === "" && modelRightInput.value === "") {
       const { year, month, day } = getTimeUtils();
       modelLeftInput.value = year + "-" + month + "-" + day;
@@ -604,9 +627,9 @@ const cancelBtn = () => {
 
 const submitBtn = () => {
   const startTime =
-    timeType === "Select" ? startTimeSelect.value : startTimePicker.value;
+    props.timeType === "Select" ? startTimeSelect.value : startTimePicker.value;
   const endTime =
-    timeType === "Select" ? endTimeSelect.value : endTimePicker.value;
+    props.timeType === "Select" ? endTimeSelect.value : endTimePicker.value;
 
   startDateTime.value = dateFormat(selectedDateList.value[0]) + " " + startTime;
 
@@ -657,7 +680,7 @@ $common-border: 1px solid #ebeef5;
 }
 
 .dc-calendar {
-  width: 646px;
+  display: flex;
   border: $common-border;
   background-color: #fff;
 

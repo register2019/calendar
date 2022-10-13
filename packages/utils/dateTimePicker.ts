@@ -37,7 +37,7 @@ export const dateFormat = (time: number) => {
  * @param dateTime
  * @returns
  */
-export const dateTimeFormat = (dateTime: Date) => {
+export const dateTimeFormat = (dateTime: Date | number) => {
   const { year, month, day, hour, minu, seco } = getTimeUtils(dateTime);
 
   return year + "-" + month + "-" + day + " " + hour + ":" + minu + ":" + seco;
@@ -429,3 +429,11 @@ export const calculateTheYearAndMonth = (year: number, month: number) => {
  */
 export const formatPanelDate = (val: number) =>
   val.toString().split("").length === 2 ? val : timeFormat(val);
+
+/**
+ * 时间戳中的时分秒转换为00：00：00
+ */
+export const timeToOneDayStart = (time: number) => {
+  const { year, month, day } = getTimeUtils(time);
+  return new Date(`${year}-${month}-${day} 00:00:00`).getTime();
+};
