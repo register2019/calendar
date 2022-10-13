@@ -152,7 +152,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(["update:modelValue", "onClick"]);
 
 if (props.pickerOptions && props.pickerOptions.length > 0) {
-  calendarStyle.value.width = "766px";
+  calendarStyle.value.width = "782px";
 }
 
 let leftDateYear = ref(0);

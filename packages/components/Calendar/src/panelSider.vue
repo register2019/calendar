@@ -11,7 +11,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch, computed } from "vue";
 import { PickerOptions } from "./constants";
 type Props = {
   pickerOptions?: PickerOptions[];
@@ -19,7 +18,7 @@ type Props = {
 const props = defineProps<Props>();
 const emit = defineEmits(["selectedPickerOptions"]);
 
-const clickShorts = (item) => {
+const clickShorts = (item: PickerOptions) => {
   emit("selectedPickerOptions", item);
 };
 </script>
