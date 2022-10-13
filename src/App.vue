@@ -17,9 +17,8 @@ const pickerOptions = [
   {
     text: "最近一周",
     value: () => {
-      const end = new Date().getTime();
-      const start = new Date().getTime() - 3600 * 1000 * 24 * 7;
-      console.log("---->", start, end);
+      const end = new Date().getTime() + 3600 * 1000 * 24 * 90;
+      const start = new Date().getTime();
 
       return [start, end];
     },

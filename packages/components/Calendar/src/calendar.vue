@@ -250,17 +250,37 @@ if (props.modelValue && props.modelValue.length === 2) {
 
 const selectedPickerOptions = (val: PickerOptions) => {
   const pickerTimeRange = val.value();
-  const allLeft = leftTds.value.flat();
-  const allRight = rightTds.value.flat();
-  const pickerLeft = allLeft.find(
-    (item) => item.timestamp === timeToOneDayStart(pickerTimeRange[0])
-  );
-  const pickerRight = allLeft.find(
-    (item) => item.timestamp === timeToOneDayStart(pickerTimeRange[1])
-  );
-  selectDate(pickerLeft!, "click");
-  selectDate(pickerRight!, "mouse");
-  selectDate(pickerRight!, "click");
+  const {
+    year: startYear,
+    month: startMonth,
+    day: startDay,
+  } = getTimeUtils(pickerTimeRange[0]);
+  const { day: endDay } = getTimeUtils(pickerTimeRange[1]);
+  const startPicker = {
+    value: Number(startDay),
+    category: "curr",
+    timestamp: timeToOneDayStart(pickerTimeRange[0]),
+  };
+  const endPicker = {
+    value: Number(endDay),
+    category: "curr",
+    timestamp: timeToOneDayStart(pickerTimeRange[1]),
+  };
+
+  let diffMonth = 0;
+  if (Number(startYear) === leftDateYear.value) {
+    diffMonth = Math.abs(Number(startMonth) - leftDateMonth.value);
+  } else {
+    diffMonth = Math.abs(Number(startMonth) - leftDateMonth.value) + 12;
+  }
+
+  for (let i = 0; i < diffMonth; i++) {
+    clickBefore("month");
+  }
+
+  selectDate(startPicker!, "click");
+  selectDate(endPicker!, "mouse");
+  selectDate(endPicker!, "click");
 };
 
 const clickAfter = (category: string) => {
