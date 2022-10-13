@@ -1,10 +1,12 @@
 <template>
-  <div
-    class="picker"
-    v-for="item in props.pickerOptions"
-    @click="clickShorts(item)"
-  >
-    {{ item.text }}
+  <div class="picker">
+    <div
+      class="picker-item"
+      v-for="item in props.pickerOptions"
+      @click="clickShorts(item)"
+    >
+      {{ item.text }}
+    </div>
   </div>
 </template>
 
@@ -24,6 +26,12 @@ const clickShorts = (item) => {
 
 <style lang="scss" scoped>
 .picker {
-  width: 120px;
+  min-width: 120px;
+  height: 450px;
+  border-right: 1px solid #ebeef5;
+  padding: 15px 0 0 15px;
+  &-item {
+    padding: 5px 0;
+  }
 }
 </style>
