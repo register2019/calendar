@@ -13,6 +13,7 @@ app.use(DefaultComponents())
 <DefaultCalendar 
   v-model="selectedTimeRange"
   @onClick="getSelectedTimeRange"
+  :pickerOptions="pickerOptions"
 />
 ```
 
@@ -25,6 +26,17 @@ const selectedTimeRange = ref<[Date, Date]>([
 const getSelectedTimeRange = (val: number[]) => {
 
 }
+
+const pickerOptions = [
+  {
+    text: "最近一周",
+    value: () => {
+      const end = new Date().getTime();
+      const start = new Date().getTime() - +3600 * 1000 * 24 * 7;
+
+    },
+  },
+];
 ```
 
 
@@ -32,3 +44,4 @@ const getSelectedTimeRange = (val: number[]) => {
 | --------------- | ----------------------------------------------------------------------------- | ----------------------------------------- |
 | unlinkPanels    | 可选 是否取消左右 日期面板的联动                                                  | boolean: false                            |
 | timeType        | 日期面板时间类型 可选Picker和Select                                              | string: Picker                            |
+| pickerOptions   | 设置快捷选项                                                                    | Array                                     |
