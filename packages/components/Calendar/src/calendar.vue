@@ -483,10 +483,21 @@ const compareTwoDates = (val: string[]) => {
 	}
 };
 
+watch(selectedDateList, (val) => {
+	if (val[0] <= val[1]) return;
+	console.log("需要排序");
+});
+
 watch([modelLeftInput, modelRightInput], (newVal, oldVal) => {
 	let notInitLeft = "default";
 	let notInitRight = "default";
+	const startTimeStamp = dateToTimeStamp(
+		newVal[0] + " " + startTimePicker.value
+	);
+	const endTimeStamp = dateToTimeStamp(newVal[1] + " " + endTimePicker.value);
 
+	selectedDateList.value = [startTimeStamp, endTimeStamp];
+	console.log(selectedDateList.value);
 	if (
 		determineTheDateFormat(newVal[0]) &&
 		determineTheDateFormat(newVal[1]) &&
