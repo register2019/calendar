@@ -6,6 +6,7 @@
       autocomplete="off"
       v-model="inputValue"
       :disabled="props.disabled"
+      @blur="onBlur"
     />
   </div>
 </template>
@@ -23,7 +24,7 @@ type Props = {
   size?: string;
   disabled?: boolean;
 };
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "blur"]);
 const props = withDefaults(defineProps<Props>(), {
   modelValue: "",
   size: "normal",
@@ -37,6 +38,9 @@ const inputHeight = computed(() => {
   }
   return "40px";
 });
+const onBlur = () => {
+  emit("blur", () => {});
+};
 
 watch(inputValue, (val) => {
   emit("update:modelValue", val);

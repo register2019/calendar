@@ -37,6 +37,8 @@ import {
   secondaryColor,
   bgColor,
   whiteColor,
+  getTimeUtils,
+  dateToTimeStamp,
 } from "../../../utils";
 
 type Props = {
@@ -70,20 +72,43 @@ const beforeAndAfterUI = (category: string) => {
   return "";
 };
 
+const initPropsSelectedDateList = () => {
+  const {
+    year: startYear,
+    month: startMonth,
+    day: startDay,
+  } = getTimeUtils(props.selectedDateList[0]);
+  const {
+    year: endYear,
+    month: endMonth,
+    day: endDay,
+  } = getTimeUtils(props.selectedDateList[1]);
+
+  const startDateTime = dateToTimeStamp(
+    startYear + "-" + startMonth + "-" + startDay + " " + "00:00:00"
+  );
+  const endDateTime = dateToTimeStamp(
+    endYear + "-" + endMonth + "-" + endDay + " " + "00:00:00"
+  );
+
+  return [startDateTime, endDateTime];
+};
+
 /**
  * 设置选中范围的背景颜色
  * @param td
  */
 const selectedDateBgUI = (td: IDate) => {
+  if (props.selectedDateList.length === 0) return;
   if (td.category === "curr") {
-    const sortSelectedDateList = [...props.selectedDateList];
+    const sortSelectedDateList = initPropsSelectedDateList();
     sortSelectedDateList.sort((a, b) => a - b);
     if (
       (props.selectedDateList.length === 2 &&
-        props.selectedDateList[0] === td.timestamp &&
-        props.selectedDateList[1] === td.timestamp) ||
+        sortSelectedDateList[0] === td.timestamp &&
+        sortSelectedDateList[1] === td.timestamp) ||
       (props.selectedDateList.length === 1 &&
-        props.selectedDateList[0] === td.timestamp)
+        sortSelectedDateList[0] === td.timestamp)
     ) {
       return "dc-table-selected-td start end";
     }
@@ -105,10 +130,11 @@ const selectedDateBgUI = (td: IDate) => {
   return "";
 };
 const selectedStartAndEndUI = (td: IDate) => {
+  if (props.selectedDateList.length === 0) return;
   if (
     td.category === "curr" &&
-    (props.selectedDateList[0] === td.timestamp ||
-      props.selectedDateList[1] === td.timestamp)
+    (initPropsSelectedDateList()[0] === td.timestamp ||
+      initPropsSelectedDateList()[1] === td.timestamp)
   ) {
     return "dc-table-selected-td-boundary";
   }
