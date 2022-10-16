@@ -23,6 +23,7 @@
               v-model:date="modelLeftInput"
               v-model:time="startTimeType"
               :inputIsDisabled="inputIsDisabled"
+              :timeType="props.timeType"
               inputPosition="start"
               @update-input-position="updateInputPosition"
             />
@@ -31,6 +32,7 @@
               v-model:date="modelRightInput"
               v-model:time="endTimeType"
               :inputIsDisabled="inputIsDisabled"
+              :timeType="props.timeType"
               inputPosition="end"
               @update-input-position="updateInputPosition"
             />

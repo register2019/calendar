@@ -3,16 +3,17 @@
     v-model="selectedTimeRange"
     @onClick="getSelectedTimeRange"
     :pickerOptions="pickerOptions"
+    timeType="Select"
   />
 </template>
 
 <script lang="ts" setup>
 import { ref, reactive, watch, computed } from "vue";
-const selectedTimeRange = ref<[Date, Date]>([
-  new Date(2000, 10, 10, 10, 10),
-  new Date(2000, 10, 11, 10, 10),
-]);
-// const selectedTimeRange = ref<Date[]>([]);
+// const selectedTimeRange = ref<[Date, Date]>([
+//   new Date(2000, 10, 10, 10, 10),
+//   new Date(2000, 10, 11, 10, 10),
+// ]);
+const selectedTimeRange = ref<Date[]>([]);
 const pickerOptions = [
   {
     text: "最近一周",

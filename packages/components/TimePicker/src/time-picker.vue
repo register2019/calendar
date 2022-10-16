@@ -72,6 +72,7 @@ const emit = defineEmits(["update:modelValue"]);
 
 if (props.modelValue) {
   inputRef.value = props.modelValue;
+
   const modelValueArr = props.modelValue.split(":");
   currHour.value = modelValueArr[0];
   currMinu.value = modelValueArr[1];
@@ -103,6 +104,11 @@ const inputFocus = () => {
   if (!inputRef.value) {
     const { hour, minu, seco } = getTimeUtils();
     inputRef.value = hour + ":" + minu + ":" + seco;
+  }
+  if (inputRef.value === "00:00:00") {
+    currHour.value = "00";
+    currMinu.value = "00";
+    currSeco.value = "00";
   }
   initValOfInputRef = inputRef.value;
   timePickerStatus.value = true;
