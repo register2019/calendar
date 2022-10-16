@@ -1,7 +1,7 @@
 <template>
   <div @click="openCalendar" class="dc-calendar-input" ref="calendarInput">
     <input type="text" class="dc-input" v-model="startDateTime" />
-    <span>至</span>
+    <span>{{ props.rangeSeparator }}</span>
     <input type="text" class="dc-input" v-model="endDateTime" />
   </div>
   <Teleport to="body">
@@ -150,11 +150,13 @@ type Props = {
   modelValue?: Date[];
   timeType?: string; // 默认是Picker 可选值为Picker和Select
   pickerOptions?: PickerOptions[];
+  rangeSeparator?: string;
 };
 const props = withDefaults(defineProps<Props>(), {
   unlinkPanels: false,
   modelValue: (): Date[] => [],
   timeType: "Picker",
+  rangeSeparator: "至",
 });
 
 const emit = defineEmits(["update:modelValue", "onClick"]);
