@@ -252,8 +252,13 @@ const selectedPickerOptions = (val: PickerOptions) => {
   for (let i = 0; i < diffMonth; i++) {
     clickBefore("month");
   }
-  startTimeType.value = (attrs.selectOptions as SelectOptions).start;
-  endTimeType.value = (attrs.selectOptions as SelectOptions).start;
+
+  startTimeType.value = attrs.selectOptions
+    ? (attrs.selectOptions as SelectOptions).start
+    : "08:30";
+  endTimeType.value = attrs.selectOptions
+    ? (attrs.selectOptions as SelectOptions).start
+    : "08:30";
   selectDate(startPicker!, "click");
   selectDate(endPicker!, "mouse");
   selectDate(endPicker!, "click");
