@@ -13,7 +13,7 @@
       class="dc-time-select"
     >
       <div
-        v-for="(item, index) in initTimeSelectPanel(props.pickerOptions)"
+        v-for="(item, index) in initTimeSelectPanel(props.selectOptions)"
         :key="index"
         :class="['dc-time-select-item', initSelectedTimeStyle(item)]"
         @click="selectTime(item)"
@@ -31,25 +31,26 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { nextTick, ref, watch } from "vue";
+import { nextTick, ref, useAttrs, watch } from "vue";
 import DefaultInput from "../../Input/src/input.vue";
 import { onClickOutside, useElementBounding } from "@vueuse/core";
-import { initTimeSelectPanel, PickerOptions } from "../../../utils/timeSelect";
+import { initTimeSelectPanel, SelectOptions } from "../../../utils/timeSelect";
 
 type Props = {
   modelValue?: string;
-  pickerOptions?: PickerOptions;
+  selectOptions?: SelectOptions;
   size?: string;
 };
 
 const emit = defineEmits(["update:modelValue"]);
 const props = withDefaults(defineProps<Props>(), {
-  pickerOptions: (): PickerOptions => ({
+  selectOptions: (): SelectOptions => ({
     start: "08:30",
     step: "00:13",
     end: "18:30",
   }),
 });
+
 const currSelectedTime = ref("08:30");
 const isShowTimeSelectPanel = ref(false);
 const timeSelectRef = ref();
@@ -61,7 +62,17 @@ watch(
     currSelectedTime.value = val.modelValue!;
   },
   {
+    deep: true,
     immediate: true,
+  }
+);
+const attrs = useAttrs();
+watch(
+  () => attrs.disabled,
+  (val) => {
+    if (val) {
+      selectTime(props.selectOptions.start);
+    }
   }
 );
 
@@ -74,7 +85,7 @@ const openTimeSelectPanel = () => {
   const { width } = useElementBounding(timeSelectInputRef);
   timeSelectPanelWidth.value = width.value + "px";
   nextTick(() => {
-    selectTimeItemRef.value.forEach((item) => {
+    selectTimeItemRef.value.forEach((item: HTMLDivElement) => {
       if (item.innerText === currSelectedTime.value) {
         timeSelectRef.value.scrollTo({
           top: item.offsetTop,

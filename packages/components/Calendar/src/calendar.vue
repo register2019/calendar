@@ -26,6 +26,7 @@
               :timeType="props.timeType"
               inputPosition="start"
               @update-input-position="updateInputPosition"
+              v-bind="$attrs"
             />
             <span class="dc-calendar-header-separator">&gt;</span>
             <PanelInput
@@ -35,6 +36,7 @@
               :timeType="props.timeType"
               inputPosition="end"
               @update-input-position="updateInputPosition"
+              v-bind="$attrs"
             />
           </div>
 
@@ -95,7 +97,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { ref, watch, computed, CSSProperties } from "vue";
+import { ref, watch, computed, CSSProperties, useAttrs } from "vue";
 import { onClickOutside, useElementBounding } from "@vueuse/core";
 import {
   getCurrAdjacentMonth,
@@ -116,6 +118,7 @@ import PanelTable from "./panelTable.vue";
 import PanelInput from "./panelInput.vue";
 import PanelSider from "./panelSider.vue";
 import { PickerOptions } from "./constants";
+import { SelectOptions } from "../../../utils/timeSelect";
 
 const calendarPanel = ref(false);
 const calendarRef = ref();
@@ -213,7 +216,13 @@ const initSelectedDateTimeRange = (value: string[] | Date[]) => {
     ),
   ];
 };
-
+const startTimeType = ref(
+  props.timeType === "Select" ? startTimeSelect : startTimePicker
+);
+const endTimeType = ref(
+  props.timeType === "Select" ? endTimeSelect : endTimePicker
+);
+const attrs = useAttrs();
 const selectedPickerOptions = (val: PickerOptions) => {
   const pickerTimeRange = val.value();
   const {
@@ -243,11 +252,11 @@ const selectedPickerOptions = (val: PickerOptions) => {
   for (let i = 0; i < diffMonth; i++) {
     clickBefore("month");
   }
-
+  startTimeType.value = (attrs.selectOptions as SelectOptions).start;
+  endTimeType.value = (attrs.selectOptions as SelectOptions).start;
   selectDate(startPicker!, "click");
   selectDate(endPicker!, "mouse");
   selectDate(endPicker!, "click");
-
   updateInputPosition("start");
 };
 
@@ -363,10 +372,6 @@ const selectDate = (td: IDate, category?: string) => {
   startTimePicker.value = "00:00:00";
   endTimePicker.value = "00:00:00";
 };
-
-const startTimeType =
-  props.timeType === "Select" ? startTimeSelect : startTimePicker;
-const endTimeType = props.timeType === "Select" ? endTimeSelect : endTimePicker;
 
 const inputIsDisabled = ref(false);
 

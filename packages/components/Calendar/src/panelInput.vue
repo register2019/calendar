@@ -14,6 +14,7 @@
         size="small"
         v-model="inputTime"
         :disabled="inputIsDisabled"
+        :selectOptions="selectOptions"
       />
       <DefaultTimePicker
         v-else
@@ -26,10 +27,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { ref, useAttrs, watch } from "vue";
 import DefaultInput from "../../Input/src/input.vue";
 import DefaultTimeSelect from "../../TimeSelect/src/time-select.vue";
 import DefaultTimePicker from "../../TimePicker/src/time-picker.vue";
+import { SelectOptions } from "../../../utils/timeSelect";
 
 type Props = {
   timeType?: string;
@@ -38,14 +40,16 @@ type Props = {
   time?: string;
   inputPosition?: string;
 };
-
 const props = withDefaults(defineProps<Props>(), {
   timeType: "Picker",
   inputIsDisabled: false,
   date: "",
 });
-const emit = defineEmits(["update:date", "update:time", "updateInputPosition"]);
 
+const emit = defineEmits(["update:date", "update:time", "updateInputPosition"]);
+const attrs = useAttrs();
+
+const selectOptions = ref<SelectOptions>(attrs.selectOptions as SelectOptions);
 const inputDate = ref("");
 const inputTime = ref("");
 
