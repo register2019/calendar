@@ -97,7 +97,6 @@ import { ref, watch, computed, CSSProperties } from "vue";
 import { onClickOutside, useElementBounding } from "@vueuse/core";
 import {
   getCurrAdjacentMonth,
-  timeFormat,
   unlinkBefore,
   unlinkAfter,
   getCurrPageDays,
@@ -107,7 +106,6 @@ import {
   initCalendarPanel,
   dateToTimeStamp,
   determineTheDateFormat,
-  updatePanelDate,
   formatPanelDate,
   getTimeUtils,
   timeToOneDayStart,
@@ -221,11 +219,7 @@ const selectedPickerOptions = (val: PickerOptions) => {
     month: startMonth,
     day: startDay,
   } = getTimeUtils(pickerTimeRange[0]);
-  const {
-    year: endYear,
-    month: endMonth,
-    day: endDay,
-  } = getTimeUtils(pickerTimeRange[1]);
+  const { day: endDay } = getTimeUtils(pickerTimeRange[1]);
   const startPicker = {
     value: Number(startDay),
     category: "curr",
@@ -346,6 +340,7 @@ const selectDate = (td: IDate, category?: string) => {
     selectedDateList.value.push(td.timestamp);
     return;
   }
+
   // 解决在一个面板中完成了日期选择 另一个面板没有选中 当移入另一个时出现选中的情况
   if (category == "click" && selectedDateList.value.length === 2) {
     isSelectedFinish.value = true;
@@ -410,7 +405,6 @@ for (let i = 0; i < 6; i++) {
   rightTds.value[i] = [];
 }
 const initArr = (initLeft: string, initRight: string) => {
-  console.log(initLeft, initRight);
   for (let i = 0; i < 6; i++) {
     if (!props.unlinkPanels) {
       if (initLeft === "left") {

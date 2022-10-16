@@ -82,7 +82,11 @@ const initPropsSelectedDateList = () => {
     year: endYear,
     month: endMonth,
     day: endDay,
-  } = getTimeUtils(props.selectedDateList[1]);
+  } = getTimeUtils(
+    props.selectedDateList[1] === undefined
+      ? props.selectedDateList[0]
+      : props.selectedDateList[1]
+  );
 
   const startDateTime = dateToTimeStamp(
     startYear + "-" + startMonth + "-" + startDay + " " + "00:00:00"
