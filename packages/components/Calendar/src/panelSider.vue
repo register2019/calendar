@@ -26,7 +26,7 @@ const clickShorts = (item: PickerOptions) => {
 <style lang="scss" scoped>
 .picker {
   min-width: 120px;
-  height: 450px;
+  height: 435px;
   border-right: 1px solid #ebeef5;
   padding: 15px 0 0 15px;
   &-item {

@@ -543,8 +543,8 @@ const rightDate = computed(() => {
 if (props.modelValue && props.modelValue.length === 2) {
   isCompleteSelection.value = true;
   // 有默认时间
-  startDateTime.value = dateTimeFormat(props.modelValue[0]);
-  endDateTime.value = dateTimeFormat(props.modelValue[1]);
+  startDateTime.value = dateTimeFormat(props.modelValue[0], props.timeType);
+  endDateTime.value = dateTimeFormat(props.modelValue[1], props.timeType);
   const {
     leftYear,
     leftMonth,
@@ -569,8 +569,13 @@ if (props.modelValue && props.modelValue.length === 2) {
   ]);
 
   // 初始化时间
-  startTimePicker.value = leftHour + ":" + leftMinu + ":" + leftSeco;
-  endTimePicker.value = rightHour + ":" + rightMinu + ":" + rightSeco;
+  if (props.timeType === "Picker") {
+    startTimePicker.value = leftHour + ":" + leftMinu + ":" + leftSeco;
+    endTimePicker.value = rightHour + ":" + rightMinu + ":" + rightSeco;
+  } else {
+    startTimeSelect.value = leftHour + ":" + leftMinu;
+    endTimeSelect.value = rightHour + ":" + rightMinu;
+  }
 
   initSelectedDateTimeRange(props.modelValue);
   updateCalendarPanel();

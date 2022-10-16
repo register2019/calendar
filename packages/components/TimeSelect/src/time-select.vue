@@ -5,6 +5,7 @@
       v-model="currSelectedTime"
       @click="openTimeSelectPanel"
       ref="timeSelectInputRef"
+      v-bind="$attrs"
     />
     <div
       v-show="isShowTimeSelectPanel"
@@ -12,10 +13,11 @@
       class="dc-time-select"
     >
       <div
-        v-for="(item, index) in initTimeSelectPanel(pickerOptions)"
+        v-for="(item, index) in initTimeSelectPanel(props.pickerOptions)"
         :key="index"
         :class="['dc-time-select-item', initSelectedTimeStyle(item)]"
         @click="selectTime(item)"
+        ref="selectTimeItemRef"
       >
         {{ item }}
       </div>
@@ -29,7 +31,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { ref } from "vue";
+import { nextTick, ref, watch } from "vue";
 import DefaultInput from "../../Input/src/input.vue";
 import { onClickOutside, useElementBounding } from "@vueuse/core";
 import { initTimeSelectPanel, PickerOptions } from "../../../utils/timeSelect";
@@ -41,16 +43,27 @@ type Props = {
 };
 
 const emit = defineEmits(["update:modelValue"]);
-const { pickerOptions } = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   pickerOptions: (): PickerOptions => ({
     start: "08:30",
     step: "00:13",
     end: "18:30",
   }),
 });
-
+const currSelectedTime = ref("08:30");
 const isShowTimeSelectPanel = ref(false);
 const timeSelectRef = ref();
+const selectTimeItemRef = ref();
+
+watch(
+  () => props,
+  (val) => {
+    currSelectedTime.value = val.modelValue!;
+  },
+  {
+    immediate: true,
+  }
+);
 
 // 获取time-select输入框的size
 const timeSelectInputRef = ref(null);
@@ -60,13 +73,21 @@ const openTimeSelectPanel = () => {
   isShowTimeSelectPanel.value = true;
   const { width } = useElementBounding(timeSelectInputRef);
   timeSelectPanelWidth.value = width.value + "px";
+  nextTick(() => {
+    selectTimeItemRef.value.forEach((item) => {
+      if (item.innerText === currSelectedTime.value) {
+        timeSelectRef.value.scrollTo({
+          top: item.offsetTop,
+        });
+      }
+    });
+  });
 };
 
 onClickOutside(timeSelectRef, () => {
   isShowTimeSelectPanel.value = false;
 });
 
-const currSelectedTime = ref("08:30");
 const selectTime = (time: string) => {
   currSelectedTime.value = time;
   emit("update:modelValue", currSelectedTime.value);
@@ -91,6 +112,7 @@ const initSelectedTimeStyle = (val: string) => {
     border: 1px solid #d3d3d3;
     border-radius: 5px;
     &-item {
+      position: relative;
       padding: 8px 10px;
       font-size: 14px;
       line-height: 20px;
