@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch, computed } from "vue";
+import { ref, watch } from "vue";
 import {
   getTodayTimeStamp,
   IDate,
@@ -43,11 +43,13 @@ import {
 
 type Props = {
   tds: IDate[][];
-  selectedDateList: number[];
-  isSelectedFinish: boolean;
+  selectedDateList?: number[];
+  isSelectedFinish?: boolean;
 };
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  selectedDateList: (): number[] => [],
+});
 const emit = defineEmits(["emitSelectedDate"]);
 const tdStyle = "dc-table-tbody-td";
 

@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PickerOptions } from "./constants";
+import { PickerOptions } from "../constants";
 type Props = {
   pickerOptions?: PickerOptions[];
 };
