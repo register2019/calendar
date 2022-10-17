@@ -4,16 +4,19 @@
   </div>
   <Teleport to="body">
     <div class="dc-date-time-dialog" v-show="isShowPanel" ref="DateTimeRef">
-      <PanelInput />
+      <div class="dc-date-time-dialog-input">
+        <PanelInput />
+      </div>
+
       <div class="dc-date-time-dialog-header">
-        <div class="dc-date-time-dialog-header-left">
-          <span>&lt;&lt; </span>
-          <span>&lt;</span>
+        <div class="dc-date-time-dialog-header-before">
+          <span class="dc-date-time-dialog-header-before-year">&lt;&lt; </span>
+          <span class="dc-date-time-dialog-header-before-month">&lt;</span>
         </div>
-        <div></div>
-        <div class="dc-date-time-dialog-header-right">
-          <span>&gt;</span>
-          <span>&gt;&gt;</span>
+        <div>{{ headerDateTime }}</div>
+        <div class="dc-date-time-dialog-header-after">
+          <span class="dc-date-time-dialog-header-after-month">&gt;</span>
+          <span class="dc-date-time-dialog-header-after-year">&gt;&gt;</span>
         </div>
       </div>
       <div class="dc-date-time-dialog-table">
@@ -52,9 +55,11 @@ for (let i = 0; i < 6; i++) {
   tds.value[i] = [];
 }
 
-const getTableData = () => {
+const headerDateTime = ref("");
+const getTableData = (year: number, month: number) => {
+  headerDateTime.value = year + " 年 " + "  " + month + " 月 ";
   let i = 0;
-  getCurrPageDays(year, Number(month)).forEach((td, index) => {
+  getCurrPageDays(year, month).forEach((td, index) => {
     if ((index + 1) % 7 === 0) {
       tds.value[i].push(td);
       i++;
@@ -63,7 +68,7 @@ const getTableData = () => {
     }
   });
 };
-getTableData();
+getTableData(year, Number(month));
 </script>
 <style lang="scss" scoped>
 .dc-date-time {
@@ -73,11 +78,19 @@ getTableData();
   &-dialog {
     width: 322px;
     border: 1px solid #ebeefa;
+    &-input {
+      padding: 10px 6px;
+      border-bottom: 1px solid #ebeefa;
+    }
     &-header {
       display: flex;
       justify-content: space-between;
-      &-left,
-      &-right {
+      margin: 10px 15px;
+      &-before-month {
+        margin-left: 10px;
+      }
+      &-after-month {
+        margin-right: 10px;
       }
     }
     &-table {
