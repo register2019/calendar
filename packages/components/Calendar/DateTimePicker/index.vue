@@ -421,13 +421,6 @@ for (let i = 0; i < 6; i++) {
 const initArr = (initLeft: string, initRight: string) => {
 	for (let i = 0; i < 6; i++) {
 		if (!props.unlinkPanels) {
-			if (initLeft === "left") {
-				rightTds.value[i] = [];
-			}
-			if (initRight === "right") {
-				leftTds.value[i] = [];
-			}
-
 			if (initLeft === "default" && initRight === "default") {
 				leftTds.value[i] = [];
 				rightTds.value[i] = [];
@@ -510,8 +503,17 @@ watch([startTimePicker, endTimePicker], (val) => {
 
 const updateCalendarPanel = () => {
 	initArr("default", "default");
-	updateLeftPanel([leftDateYear.value, leftDateMonth.value]);
-	updateRightPanel([rightDateYear.value, rightDateMonth.value]);
+	if (props.unlinkPanels) {
+		if (unlinkLeft.value) {
+			updateLeftPanel([leftDateYear.value, leftDateMonth.value]);
+		}
+		if (unlinkRight.value) {
+			updateRightPanel([rightDateYear.value, rightDateMonth.value]);
+		}
+	} else {
+		updateLeftPanel([leftDateYear.value, leftDateMonth.value]);
+		updateRightPanel([rightDateYear.value, rightDateMonth.value]);
+	}
 };
 
 // 更新左侧面板 S
@@ -601,6 +603,12 @@ if (props.modelValue && props.modelValue.length === 2) {
 	updateCalendarPanel();
 }
 
+// 面板取消联动时 初始化页面
+if (props.unlinkPanels) {
+	unlinkLeft.value = true;
+	unlinkRight.value = true;
+	updateCalendarPanel();
+}
 const cancelBtn = () => {
 	calendarPanel.value = false;
 	isSelectedDateRange.value = false;

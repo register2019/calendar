@@ -1,5 +1,8 @@
 <template>
-	<div>dateTime</div>
+	<DefaultInput @focus="openDialog" />
+	<Teleport to="body">
+		<div ref="DateTimeRef">DateTime</div>
+	</Teleport>
 </template>
 
 <script lang="ts">
@@ -9,15 +12,13 @@ export default {
 </script>
 <script lang="ts" setup>
 import { ref, reactive, watch, onMounted, computed } from "vue";
+import DefaultInput from "../../Input/src/input.vue";
 import { PickerOptions } from "../constants";
-type Props = {
-	unlinkPanels?: boolean; // 是否取消左右日期间的联动 默认是联动的
-	modelValue?: Date[];
-	timeType?: string; // 默认是Picker 可选值为Picker和Select
-	pickerOptions?: PickerOptions[];
-	rangeSeparator?: string;
+
+const DateTimeRef = ref();
+
+const openDialog = () => {
+	console.log("------>");
 };
-const props = defineProps<Props>();
-// console.log("------>", props);
 </script>
 <style lang="scss" scoped></style>

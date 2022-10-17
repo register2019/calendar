@@ -1,0 +1,40 @@
+<template>
+	<DefaultCalendar
+		v-model="selectedTimeRange"
+		@onClick="getSelectedTimeRange"
+		:pickerOptions="pickerOptions"
+		timeType="Select"
+		type="DateTimePicker"
+		:selectOptions="selectOptions"
+	/>
+</template>
+
+<script lang="ts" setup>
+import { ref, reactive, watch, computed } from "vue";
+// const selectedTimeRange = ref<[Date, Date]>([
+//   new Date(2000, 10, 10, 10, 14),
+//   new Date(2000, 10, 11, 12, 24),
+// ]);
+const selectedTimeRange = ref<Date[]>([]);
+const pickerOptions = [
+	{
+		text: "最近一周",
+		value: () => {
+			const end = new Date().getTime();
+			const start = new Date().getTime() - 3600 * 1000 * 24 * 7;
+
+			return [start, end];
+		},
+	},
+];
+const selectOptions = {
+	start: "08:30",
+	step: "00:15",
+	end: "18:30",
+};
+const getSelectedTimeRange = (val: number[]) => {
+	// console.log(val);
+};
+</script>
+
+<style lang="scss" scoped></style>
