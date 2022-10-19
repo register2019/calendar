@@ -27,10 +27,18 @@
         <PanelTable
           :tds="tds"
           panel-type="DateTime"
+          :curr-date-time="inputDate"
           @emit-selected-date="emitSelectedDate"
         />
       </div>
       <div class="dc-date-time-dialog-footer">
+        <DefaultButton
+          size="small"
+          type="text"
+          style="margin-right: 10px"
+          @click="getCurrDateTime"
+          >此刻</DefaultButton
+        >
         <DefaultButton @click="submitBtn" size="small">确定</DefaultButton>
       </div>
     </div>
@@ -130,7 +138,11 @@ const emitSelectedDate = (val: IDate) => {
   inputDate.value = year + "-" + month + "-" + day;
   inputTime.value = hour + ":" + minu + ":" + seco;
 };
-
+const getCurrDateTime = () => {
+  const { year, month, day, hour, minu, seco } = getTimeUtils();
+  inputDate.value = year + "-" + month + "-" + day;
+  inputTime.value = hour + ":" + minu + ":" + seco;
+};
 const submitBtn = () => {
   selectedDateTime.value = inputDate.value + " " + inputTime.value;
   isShowPanel.value = false;

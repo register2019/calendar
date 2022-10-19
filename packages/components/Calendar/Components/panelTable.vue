@@ -47,6 +47,7 @@ type Props = {
   selectedDateList?: number[];
   isSelectedFinish?: boolean;
   panelType?: string;
+  currDateTime?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -186,6 +187,13 @@ const dateTimeTypeUI = (td: IDate) => {
     return "dc-table-selected-date-time";
   }
 };
+
+watch(
+  () => props.currDateTime,
+  (val) => {
+    currSelectedDateTime.value = dateToTimeStamp(val + " " + "00:00:00");
+  }
+);
 
 const selectedDate = (td: IDate) => {
   if (props.selectedDateList.length === 2) {
