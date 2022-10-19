@@ -18,6 +18,7 @@
               todayUI(td.timestamp),
               beforeAndAfterUI(td.category),
               selectedStartAndEndUI(td),
+              dateTimeTypeUI(td),
             ]"
             >{{ td.value }}</span
           >
@@ -45,10 +46,12 @@ type Props = {
   tds: IDate[][];
   selectedDateList?: number[];
   isSelectedFinish?: boolean;
+  panelType?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
   selectedDateList: (): number[] => [],
+  panelType: "DateTimePicker",
 });
 const emit = defineEmits(["emitSelectedDate"]);
 const tdStyle = "dc-table-tbody-td";
@@ -170,10 +173,25 @@ const dynamicSelection = (td: IDate) => {
   }
 };
 
+/**
+ * 处理类型为DateTime的样式
+ */
+const currSelectedDateTime = ref<number>();
+const dateTimeTypeUI = (td: IDate) => {
+  if (
+    td.category === "curr" &&
+    td.timestamp === currSelectedDateTime.value &&
+    props.panelType === "DateTime"
+  ) {
+    return "dc-table-selected-date-time";
+  }
+};
+
 const selectedDate = (td: IDate) => {
   if (props.selectedDateList.length === 2) {
     selectFinish.value = true;
   }
+  currSelectedDateTime.value = td.timestamp;
   emit("emitSelectedDate", td, "click");
 };
 </script>
@@ -210,6 +228,15 @@ const selectedDate = (td: IDate) => {
       border-radius: 50%;
       color: v-bind(whiteColor);
     }
+  }
+  &-selected-date-time {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    border-radius: 50%;
+    display: inline-block;
+    background-color: v-bind(primaryColor);
+    color: #fff;
   }
 }
 .start {

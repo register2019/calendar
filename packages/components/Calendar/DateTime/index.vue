@@ -24,7 +24,11 @@
         </div>
       </div>
       <div class="dc-date-time-dialog-table">
-        <PanelTable :tds="tds" @emit-selected-date="emitSelectedDate" />
+        <PanelTable
+          :tds="tds"
+          panel-type="DateTime"
+          @emit-selected-date="emitSelectedDate"
+        />
       </div>
       <div class="dc-date-time-dialog-footer">
         <DefaultButton @click="submitBtn" size="small">确定</DefaultButton>
