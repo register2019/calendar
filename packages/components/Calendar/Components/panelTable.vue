@@ -47,7 +47,7 @@ type Props = {
   selectedDateList?: number[];
   isSelectedFinish?: boolean;
   panelType?: string;
-  currDateTime?: string;
+  currDateTime?: string; // 当且仅当类型为DateTime是使用
 };
 
 const props = withDefaults(defineProps<Props>(), {
