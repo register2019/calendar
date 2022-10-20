@@ -172,6 +172,11 @@ const selectedPickerOptions = (val: PickerOptions) => {
   );
   inputDate.value = year + "-" + month + "-" + day;
   inputTime.value = hour + ":" + minu + ":" + seco;
+  if (year !== currYear.value || Number(month) !== currMonth.value) {
+    getTableData(year, Number(month));
+    currYear.value = year;
+    currMonth.value = Number(month);
+  }
 };
 const getCurrDateTime = () => {
   const { year, month, day, hour, minu, seco } = getTimeUtils();
