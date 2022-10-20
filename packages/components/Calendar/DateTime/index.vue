@@ -26,7 +26,10 @@
                 >&lt;</span
               >
             </div>
-            <div>{{ headerDateTime }}</div>
+            <div>
+              <span @click="selectYear">{{ currYear }} 年 </span>
+              <span @click="selectMonth">{{ timeFormat(currMonth) }} 月 </span>
+            </div>
             <div class="dc-date-time-dialog-header-after">
               <span @click="clickAfter('month')" style="margin-right: 10px"
                 >&gt;</span
@@ -36,11 +39,14 @@
           </div>
           <div class="dc-date-time-dialog-table">
             <PanelTable
+              v-show="panelType === 'day'"
               :tds="tds"
-              panel-type="DateTime"
+              type="DateTime"
               :curr-date-time="inputDate"
               @emit-selected-date="emitSelectedDate"
             />
+            <div v-show="panelType === 'month'">月</div>
+            <div v-show="panelType === 'year'">年</div>
           </div>
         </div>
       </div>
@@ -81,6 +87,7 @@ import PanelSider from "../Components/panelSider.vue";
 
 const DateTimeRef = ref();
 const isShowPanel = ref(false);
+const panelType = ref("day");
 const dynamicPanelWidth = ref<CSSProperties>({
   width: "322px",
 });
@@ -95,7 +102,6 @@ const openDialog = () => {
   isShowPanel.value = true;
   if (props.pickerOptions) {
     dynamicPanelWidth.value.width = "432px";
-    console.log(props.pickerOptions);
   }
 };
 onClickOutside(DateTimeRef, () => {
@@ -108,11 +114,9 @@ const currYear = ref(year);
 const currMonth = ref(Number(month));
 const selectedDateTime = ref("");
 
-const headerDateTime = ref("");
 const inputDate = ref("");
 const inputTime = ref();
 const getTableData = (year: number, month: number) => {
-  headerDateTime.value = year + " 年 " + "  " + timeFormat(month) + " 月 ";
   for (let i = 0; i < 6; i++) {
     tds.value[i] = [];
   }
@@ -160,6 +164,12 @@ const clickAfter = (category: string) => {
   }
   getTableData(currYear.value, currMonth.value);
 };
+const selectYear = () => {
+  panelType.value = "year";
+};
+const selectMonth = () => {
+  panelType.value = "month";
+};
 
 const emitSelectedDate = (val: IDate) => {
   const { year, month, day, hour, minu, seco } = getTimeUtils(val.timestamp);
@@ -182,6 +192,11 @@ const getCurrDateTime = () => {
   const { year, month, day, hour, minu, seco } = getTimeUtils();
   inputDate.value = year + "-" + month + "-" + day;
   inputTime.value = hour + ":" + minu + ":" + seco;
+  if (year !== currYear.value || Number(month) !== currMonth.value) {
+    getTableData(year, Number(month));
+    currYear.value = year;
+    currMonth.value = Number(month);
+  }
 };
 const submitBtn = () => {
   selectedDateTime.value = inputDate.value + " " + inputTime.value;

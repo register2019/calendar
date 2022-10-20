@@ -46,13 +46,13 @@ type Props = {
   tds: IDate[][];
   selectedDateList?: number[];
   isSelectedFinish?: boolean;
-  panelType?: string;
+  type?: string;
   currDateTime?: string; // 当且仅当类型为DateTime是使用
 };
 
 const props = withDefaults(defineProps<Props>(), {
   selectedDateList: (): number[] => [],
-  panelType: "DateTimePicker",
+  type: "DateTimePicker",
 });
 const emit = defineEmits(["emitSelectedDate"]);
 const tdStyle = "dc-table-tbody-td";
@@ -182,7 +182,7 @@ const dateTimeTypeUI = (td: IDate) => {
   if (
     td.category === "curr" &&
     td.timestamp === currSelectedDateTime.value &&
-    props.panelType === "DateTime"
+    props.type === "DateTime"
   ) {
     return "dc-table-selected-date-time";
   }
