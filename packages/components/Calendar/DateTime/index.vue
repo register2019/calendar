@@ -3,33 +3,46 @@
     <DefaultInput v-model="selectedDateTime" />
   </div>
   <Teleport to="body">
-    <div class="dc-date-time-dialog" v-show="isShowPanel" ref="DateTimeRef">
-      <div class="dc-date-time-dialog-input">
-        <PanelInput v-model:date="inputDate" v-model:time="inputTime" />
-      </div>
-
-      <div class="dc-date-time-dialog-header">
-        <div class="dc-date-time-dialog-header-before">
-          <span @click="clickBefore('year')">&lt;&lt; </span>
-          <span @click="clickBefore('month')" style="margin-left: 10px"
-            >&lt;</span
-          >
-        </div>
-        <div>{{ headerDateTime }}</div>
-        <div class="dc-date-time-dialog-header-after">
-          <span @click="clickAfter('month')" style="margin-right: 10px"
-            >&gt;</span
-          >
-          <span @click="clickAfter('year')">&gt;&gt;</span>
-        </div>
-      </div>
-      <div class="dc-date-time-dialog-table">
-        <PanelTable
-          :tds="tds"
-          panel-type="DateTime"
-          :curr-date-time="inputDate"
-          @emit-selected-date="emitSelectedDate"
+    <div
+      class="dc-date-time-dialog"
+      :style="dynamicPanelWidth"
+      v-show="isShowPanel"
+      ref="DateTimeRef"
+    >
+      <div class="dc-dialog-layout">
+        <PanelSider
+          v-if="props.pickerOptions && props.pickerOptions.length !== 0"
+          :picker-options="pickerOptions"
+          @selected-picker-options="selectedPickerOptions"
         />
+        <div class="dc-dialog-layout-content">
+          <div class="dc-date-time-dialog-input">
+            <PanelInput v-model:date="inputDate" v-model:time="inputTime" />
+          </div>
+          <div class="dc-date-time-dialog-header">
+            <div class="dc-date-time-dialog-header-before">
+              <span @click="clickBefore('year')">&lt;&lt; </span>
+              <span @click="clickBefore('month')" style="margin-left: 10px"
+                >&lt;</span
+              >
+            </div>
+            <div>{{ headerDateTime }}</div>
+            <div class="dc-date-time-dialog-header-after">
+              <span @click="clickAfter('month')" style="margin-right: 10px"
+                >&gt;</span
+              >
+              <span @click="clickAfter('year')">&gt;&gt;</span>
+            </div>
+          </div>
+          <div class="dc-date-time-dialog-table">
+            <PanelTable
+              :tds="tds"
+              panel-type="DateTime"
+              :curr-date-time="inputDate"
+              @emit-selected-date="emitSelectedDate"
+            />
+          </div>
+        </div>
       </div>
       <div class="dc-date-time-dialog-footer">
         <DefaultButton
@@ -52,7 +65,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import { onClickOutside } from "@vueuse/core";
-import { ref, reactive, watch, onMounted, computed } from "vue";
+import { ref, reactive, watch, onMounted, computed, CSSProperties } from "vue";
 import {
   getCurrPageDays,
   getTimeUtils,
@@ -63,12 +76,27 @@ import DefaultInput from "../../Input/src/input.vue";
 import PanelInput from "../Components/panelInput.vue";
 import PanelTable from "../Components/panelTable.vue";
 import DefaultButton from "../../Button/index.vue";
+import { PickerOptions } from "../constants";
+import PanelSider from "../Components/panelSider.vue";
 
 const DateTimeRef = ref();
 const isShowPanel = ref(false);
+const dynamicPanelWidth = ref<CSSProperties>({
+  width: "322px",
+});
+
+type Props = {
+  pickerOptions?: PickerOptions[];
+};
+
+const props = defineProps<Props>();
 
 const openDialog = () => {
   isShowPanel.value = true;
+  if (props.pickerOptions) {
+    dynamicPanelWidth.value.width = "432px";
+    console.log(props.pickerOptions);
+  }
 };
 onClickOutside(DateTimeRef, () => {
   isShowPanel.value = false;
@@ -138,6 +166,13 @@ const emitSelectedDate = (val: IDate) => {
   inputDate.value = year + "-" + month + "-" + day;
   inputTime.value = hour + ":" + minu + ":" + seco;
 };
+const selectedPickerOptions = (val: PickerOptions) => {
+  const { year, month, day, hour, minu, seco } = getTimeUtils(
+    val.value() as number
+  );
+  inputDate.value = year + "-" + month + "-" + day;
+  inputTime.value = hour + ":" + minu + ":" + seco;
+};
 const getCurrDateTime = () => {
   const { year, month, day, hour, minu, seco } = getTimeUtils();
   inputDate.value = year + "-" + month + "-" + day;
@@ -156,7 +191,6 @@ getTableData(currYear.value, currMonth.value);
     width: 220px;
   }
   &-dialog {
-    width: 322px;
     border: 1px solid #ebeefa;
     &-input {
       padding: 10px 6px;
@@ -180,5 +214,8 @@ getTableData(currYear.value, currMonth.value);
       padding: 10px 15px;
     }
   }
+}
+.dc-dialog-layout {
+  display: flex;
 }
 </style>
