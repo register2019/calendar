@@ -22,16 +22,28 @@
           <div class="dc-date-time-dialog-header">
             <div class="dc-date-time-dialog-header-before">
               <span @click="clickBefore('year')">&lt;&lt; </span>
-              <span @click="clickBefore('month')" style="margin-left: 10px"
+              <span
+                v-show="panelType === 'day'"
+                @click="clickBefore('month')"
+                style="margin-left: 10px"
                 >&lt;</span
               >
             </div>
-            <div>
+            <div v-show="panelType === 'day'">
               <span @click="selectYear">{{ currYear }} 年 </span>
               <span @click="selectMonth">{{ timeFormat(currMonth) }} 月 </span>
             </div>
+            <div v-show="panelType === 'month'" @click="clickPanelTypeIsMonth">
+              {{ currYear }} 年
+            </div>
+            <div v-show="panelType === 'year'">
+              {{ panelTypeIsYearTitle }}
+            </div>
             <div class="dc-date-time-dialog-header-after">
-              <span @click="clickAfter('month')" style="margin-right: 10px"
+              <span
+                v-show="panelType === 'day'"
+                @click="clickAfter('month')"
+                style="margin-right: 10px"
                 >&gt;</span
               >
               <span @click="clickAfter('year')">&gt;&gt;</span>
@@ -45,8 +57,22 @@
               :curr-date-time="inputDate"
               @emit-selected-date="emitSelectedDate"
             />
-            <div v-show="panelType === 'month'">月</div>
-            <div v-show="panelType === 'year'">年</div>
+            <div v-show="panelType === 'year'">
+              <PanelMonthAndYear
+                :dates="nearlyADecade"
+                :currDate="currYear"
+                @emit-selected-year-or-month="emitSelectedYearOrMonth"
+              />
+            </div>
+            <div v-show="panelType === 'month'">
+              <PanelMonthAndYear
+                :dates="DATETIMEMONTH"
+                :currDate="
+                  CASECONVERSION.find((item) => item.val === currMonth)!.name
+                "
+                @emit-selected-year-or-month="emitSelectedYearOrMonth"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -73,6 +99,7 @@ export default {
 import { onClickOutside } from "@vueuse/core";
 import { ref, reactive, watch, onMounted, computed, CSSProperties } from "vue";
 import {
+  dateTimeYear,
   getCurrPageDays,
   getTimeUtils,
   IDate,
@@ -82,8 +109,9 @@ import DefaultInput from "../../Input/src/input.vue";
 import PanelInput from "../Components/panelInput.vue";
 import PanelTable from "../Components/panelTable.vue";
 import DefaultButton from "../../Button/index.vue";
-import { PickerOptions } from "../constants";
+import { PickerOptions, DATETIMEMONTH, CASECONVERSION } from "../constants";
 import PanelSider from "../Components/panelSider.vue";
+import PanelMonthAndYear from "../Components/panelMonthAndYear.vue";
 
 const DateTimeRef = ref();
 const isShowPanel = ref(false);
@@ -97,6 +125,7 @@ type Props = {
 };
 
 const props = defineProps<Props>();
+const nearlyADecade = ref(dateTimeYear());
 
 const openDialog = () => {
   isShowPanel.value = true;
@@ -135,16 +164,21 @@ const getTableData = (year: number, month: number) => {
  * @param category
  */
 const clickBefore = (category: string) => {
-  if (category === "year") {
-    currYear.value--;
-  } else {
-    if (currMonth.value === 1) {
+  if (panelType.value === "day" || panelType.value === "month") {
+    if (category === "year") {
       currYear.value--;
-      currMonth.value = 12;
     } else {
-      currMonth.value--;
+      if (currMonth.value === 1) {
+        currYear.value--;
+        currMonth.value = 12;
+      } else {
+        currMonth.value--;
+      }
     }
+  } else {
+    nearlyADecade.value = dateTimeYear(nearlyADecade.value.flat()[0] - 10);
   }
+
   getTableData(currYear.value, currMonth.value);
 };
 /**
@@ -152,15 +186,19 @@ const clickBefore = (category: string) => {
  * @param category
  */
 const clickAfter = (category: string) => {
-  if (category === "year") {
-    currYear.value++;
-  } else {
-    if (currMonth.value === 12) {
+  if (panelType.value === "day" || panelType.value === "month") {
+    if (category === "year") {
       currYear.value++;
-      currMonth.value = 1;
     } else {
-      currMonth.value++;
+      if (currMonth.value === 12) {
+        currYear.value++;
+        currMonth.value = 1;
+      } else {
+        currMonth.value++;
+      }
     }
+  } else {
+    nearlyADecade.value = dateTimeYear(nearlyADecade.value.flat()[0] + 10);
   }
   getTableData(currYear.value, currMonth.value);
 };
@@ -176,6 +214,28 @@ const emitSelectedDate = (val: IDate) => {
   inputDate.value = year + "-" + month + "-" + day;
   inputTime.value = hour + ":" + minu + ":" + seco;
 };
+const emitSelectedYearOrMonth = (val: number) => {
+  if (val > 0 && val <= 12) {
+    getTableData(currYear.value, val);
+    currMonth.value = val;
+    panelType.value = "day";
+  } else {
+    getTableData(val, currMonth.value);
+    currYear.value = val;
+    panelType.value = "month";
+  }
+};
+const panelTypeIsYearTitle = computed(() => {
+  return (
+    nearlyADecade.value.flat()[0] +
+    "年 -" +
+    nearlyADecade.value.flat()[1] +
+    "年"
+  );
+});
+const clickPanelTypeIsMonth = () => {
+  panelType.value = "year";
+};
 const selectedPickerOptions = (val: PickerOptions) => {
   const { year, month, day, hour, minu, seco } = getTimeUtils(
     val.value() as number
@@ -189,6 +249,7 @@ const selectedPickerOptions = (val: PickerOptions) => {
   }
 };
 const getCurrDateTime = () => {
+  panelType.value = "day";
   const { year, month, day, hour, minu, seco } = getTimeUtils();
   inputDate.value = year + "-" + month + "-" + day;
   inputTime.value = hour + ":" + minu + ":" + seco;
@@ -199,7 +260,10 @@ const getCurrDateTime = () => {
   }
 };
 const submitBtn = () => {
-  selectedDateTime.value = inputDate.value + " " + inputTime.value;
+  if (inputDate.value && inputTime.value) {
+    selectedDateTime.value = inputDate.value + " " + inputTime.value;
+  }
+  panelType.value = "day";
   isShowPanel.value = false;
 };
 

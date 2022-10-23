@@ -1,5 +1,5 @@
 <template>
-  <DefaultCalendar type="DateTime" :picker-options="pickerOptions" />
+  <DefaultCalendar type="DateTime" />
 </template>
 
 <script lang="ts" setup>

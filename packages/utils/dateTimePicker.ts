@@ -366,3 +366,26 @@ export const timeToOneDayStart = (time: number) => {
   const { year, month, day } = getTimeUtils(time);
   return new Date(`${year}-${month}-${day} 00:00:00`).getTime();
 };
+
+/**
+ * 获取近十年年份
+ * @returns
+ */
+export const dateTimeYear = (val?: number) => {
+  let initArr: number[][] = [[], [], []];
+  let j = 0;
+  const midVal = val ? `${val}-01-01 00:00:00` : "";
+  const { year } = getTimeUtils(midVal);
+  let currYear = year - (year % 10);
+  for (let i = 1; i <= 10; i++) {
+    if (i % 4 === 0) {
+      initArr[j].push(currYear++);
+      j++;
+    } else {
+      initArr[j].push(currYear++);
+    }
+  }
+  initArr[2].push(0);
+  initArr[2].push(0);
+  return initArr;
+};
