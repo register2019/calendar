@@ -1,5 +1,9 @@
 <template>
-  <DefaultCalendar type="DateTime" />
+  <DefaultCalendar
+    type="DateTime"
+    :picker-options="pickerOptions"
+    @onClick="getSelectedTime"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -18,6 +22,9 @@ const pickerOptions = [
     value: () => new Date().getTime() - 3600 * 1000 * 24 * 7,
   },
 ];
+const getSelectedTime = (val: number) => {
+  console.log(val);
+};
 </script>
 
 <style lang="scss" scoped></style>

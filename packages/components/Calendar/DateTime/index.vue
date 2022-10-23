@@ -100,6 +100,7 @@ import { onClickOutside } from "@vueuse/core";
 import { ref, reactive, watch, onMounted, computed, CSSProperties } from "vue";
 import {
   dateTimeYear,
+  dateToTimeStamp,
   getCurrPageDays,
   getTimeUtils,
   IDate,
@@ -125,6 +126,7 @@ type Props = {
 };
 
 const props = defineProps<Props>();
+const emit = defineEmits(["onClick"]);
 const nearlyADecade = ref(dateTimeYear());
 
 const openDialog = () => {
@@ -263,6 +265,7 @@ const submitBtn = () => {
   if (inputDate.value && inputTime.value) {
     selectedDateTime.value = inputDate.value + " " + inputTime.value;
   }
+  emit("onClick", dateToTimeStamp(selectedDateTime.value));
   panelType.value = "day";
   isShowPanel.value = false;
 };
