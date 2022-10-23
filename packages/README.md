@@ -8,10 +8,11 @@ import { DefaultComponents } from 'default-calendar'
 app.use(DefaultComponents())
 ```
 
-#### 用例
+#### type为DateTimePicker
 ```html
 <DefaultCalendar 
   v-model="selectedTimeRange"
+  type="DateTimePicker"
   @onClick="getSelectedTimeRange"
   :pickerOptions="pickerOptions"
   :selectOptions="selectOptions"
@@ -46,6 +47,33 @@ const selectOptions = {
   end: "18:30",
 };
 ```
+#### type为DateTime
+```html
+<DefaultCalendar
+    type="DateTime"
+    :picker-options="pickerOptions"
+    @onClick="getSelectedTime"
+  />
+```
+```typescript
+const pickerOptions = [
+  {
+    text: "今天",
+    value: () => new Date().getTime(),
+  },
+  {
+    text: "昨天",
+    value: () => new Date().getTime() - 3600 * 1000 * 24,
+  },
+  {
+    text: "一周前",
+    value: () => new Date().getTime() - 3600 * 1000 * 24 * 7,
+  },
+];
+const getSelectedTime = (val: number) => {
+  console.log(val);
+};
+```
 
 
 | 参数             | 描述                                                                          | 类型                                       |
@@ -53,4 +81,5 @@ const selectOptions = {
 | unlinkPanels    | 可选 是否取消左右 日期面板的联动                                                  | boolean: false                            |
 | timeType        | 日期面板时间类型 可选Picker和Select                                              | string: Picker                            |
 | pickerOptions   | 设置快捷选项                                                                    | Array                                     |
-| selectOptions   | 当timeType为Select时 用于设置TimeSelect的开始、结束及间隔时间                      | Object                                     |
+| selectOptions   | 当timeType为Select时 用于设置TimeSelect的开始、结束及间隔时间                      | Object                                    |
+| type            | 日历面板的类型 目前支持DateTimePicker和DateTime                                  | String                                     |
