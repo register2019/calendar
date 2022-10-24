@@ -50,12 +50,17 @@ const selectOptions = {
 #### type为DateTime
 ```html
 <DefaultCalendar
-    type="DateTime"
-    :picker-options="pickerOptions"
-    @onClick="getSelectedTime"
-  />
+  v-model="defaultValue"
+  timeType="Select"
+  type="DateTime"
+  :picker-options="pickerOptions"
+  :selectOptions="selectOptions"
+  @onClick="getSelectedTime"
+/>
 ```
 ```typescript
+// 默认时间应该于timeType类型相匹配
+const defaultValue = ref(new Date(2000, 10, 10, 8, 30));
 const pickerOptions = [
   {
     text: "今天",
@@ -70,6 +75,11 @@ const pickerOptions = [
     value: () => new Date().getTime() - 3600 * 1000 * 24 * 7,
   },
 ];
+const selectOptions = {
+  start: "08:00",
+  step: "00:15",
+  end: "18:30",
+};
 const getSelectedTime = (val: number) => {
   console.log(val);
 };
