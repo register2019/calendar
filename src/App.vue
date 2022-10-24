@@ -1,29 +1,31 @@
 <template>
-  <DefaultCalendar
-    type="DateTime"
-    :picker-options="pickerOptions"
-    @onClick="getSelectedTime"
-  />
+	<div>
+		<DefaultCalendar
+			type="DateTime"
+			:picker-options="pickerOptions"
+			@onClick="getSelectedTime"
+		/>
+	</div>
 </template>
 
 <script lang="ts" setup>
 import { ref, reactive, watch, computed } from "vue";
 const pickerOptions = [
-  {
-    text: "今天",
-    value: () => new Date().getTime(),
-  },
-  {
-    text: "昨天",
-    value: () => new Date().getTime() - 3600 * 1000 * 24,
-  },
-  {
-    text: "一周前",
-    value: () => new Date().getTime() - 3600 * 1000 * 24 * 7,
-  },
+	{
+		text: "今天",
+		value: () => new Date().getTime(),
+	},
+	{
+		text: "昨天",
+		value: () => new Date().getTime() - 3600 * 1000 * 24,
+	},
+	{
+		text: "一周前",
+		value: () => new Date().getTime() - 3600 * 1000 * 24 * 7,
+	},
 ];
 const getSelectedTime = (val: number) => {
-  console.log(val);
+	console.log(val);
 };
 </script>
 
