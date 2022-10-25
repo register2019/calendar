@@ -11,6 +11,7 @@ export default {
 import { type Component, shallowRef } from "vue";
 import DefaultDateTimePicker from "./DateTimePicker/index.vue";
 import DefaultDateTime from "./DateTime/index.vue";
+import DefaultDate from "./Date/index.vue";
 
 type Props = {
   type: string;
@@ -25,6 +26,9 @@ switch (props.type) {
     break;
   case "DateTime":
     componentType.value = DefaultDateTime;
+    break;
+  case "Date":
+    componentType.value = DefaultDate;
     break;
   default:
     break;

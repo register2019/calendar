@@ -5,7 +5,7 @@
         <th v-for="item in tableHeader" :key="item">{{ item }}</th>
       </tr>
     </thead>
-    <tbody v-for="(list, index) in props.tds" :key="index">
+    <tbody v-for="(list, index) in tableTds" :key="index">
       <td
         v-for="(td, index) in list"
         :key="index"
@@ -43,7 +43,7 @@ import {
 } from "../../../utils";
 
 type Props = {
-  tds: IDate[][];
+  tds: IDate[];
   selectedDateList?: number[];
   isSelectedFinish?: boolean;
   type?: string;
@@ -56,6 +56,26 @@ const props = withDefaults(defineProps<Props>(), {
 });
 const emit = defineEmits(["emitSelectedDate"]);
 const tdStyle = "dc-table-tbody-td";
+
+const tableTds = ref<IDate[][]>([]);
+const initTableData = (tds: IDate[]) => {
+  for (let i = 0; i < 6; i++) {
+    tableTds.value[i] = [];
+  }
+  let i = 0;
+
+  tds.forEach((td, index) => {
+    if ((index + 1) % 7 === 0) {
+      tableTds.value[i].push(td);
+      i++;
+    } else {
+      tableTds.value[i].push(td);
+    }
+  });
+
+  console.log(tableTds.value);
+};
+initTableData(props.tds);
 
 /**
  * 日历面板中与今天对应日期的UI

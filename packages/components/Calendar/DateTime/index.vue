@@ -176,27 +176,33 @@ onClickOutside(DateTimeRef, () => {
 });
 
 const { year, month } = getTimeUtils();
-const tds = ref<IDate[][]>([]);
+const tds = ref<IDate[]>([]);
 const currYear = ref(year);
 const currMonth = ref(Number(month));
 const selectedDateTime = ref("");
 
 const inputDate = ref("");
 const inputTime = ref();
+
 const getTableData = (year: number, month: number) => {
-  for (let i = 0; i < 6; i++) {
-    tds.value[i] = [];
-  }
-  let i = 0;
-  getCurrPageDays(year, month).forEach((td, index) => {
-    if ((index + 1) % 7 === 0) {
-      tds.value[i].push(td);
-      i++;
-    } else {
-      tds.value[i].push(td);
-    }
-  });
+  tds.value = getCurrPageDays(year, month);
 };
+
+// {
+
+// for (let i = 0; i < 6; i++) {
+//   tds.value[i] = [];
+// }
+// let i = 0;
+// getCurrPageDays(year, month).forEach((td, index) => {
+//   if ((index + 1) % 7 === 0) {
+//     tds.value[i].push(td);
+//     i++;
+//   } else {
+//     tds.value[i].push(td);
+//   }
+// });
+// };
 /**
  * 获取之前的日期
  * @param category
