@@ -9,3 +9,5 @@ export const secondaryColor = "#c0c4cc";
 export const bgColor = "#f2f6fc";
 
 export const whiteColor = "#ffffff";
+
+export const borderColor = "#ebeef5";

@@ -54,7 +54,6 @@
 							<PanelTable
 								:tds="leftTds"
 								:selectedDateList="selectedDateList"
-								:isSelectedFinish="isSelectedFinish"
 								@emit-selected-date="emitSelectedDate"
 							/>
 						</div>
@@ -71,7 +70,6 @@
 							<PanelTable
 								:tds="rightTds"
 								:selectedDateList="selectedDateList"
-								:isSelectedFinish="isSelectedFinish"
 								@emit-selected-date="emitSelectedDate"
 							/>
 						</div>
@@ -117,7 +115,7 @@ import {
 import PanelTable from "../Components/panelTable.vue";
 import PanelInput from "../Components/panelInput.vue";
 import PanelSider from "../Components/panelSider.vue";
-import { PickerOptions } from "../constants";
+import { PickerOptions, SelectedDateList } from "../constants";
 import { SelectOptions } from "../../../utils/timeSelect";
 
 const calendarPanel = ref(false);
@@ -129,7 +127,7 @@ const startTimePicker = ref<string>();
 const endTimePicker = ref<string>();
 const startTimeSelect = ref<string>();
 const endTimeSelect = ref<string>();
-const selectedDateList = ref<number[]>([]);
+const selectedDateList = ref<SelectedDateList[]>([]);
 const updateDateBroundry = ref("");
 
 const calendarInput = ref(null);
@@ -198,24 +196,30 @@ const initSelectedDateTimeRange = (value: string[] | Date[]) => {
 		day: defaultEndDay,
 	} = getTimeUtils(value[1]);
 	selectedDateList.value = [
-		dateToTimeStamp(
-			defaultStartYear +
-				"-" +
-				defaultStartMonth +
-				"-" +
-				defaultStartDay +
-				" " +
-				"00:00:00"
-		),
-		dateToTimeStamp(
-			defaultEndYear +
-				"-" +
-				defaultEndMonth +
-				"-" +
-				defaultEndDay +
-				" " +
-				"00:00:00"
-		),
+		{
+			val: dateToTimeStamp(
+				defaultStartYear +
+					"-" +
+					defaultStartMonth +
+					"-" +
+					defaultStartDay +
+					" " +
+					"00:00:00"
+			),
+			category: "click",
+		},
+		{
+			val: dateToTimeStamp(
+				defaultEndYear +
+					"-" +
+					defaultEndMonth +
+					"-" +
+					defaultEndDay +
+					" " +
+					"00:00:00"
+			),
+			category: "click",
+		},
 	];
 };
 const startTimeType = ref(
@@ -226,6 +230,7 @@ const endTimeType = ref(
 );
 const attrs = useAttrs();
 const selectedPickerOptions = (val: PickerOptions) => {
+	selectedDateList.value = [];
 	const pickerTimeRange = val.value() as number[];
 	const {
 		year: startYear,
@@ -351,30 +356,32 @@ const selectDate = (td: IDate, category?: string) => {
 	if (
 		category == "click" &&
 		selectedDateList.value.length === 2 &&
-		selectedDateList.value[0] !== td.timestamp &&
-		selectedDateList.value[1] !== td.timestamp
+		selectedDateList.value[0].val !== td.timestamp &&
+		selectedDateList.value[1].val !== td.timestamp
 	) {
 		selectedDateList.value = [];
-		selectedDateList.value.push(td.timestamp);
+		selectedDateList.value.push({
+			val: td.timestamp,
+			category,
+		});
 		return;
 	}
 
 	// 解决在一个面板中完成了日期选择 另一个面板没有选中 当移入另一个时出现选中的情况
 	if (category == "click" && selectedDateList.value.length === 2) {
-		isSelectedFinish.value = true;
 		inputIsDisabled.value = false;
 	}
 	if (selectedDateList.value.length < 2) {
-		selectedDateList.value.push(td.timestamp);
-		modelLeftInput.value = dateFormat(selectedDateList.value[0]);
-		modelRightInput.value = dateFormat(selectedDateList.value[0]);
+		selectedDateList.value.push({ val: td.timestamp, category: category! });
+		modelLeftInput.value = dateFormat(selectedDateList.value[0].val);
+		modelRightInput.value = dateFormat(selectedDateList.value[0].val);
 		inputIsDisabled.value = true;
 	} else {
 		selectedDateList.value.pop();
-		selectedDateList.value.push(td.timestamp);
-		selectedDateList.value.sort((a, b) => a - b);
-		modelLeftInput.value = dateFormat(selectedDateList.value[0]);
-		modelRightInput.value = dateFormat(selectedDateList.value[1]);
+		selectedDateList.value.push({ val: td.timestamp, category: category! });
+		selectedDateList.value.sort((a, b) => a.val - b.val);
+		modelLeftInput.value = dateFormat(selectedDateList.value[0].val);
+		modelRightInput.value = dateFormat(selectedDateList.value[1].val);
 	}
 	startTimePicker.value = "00:00:00";
 	endTimePicker.value = "00:00:00";
@@ -393,7 +400,6 @@ function updateDateTime(dateList: number[]) {
 	modelRightInput.value = dateFormat(dateList[1]);
 }
 
-const isSelectedFinish = ref(false);
 const openCalendar = () => {
 	const {
 		top: inputTop,
@@ -410,9 +416,6 @@ const openCalendar = () => {
 	calendarStyle.value.left = inputLeft.value + "px";
 
 	calendarPanel.value = true;
-	if (selectedDateList.value.length === 2) {
-		isSelectedFinish.value = true;
-	}
 };
 
 const updateInputPosition = (val: string) => {
@@ -430,13 +433,20 @@ const updateInputPosition = (val: string) => {
 	)
 		return;
 
-	selectedDateList.value = [startTimeStamp, endTimeStamp].sort((a, b) => a - b);
-	modelLeftInput.value = dateFormat(selectedDateList.value[0]);
-	modelRightInput.value = dateFormat(selectedDateList.value[1]);
+	[startTimeStamp, endTimeStamp]
+		.sort((a, b) => a - b)
+		.forEach((item) => {
+			selectedDateList.value.push({
+				val: item,
+				category: "click",
+			});
+		});
+	modelLeftInput.value = dateFormat(selectedDateList.value[0].val);
+	modelRightInput.value = dateFormat(selectedDateList.value[1].val);
 
 	if (updateDateBroundry.value === "start") {
 		const { year: startYear, month: startMonth } = getTimeUtils(
-			selectedDateList.value[0]
+			selectedDateList.value[0].val
 		);
 
 		leftDateYear.value = startYear;
@@ -450,7 +460,7 @@ const updateInputPosition = (val: string) => {
 		}
 	} else {
 		const { year: endYear, month: endMonth } = getTimeUtils(
-			selectedDateList.value[1]
+			selectedDateList.value[1].val
 		);
 		rightDateYear.value = endYear;
 		rightDateMonth.value = Number(endMonth);
@@ -574,9 +584,10 @@ const submitBtn = () => {
 	const endTime =
 		props.timeType === "Select" ? endTimeSelect.value : endTimePicker.value;
 
-	startDateTime.value = dateFormat(selectedDateList.value[0]) + " " + startTime;
+	startDateTime.value =
+		dateFormat(selectedDateList.value[0].val) + " " + startTime;
 
-	endDateTime.value = dateFormat(selectedDateList.value[1]) + " " + endTime;
+	endDateTime.value = dateFormat(selectedDateList.value[1].val) + " " + endTime;
 
 	calendarPanel.value = false;
 

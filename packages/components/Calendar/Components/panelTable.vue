@@ -41,17 +41,17 @@ import {
 	getTimeUtils,
 	dateToTimeStamp,
 } from "../../../utils";
+import { SelectedDateList } from "../constants";
 
 type Props = {
 	tds: IDate[];
-	selectedDateList?: number[];
-	isSelectedFinish?: boolean;
+	selectedDateList?: SelectedDateList[];
 	type?: string;
 	currDateTime?: string; // 当且仅当类型为DateTime是使用
 };
 
 const props = withDefaults(defineProps<Props>(), {
-	selectedDateList: (): number[] => [],
+	selectedDateList: (): SelectedDateList[] => [],
 	type: "DateTimePicker",
 });
 const emit = defineEmits(["emitSelectedDate"]);
@@ -110,15 +110,15 @@ const initPropsSelectedDateList = () => {
 		year: startYear,
 		month: startMonth,
 		day: startDay,
-	} = getTimeUtils(props.selectedDateList[0]);
+	} = getTimeUtils(props.selectedDateList[0].val);
 	const {
 		year: endYear,
 		month: endMonth,
 		day: endDay,
 	} = getTimeUtils(
-		props.selectedDateList[1] === undefined
-			? props.selectedDateList[0]
-			: props.selectedDateList[1]
+		props.selectedDateList.length === 1
+			? props.selectedDateList[0].val
+			: props.selectedDateList[1].val
 	);
 
 	const startDateTime = dateToTimeStamp(
@@ -177,26 +177,10 @@ const selectedStartAndEndUI = (td: IDate) => {
 	}
 };
 
-const selectFinish = ref(false);
-/**
- * 解决在一个面板中完成了日期选择 另一个面板没有选中 当移入另一个时出现选中的情况
- */
-watch(
-	() => props.isSelectedFinish,
-	(val) => {
-		if (val) {
-			selectFinish.value = val;
-		}
-	},
-	{
-		immediate: true,
-	}
-);
 const dynamicSelection = (td: IDate) => {
-	if (props.selectedDateList.length === 1) {
-		selectFinish.value = false;
-	}
-	if (props.selectedDateList.length >= 1 && !selectFinish.value) {
+	console.log(props.selectedDateList);
+
+	if (props.selectedDateList.length >= 1) {
 		emit("emitSelectedDate", td, "mouse");
 	}
 };
@@ -223,9 +207,6 @@ watch(
 );
 
 const selectedDate = (td: IDate) => {
-	if (props.selectedDateList.length === 2) {
-		selectFinish.value = true;
-	}
 	currSelectedDateTime.value = td.timestamp;
 	emit("emitSelectedDate", td, "click");
 };
