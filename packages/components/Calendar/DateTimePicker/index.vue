@@ -354,34 +354,48 @@ const emitSelectedDate = (val: IDate, category: string) => {
 
 const selectDate = (td: IDate, category?: string) => {
 	if (
-		category == "click" &&
 		selectedDateList.value.length === 2 &&
-		selectedDateList.value[0].val !== td.timestamp &&
-		selectedDateList.value[1].val !== td.timestamp
+		category === "click" &&
+		selectedDateList.value[0].category === "click" &&
+		selectedDateList.value[1].category === "click"
 	) {
 		selectedDateList.value = [];
-		selectedDateList.value.push({
-			val: td.timestamp,
-			category,
-		});
-		return;
-	}
-
-	// 解决在一个面板中完成了日期选择 另一个面板没有选中 当移入另一个时出现选中的情况
-	if (category == "click" && selectedDateList.value.length === 2) {
-		inputIsDisabled.value = false;
-	}
-	if (selectedDateList.value.length < 2) {
-		selectedDateList.value.push({ val: td.timestamp, category: category! });
-		modelLeftInput.value = dateFormat(selectedDateList.value[0].val);
-		modelRightInput.value = dateFormat(selectedDateList.value[0].val);
+		selectedDateList.value.push({ val: td.timestamp, category });
 		inputIsDisabled.value = true;
-	} else {
-		selectedDateList.value.pop();
-		selectedDateList.value.push({ val: td.timestamp, category: category! });
-		selectedDateList.value.sort((a, b) => a.val - b.val);
-		modelLeftInput.value = dateFormat(selectedDateList.value[0].val);
-		modelRightInput.value = dateFormat(selectedDateList.value[1].val);
+	} else if (selectedDateList.value.length === 0 && category === "click") {
+		selectedDateList.value.push({ val: td.timestamp, category });
+		inputIsDisabled.value = true;
+	} else if (selectedDateList.value.length === 1 && category === "mouse") {
+		if (td.timestamp >= selectedDateList.value[0].val) {
+			selectedDateList.value.push({ val: td.timestamp, category });
+		} else {
+			selectedDateList.value.unshift({ val: td.timestamp, category });
+		}
+		inputIsDisabled.value = true;
+	} else if (
+		(selectedDateList.value.length === 2 && category === "mouse") ||
+		(selectedDateList.value.length === 2 && category === "click")
+	) {
+		if (
+			td.timestamp >=
+			selectedDateList.value.find((item) => item.category === "click")!.val
+		) {
+			selectedDateList.value = selectedDateList.value.filter(
+				(item) => item.category !== "mouse"
+			);
+			selectedDateList.value.push({ val: td.timestamp, category });
+		} else {
+			selectedDateList.value = selectedDateList.value.filter(
+				(item) => item.category !== "mouse"
+			);
+			selectedDateList.value.unshift({ val: td.timestamp, category });
+		}
+
+		if (category === "click") {
+			inputIsDisabled.value = false;
+		} else {
+			inputIsDisabled.value = true;
+		}
 	}
 	startTimePicker.value = "00:00:00";
 	endTimePicker.value = "00:00:00";

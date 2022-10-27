@@ -178,7 +178,12 @@ const selectedStartAndEndUI = (td: IDate) => {
 };
 
 const dynamicSelection = (td: IDate) => {
-	console.log(props.selectedDateList);
+	if (
+		props.selectedDateList.length === 2 &&
+		props.selectedDateList[0].category === "click" &&
+		props.selectedDateList[1].category === "click"
+	)
+		return;
 
 	if (props.selectedDateList.length >= 1) {
 		emit("emitSelectedDate", td, "mouse");
