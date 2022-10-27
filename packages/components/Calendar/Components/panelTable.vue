@@ -208,6 +208,9 @@ watch(
 	() => props.currDateTime,
 	(val) => {
 		currSelectedDateTime.value = dateToTimeStamp(val + " " + "00:00:00");
+	},
+	{
+		immediate: true,
 	}
 );
 
