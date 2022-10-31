@@ -17,7 +17,6 @@
 import { log } from "console";
 import { ref, reactive, watch, computed } from "vue";
 import { CASECONVERSION } from "../constants";
-import { primaryColor } from "../../../utils";
 type Props = {
   dates: (number | string)[][];
   currDate: number | string;
@@ -55,7 +54,7 @@ const selectedDate = (val: number | string) => {
   }
 }
 .currDate {
-  color: v-bind(primaryColor) !important;
+  color: var(--primary-color) !important;
   font-weight: 700;
 }
 </style>

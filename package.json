@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@default/components": "link:packages\\components",
+    "@default/style": "link:packages\\style",
     "@default/utils": "link:packages\\utils",
     "@vueuse/core": "^9.2.0",
     "lodash": "^4.17.21",

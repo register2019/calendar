@@ -3,8 +3,8 @@
     <DefaultInput />
   </div>
   <Teleport to="body">
-    <div ref="panelRef" v-show="isShowPanel">
-      <!-- <PanelTable :tds="tds" /> -->
+    <div ref="panelRef" class="date-panel" v-show="isShowPanel">
+      <PanelTable :tds="tds" />
     </div>
   </Teleport>
 </template>
@@ -40,6 +40,9 @@ const tds = getCurrPageDays(year, Number(month));
 .date {
   &-input {
     width: 220px;
+  }
+  &-panel {
+    border: 1px solid var(--border-color);
   }
 }
 </style>

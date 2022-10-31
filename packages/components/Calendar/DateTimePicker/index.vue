@@ -78,12 +78,10 @@
       </div>
 
       <div class="dc-calendar-footer">
-        <button @click="cancelBtn" class="dc-calendar-footer-cancel">
+        <DefaultButton type="text" size="small" @click="cancelBtn">
           取消
-        </button>
-        <button @click="submitBtn" class="dc-calendar-footer-submit">
-          确定
-        </button>
+        </DefaultButton>
+        <DefaultButton size="small" @click="submitBtn"> 确定 </DefaultButton>
       </div>
     </div>
   </Teleport>
@@ -115,6 +113,7 @@ import {
 import PanelTable from "../Components/panelTable.vue";
 import PanelInput from "../Components/panelInput.vue";
 import PanelSider from "../Components/panelSider.vue";
+import DefaultButton from "../../Button/index.vue";
 import { PickerOptions, SelectedDateList } from "../constants";
 import { SelectOptions } from "../../../utils/timeSelect";
 
@@ -716,22 +715,7 @@ $common-border: 1px solid #ebeef5;
   &-footer {
     display: flex;
     justify-content: right;
-    margin: 10px 0;
-
-    button {
-      border: $common-border;
-      background-color: #fff;
-
-      padding: 5px 15px;
-      margin: 0 5px;
-      cursor: pointer;
-    }
-    &-cancel {
-      color: #000;
-    }
-    &-submit {
-      color: #409eff;
-    }
+    margin: 10px;
   }
 }
 
