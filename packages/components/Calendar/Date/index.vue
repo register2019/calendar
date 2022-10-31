@@ -1,12 +1,16 @@
 <template>
   <div class="dc-date-input" @click="openPanel">
-    <DefaultInput />
+    <DefaultInput v-model="inputDate" />
   </div>
   <Teleport to="body">
     <div ref="panelRef" class="dc-date-panel" v-show="isShowPanel">
       <!-- <div>侧边栏</div> -->
       <div class="dc-date-panel-table">
-        <PanelTable :tds="tds" />
+        <PanelTable
+          :tds="tds"
+          type="Date"
+          @emit-selected-date="emitSelectedDate"
+        />
       </div>
     </div>
   </Teleport>
@@ -20,7 +24,7 @@ export default {
 <script lang="ts" setup>
 import { onClickOutside } from "@vueuse/core";
 import { ref, reactive, watch, computed } from "vue";
-import { getCurrPageDays, getTimeUtils } from "../../../utils";
+import { getCurrPageDays, getTimeUtils, IDate } from "../../../utils";
 import DefaultInput from "../../Input/src/input.vue";
 import PanelTable from "../Components/panelTable.vue";
 
@@ -34,6 +38,13 @@ const openPanel = () => {
 onClickOutside(panelRef, () => {
   isShowPanel.value = false;
 });
+
+const inputDate = ref("");
+const emitSelectedDate = (val: IDate) => {
+  const { year, month, day } = getTimeUtils(val.timestamp);
+  inputDate.value = year + "-" + month + "-" + day;
+  isShowPanel.value = false;
+};
 
 const { year, month } = getTimeUtils();
 const tds = getCurrPageDays(year, Number(month));

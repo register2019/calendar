@@ -194,7 +194,7 @@ const dateTimeTypeUI = (td: IDate) => {
   if (
     td.category === "curr" &&
     td.timestamp === currSelectedDateTime.value &&
-    props.type === "DateTime"
+    (props.type === "DateTime" || props.type === "Date")
   ) {
     return "dc-table-selected-date-time";
   }
