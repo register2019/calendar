@@ -1,10 +1,13 @@
 <template>
-  <div class="date-input" @click="openPanel">
+  <div class="dc-date-input" @click="openPanel">
     <DefaultInput />
   </div>
   <Teleport to="body">
-    <div ref="panelRef" class="date-panel" v-show="isShowPanel">
-      <PanelTable :tds="tds" />
+    <div ref="panelRef" class="dc-date-panel" v-show="isShowPanel">
+      <!-- <div>侧边栏</div> -->
+      <div class="dc-date-panel-table">
+        <PanelTable :tds="tds" />
+      </div>
     </div>
   </Teleport>
 </template>
@@ -37,12 +40,18 @@ const tds = getCurrPageDays(year, Number(month));
 </script>
 
 <style lang="scss" scoped>
-.date {
+.dc-date {
   &-input {
     width: 220px;
   }
   &-panel {
+    display: flex;
+    width: 292px;
     border: 1px solid var(--border-color);
+    &-table {
+      display: flex;
+      justify-content: center;
+    }
   }
 }
 </style>
