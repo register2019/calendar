@@ -84,6 +84,20 @@ const getSelectedTime = (val: number) => {
   console.log(val);
 };
 ```
+#### type为Date
+```html
+<DefaultCalendar
+  v-model="defaultValue"
+  type="Date"
+  :pickerOptions="pickerOptions"
+  @onClick="getSelectedDate"
+/>
+```
+```typescript
+/**
+ * pickerOptions、v-model、onClick同type为DateTime
+ */
+```
 
 
 | 参数             | 描述                                                                          | 类型                                       |
@@ -92,4 +106,4 @@ const getSelectedTime = (val: number) => {
 | timeType        | 日期面板时间类型 可选Picker和Select                                              | string: Picker                            |
 | pickerOptions   | 设置快捷选项                                                                    | Array                                     |
 | selectOptions   | 当timeType为Select时 用于设置TimeSelect的开始、结束及间隔时间                      | Object                                    |
-| type            | 日历面板的类型 目前支持DateTimePicker和DateTime                                  | String                                     |
+| type            | 日历面板的类型 目前支持DateTimePicker、DateTime、Date                             | String                                     |
