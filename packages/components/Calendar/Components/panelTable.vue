@@ -5,25 +5,27 @@
         <th v-for="item in tableHeader" :key="item">{{ item }}</th>
       </tr>
     </thead>
-    <tbody v-for="(list, index) in tableTds" :key="index">
-      <td
-        v-for="(td, index) in list"
-        :key="index"
-        :class="[tdStyle, selectedDateBgUI(td)]"
-        @click="selectedDate(td)"
-      >
-        <div @mouseenter="dynamicSelection(td)">
-          <span
-            :class="[
-              todayUI(td.timestamp),
-              beforeAndAfterUI(td.category),
-              selectedStartAndEndUI(td),
-              dateTimeTypeUI(td),
-            ]"
-            >{{ td.value }}</span
-          >
-        </div>
-      </td>
+    <tbody class="dc-table-tbody">
+      <tr v-for="(list, index) in tableTds" :key="index">
+        <td
+          v-for="(td, index) in list"
+          :key="index"
+          :class="[tdStyle, selectedDateBgUI(td)]"
+          @click="selectedDate(td)"
+        >
+          <div @mouseenter="dynamicSelection(td)">
+            <span
+              :class="[
+                todayUI(td.timestamp),
+                beforeAndAfterUI(td.category),
+                selectedStartAndEndUI(td),
+                dateTimeTypeUI(td),
+              ]"
+              >{{ td.value }}</span
+            >
+          </div>
+        </td>
+      </tr>
     </tbody>
   </table>
 </template>
@@ -220,6 +222,9 @@ const selectedDate = (td: IDate) => {
 .dc-table {
   min-width: 291px;
   border-spacing: 0 10px !important;
+  &-tbody {
+    border: 1px solid #000;
+  }
   &-tbody-td {
     text-align: center;
     cursor: pointer;
