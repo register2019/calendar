@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { ref, useAttrs, watch } from "vue";
 import {
   getTodayTimeStamp,
   IDate,
@@ -39,7 +39,7 @@ import {
   getTimeUtils,
   dateToTimeStamp,
 } from "../../../utils";
-import { SelectedDateList } from "../constants";
+import { Attrs, SelectedDateList } from "../constants";
 
 type Props = {
   tds: IDate[];
@@ -54,6 +54,11 @@ const props = withDefaults(defineProps<Props>(), {
 });
 const emit = defineEmits(["emitSelectedDate"]);
 const tdStyle = "dc-table-tbody-td";
+const attrs = useAttrs() as Attrs;
+if (attrs.disabledDate) {
+  // console.log(attrs);
+  console.log(attrs.disabledDate.range);
+}
 
 const tableTds = ref<IDate[][]>([]);
 const initTableData = (tds: IDate[]) => {
@@ -81,6 +86,30 @@ watch(
     immediate: true,
   }
 );
+
+const disabledTdUi = (td: IDate) => {
+  const { range, type } = attrs.disabledDate;
+  if (type === "after") {
+    if (typeof range === "string" && td.timestamp > dateToTimeStamp(range)) {
+      return "disbaled";
+    }
+  } else if (type === "before") {
+    if (typeof range === "string" && td.timestamp < dateToTimeStamp(range)) {
+      return "disbaled";
+    }
+  } else if (type === "curr") {
+    if (typeof range === "string" && td.timestamp === dateToTimeStamp(range)) {
+      return "disbaled";
+    }
+  } else if (
+    type === "range" &&
+    range instanceof Array &&
+    td.timestamp > dateToTimeStamp(range[0]) &&
+    td.timestamp < dateToTimeStamp(range[1])
+  ) {
+    return "disabled";
+  }
+};
 
 /**
  * 日历面板中与今天对应日期的UI

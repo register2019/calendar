@@ -55,6 +55,7 @@
                 :tds="leftTds"
                 :selectedDateList="selectedDateList"
                 @emit-selected-date="emitSelectedDate"
+                v-bind="$attrs"
               />
             </div>
             <div class="dc-calendar-content-right">
@@ -71,6 +72,7 @@
                 :tds="rightTds"
                 :selectedDateList="selectedDateList"
                 @emit-selected-date="emitSelectedDate"
+                v-bind="$attrs"
               />
             </div>
           </div>
