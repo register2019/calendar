@@ -267,7 +267,7 @@ export const getCurrPageDays = (year: number, month: number) => {
   });
 
   const objNextDays: IDate[] = nextDays.map((item) => {
-    const date = year + "-" + (month + 1) + "-" + item + " " + "00:00:00";
+    const date = year + "-" + month + "-" + item + " " + "00:00:00";
     return {
       value: item,
       category: "next",
