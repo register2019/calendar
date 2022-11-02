@@ -10,7 +10,7 @@
         <td
           v-for="(td, index) in list"
           :key="index"
-          :class="[tdStyle, selectedDateBgUI(td)]"
+          :class="[tdStyle, selectedDateBgUI(td), disabledTdUi(td)]"
           @click="selectedDate(td)"
         >
           <div @mouseenter="dynamicSelection(td)">
@@ -55,10 +55,6 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(["emitSelectedDate"]);
 const tdStyle = "dc-table-tbody-td";
 const attrs = useAttrs() as Attrs;
-if (attrs.disabledDate) {
-  // console.log(attrs);
-  console.log(attrs.disabledDate.range);
-}
 
 const tableTds = ref<IDate[][]>([]);
 const initTableData = (tds: IDate[]) => {
@@ -91,13 +87,13 @@ const disabledTdUi = (td: IDate) => {
   const { range, type } = attrs.disabledDate;
   if (type === "after") {
     if (typeof range === "string" && td.timestamp > dateToTimeStamp(range)) {
-      return "disbaled";
+      return "disabled";
     }
   } else if (type === "before") {
     if (typeof range === "string" && td.timestamp < dateToTimeStamp(range)) {
       return "disbaled";
     }
-  } else if (type === "curr") {
+  } else if (type === "today") {
     if (typeof range === "string" && td.timestamp === dateToTimeStamp(range)) {
       return "disbaled";
     }
@@ -251,9 +247,6 @@ const selectedDate = (td: IDate) => {
 .dc-table {
   min-width: 291px;
   border-spacing: 0 10px !important;
-  &-tbody {
-    border: 1px solid #000;
-  }
   &-tbody-td {
     text-align: center;
     cursor: pointer;
@@ -300,5 +293,18 @@ const selectedDate = (td: IDate) => {
 .end {
   border-top-right-radius: 50%;
   border-bottom-right-radius: 50%;
+}
+
+.disabled {
+  padding: 0;
+}
+.disabled div {
+  background-color: #f5f7fa;
+  opacity: 1;
+  cursor: not-allowed;
+  color: #c0c4cc;
+  height: 30px;
+  line-height: 30px;
+  padding: 3px;
 }
 </style>

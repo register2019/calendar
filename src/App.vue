@@ -38,7 +38,7 @@ const getSelectedTimeRange = (val: number[]) => {
 };
 const disabledDate = {
   type: "after",
-  range: ["2022-11-06", "2022-12-06"],
+  range: "2022-11-06",
 };
 </script>
 
