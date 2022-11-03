@@ -98,6 +98,29 @@ const getSelectedTime = (val: number) => {
  * pickerOptions、v-model、onClick同type为DateTime
  */
 ```
+#### disabledDate使用
+```typescript
+// 只禁用这一天
+const disabledDate = {
+  type: "today",
+  range: "2022-11-06 00:00:00",
+};
+// 禁用包括这一天之前的日期
+const disabledDate = {
+  type: "before",
+  range: "2022-11-06 00:00:00",
+};
+// 禁用包括这一天之后的日期
+const disabledDate = {
+  type: "after",
+  range: "2022-11-06 00:00:00",
+};
+// 禁用这个范围的日期
+const disabledDate = {
+  type: "range",
+  range: ["2022-11-06 00:00:00", "2022-11-16 00:00:00"],
+};
+```
 
 
 | 参数             | 描述                                                                          | 类型                                       |
@@ -106,4 +129,5 @@ const getSelectedTime = (val: number) => {
 | timeType        | 日期面板时间类型 可选Picker和Select                                              | string: Picker                            |
 | pickerOptions   | 设置快捷选项                                                                    | Array                                     |
 | selectOptions   | 当timeType为Select时 用于设置TimeSelect的开始、结束及间隔时间                      | Object                                    |
-| type            | 日历面板的类型 目前支持DateTimePicker、DateTime、Date                             | String                                     |
+| type            | 日历面板的类型 目前支持DateTimePicker、DateTime、Date                             | String                                    |
+| disabledDate    | 禁用日期 支持 before、after、today、range四种类型                                 | Object                                    |
