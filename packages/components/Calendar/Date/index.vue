@@ -31,6 +31,7 @@
           type="Date"
           :curr-date-time="inputDate"
           @emit-selected-date="emitSelectedDate"
+          v-bind="$attrs"
         />
       </div>
     </div>

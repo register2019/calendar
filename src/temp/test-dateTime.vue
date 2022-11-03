@@ -6,6 +6,7 @@
       type="DateTime"
       :picker-options="pickerOptions"
       :selectOptions="selectOptions"
+      :disabledDate="disabledDate"
       @onClick="getSelectedTime"
     />
   </div>
@@ -35,6 +36,10 @@ const selectOptions = {
 };
 const getSelectedTime = (val: number) => {
   console.log(val);
+};
+const disabledDate = {
+  type: "range",
+  range: ["2022-11-06 00:00:00", "2022-11-16 00:00:00"],
 };
 </script>
 
