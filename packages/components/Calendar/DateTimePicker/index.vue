@@ -354,6 +354,7 @@ const emitSelectedDate = (val: IDate, category: string) => {
 };
 
 const selectDate = (td: IDate, category?: string) => {
+  const { timestamp } = td;
   if (
     selectedDateList.value.length === 2 &&
     category === "click" &&
@@ -361,18 +362,18 @@ const selectDate = (td: IDate, category?: string) => {
     selectedDateList.value[1].category === "click"
   ) {
     selectedDateList.value = [];
-    selectedDateList.value.push({ val: td.timestamp, category });
+    selectedDateList.value.push({ val: timestamp, category });
     inputIsDisabled.value = true;
   } else if (selectedDateList.value.length === 0 && category === "click") {
-    selectedDateList.value.push({ val: td.timestamp, category });
+    selectedDateList.value.push({ val: timestamp, category });
     inputIsDisabled.value = true;
     modelLeftInput.value = dateFormat(selectedDateList.value[0].val);
     modelRightInput.value = dateFormat(selectedDateList.value[0].val);
   } else if (selectedDateList.value.length === 1 && category === "mouse") {
-    if (td.timestamp >= selectedDateList.value[0].val) {
-      selectedDateList.value.push({ val: td.timestamp, category });
+    if (timestamp >= selectedDateList.value[0].val) {
+      selectedDateList.value.push({ val: timestamp, category });
     } else {
-      selectedDateList.value.unshift({ val: td.timestamp, category });
+      selectedDateList.value.unshift({ val: timestamp, category });
     }
     inputIsDisabled.value = true;
   } else if (
@@ -386,12 +387,12 @@ const selectDate = (td: IDate, category?: string) => {
       selectedDateList.value = selectedDateList.value.filter(
         (item) => item.category !== "mouse"
       );
-      selectedDateList.value.push({ val: td.timestamp, category });
+      selectedDateList.value.push({ val: timestamp, category });
     } else {
       selectedDateList.value = selectedDateList.value.filter(
         (item) => item.category !== "mouse"
       );
-      selectedDateList.value.unshift({ val: td.timestamp, category });
+      selectedDateList.value.unshift({ val: timestamp, category });
     }
 
     if (category === "click") {

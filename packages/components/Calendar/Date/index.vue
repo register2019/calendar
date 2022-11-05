@@ -60,7 +60,6 @@ import DefaultInput from "../../Input/src/input.vue";
 import PanelTable from "../Components/panelTable.vue";
 import PanelSider from "../Components/panelSider.vue";
 import { PickerOptions } from "../constants";
-import { emit } from "process";
 
 const panelRef = ref();
 const isShowPanel = ref(false);

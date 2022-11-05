@@ -84,6 +84,7 @@ watch(
 );
 
 const disabledTdUi = (td: IDate) => {
+  if (!attrs.disabledDate) return;
   const { range, type } = attrs.disabledDate;
   if (type === "after") {
     if (typeof range === "string" && td.timestamp >= dateToTimeStamp(range)) {
@@ -201,6 +202,7 @@ const selectedStartAndEndUI = (td: IDate) => {
 };
 
 const optional = (timestamp: number) => {
+  if (!attrs.disabledDate) return;
   const { range, type } = attrs.disabledDate;
   if (
     (type === "after" && timestamp >= dateToTimeStamp(range as string)) ||
@@ -217,7 +219,7 @@ const optional = (timestamp: number) => {
 };
 
 const dynamicSelection = (td: IDate) => {
-  if (!optional(td.timestamp)) return;
+  if (attrs.disabledDate && !optional(td.timestamp)) return;
   if (
     props.selectedDateList.length === 2 &&
     props.selectedDateList[0].category === "click" &&
@@ -255,7 +257,7 @@ watch(
 );
 
 const selectedDate = (td: IDate) => {
-  if (!optional(td.timestamp)) return;
+  if (attrs.disabledDate && !optional(td.timestamp)) return;
 
   currSelectedDateTime.value = td.timestamp;
   emit("emitSelectedDate", td, "click");
