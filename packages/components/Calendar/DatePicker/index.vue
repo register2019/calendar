@@ -1,5 +1,5 @@
 <template>
-  <div class="dc-date-picker-input" @click="openPanel">
+  <div class="dc-date-picker-input" ref="inputRef" @click="openPanel">
     <DefaultInput v-model="startDateInput" class="borderUI" />
     <span>{{ props.rangeSeparator }}</span>
     <DefaultInput v-model="endDateInput" class="borderUI" />
@@ -64,8 +64,12 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { onClickOutside } from "@vueuse/core";
-import { ref, computed, CSSProperties } from "vue";
+import {
+  onClickOutside,
+  useElementBounding,
+  useWindowSize,
+} from "@vueuse/core";
+import { ref, computed, CSSProperties, nextTick } from "vue";
 import {
   dateFormat,
   dateToTimeStamp,
@@ -93,6 +97,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(["onClick"]);
 
 const panelRef = ref();
+const inputRef = ref();
 const isShowPanel = ref(false);
 
 const startYear = ref(0);
@@ -270,7 +275,19 @@ onClickOutside(panelRef, () => {
 });
 
 const openPanel = () => {
+  const { top, left, height, bottom } = useElementBounding(inputRef);
+
+  calendarStyle.value.top = top.value + height.value + 5 + "px";
+  calendarStyle.value.left = left.value + "px";
+
   isShowPanel.value = true;
+  nextTick(() => {
+    const { height: panelHeight } = useElementBounding(panelRef);
+    const { height } = useWindowSize();
+    if (bottom.value + panelHeight.value >= height.value) {
+      calendarStyle.value.top = top.value - panelHeight.value - 5 + "px";
+    }
+  });
 };
 
 if (props.pickerOptions) {
