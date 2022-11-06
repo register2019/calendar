@@ -2,6 +2,7 @@
   <DefaultCalendar
     v-model="defaultValue"
     type="DatePicker"
+    rangeSeparator="~"
     :picker-options="pickerOptions"
     @onClick="getSelectedDate"
   />

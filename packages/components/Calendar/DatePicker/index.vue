@@ -1,7 +1,7 @@
 <template>
   <div class="dc-date-picker-input" @click="openPanel">
     <DefaultInput v-model="startDateInput" class="borderUI" />
-    <span>至</span>
+    <span>{{ props.rangeSeparator }}</span>
     <DefaultInput v-model="endDateInput" class="borderUI" />
   </div>
   <Teleport to="body">
@@ -83,10 +83,12 @@ type Props = {
   modelValue?: Date[];
   unlinkPanels?: boolean;
   pickerOptions?: PickerOptions[];
+  rangeSeparator?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
   unlinkPanels: false,
+  rangeSeparator: "至",
 });
 const emit = defineEmits(["onClick"]);
 
@@ -282,6 +284,8 @@ if (props.modelValue && props.modelValue.length !== 0) {
     });
   });
   const { year, month } = getTimeUtils(props.modelValue[0]);
+  startDateInput.value = dateFormat(selectedDateList.value[0].val);
+  endDateInput.value = dateFormat(selectedDateList.value[1].val);
   initTableData(year, Number(month));
 } else {
   let { year, month } = getTimeUtils();
@@ -306,8 +310,6 @@ $borderUI: 1px solid var(--border-color);
 .dc-date-picker-panel {
   display: flex;
   border: $borderUI;
-  &-shortcuts {
-  }
   &-table {
     display: flex;
     width: 100%;

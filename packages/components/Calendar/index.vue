@@ -15,7 +15,7 @@ import DefaultDate from "./Date/index.vue";
 import DefaultDatePicker from "./DatePicker/index.vue";
 
 type Props = {
-  type: string;
+  type?: string;
 };
 
 const props = defineProps<Props>();
@@ -35,6 +35,7 @@ switch (props.type) {
     componentType.value = DefaultDatePicker;
     break;
   default:
+    componentType.value = DefaultDateTimePicker;
     break;
 }
 </script>
