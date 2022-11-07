@@ -43,6 +43,7 @@
 						:selectedDateList="selectedDateList"
 						v-bind="$attrs"
 						@date-range="getDateRange"
+						@isCompleteSelection="computedSelection"
 					/>
 				</div>
 			</div>
@@ -85,7 +86,6 @@ const startDateTime = ref<string>();
 const endDateTime = ref<string>();
 
 const selectedDateList = ref<SelectedDateList[]>([]);
-const emitSelectedList = ref<number[]>([]);
 
 const calendarInput = ref(null);
 const calendarStyle = ref<CSSProperties>({
@@ -122,26 +122,33 @@ let panelStartDate = ref();
 let panelEndDate = ref();
 
 // 是否完成选择
-let isCompleteSelection = ref(false);
+const inputIsDisabled = ref(false);
 
 const panelStartTime = ref();
 const panelEndTime = ref();
 const attrs = useAttrs();
-/**
- * 点击侧边栏
- * @param val
- */
-const selectedPickerOptions = (val: PickerOptions) => {
+
+const initSelectedDateList = (val: number[]) => {
 	selectedDateList.value = [];
-	const target = val.value() as number[];
-	panelStartDate.value = dateFormat(target[0]);
-	panelEndDate.value = dateFormat(target[1]);
-	target.forEach((item) => {
+	val.forEach((item) => {
 		selectedDateList.value.push({
 			val: item,
 			category: "click",
 		});
 	});
+};
+const computedSelection = (val: boolean) => {
+	inputIsDisabled.value = !val;
+};
+/**
+ * 点击侧边栏
+ * @param val
+ */
+const selectedPickerOptions = (val: PickerOptions) => {
+	const target = val.value() as number[];
+	panelStartDate.value = dateFormat(target[0]);
+	panelEndDate.value = dateFormat(target[1]);
+	initSelectedDateList(target);
 };
 
 const getDateRange = (params: number[]) => {
@@ -154,16 +161,8 @@ const getDateRange = (params: number[]) => {
 		panelStartTime.value = "00:00:00";
 		panelEndTime.value = "00:00:00";
 	}
-
-	params.forEach((item) => {
-		selectedDateList.value.push({
-			val: item,
-			category: "click",
-		});
-	});
+	initSelectedDateList(params);
 };
-
-const inputIsDisabled = ref(false);
 
 // 是否是点击日历面板选择日期 主要用于区别输入框修改日期 日历面板更新的情况
 const isSelectedDateRange = ref(false);
@@ -199,27 +198,17 @@ const updateInputPosition = () => {
 		!determineTheDateFormat(panelEndDate.value)
 	)
 		return;
-	selectedDateList.value = [];
-	[startTimeStamp, endTimeStamp]
-		.sort((a, b) => a - b)
-		.forEach((item) => {
-			selectedDateList.value.push({
-				val: item,
-				category: "click",
-			});
-		});
+	initSelectedDateList([startTimeStamp, endTimeStamp].sort((a, b) => a - b));
 
 	panelStartDate.value = dateFormat(selectedDateList.value[0].val);
 	panelEndDate.value = dateFormat(selectedDateList.value[1].val);
 };
 
 if (props.modelValue && props.modelValue.length === 2) {
-	props.modelValue.forEach((item) => {
-		selectedDateList.value.push({
-			val: dateToTimeStamp(item),
-			category: "click",
-		});
-	});
+	initSelectedDateList([
+		dateToTimeStamp(props.modelValue[0]),
+		dateToTimeStamp(props.modelValue[1]),
+	]);
 
 	// 有默认时间
 	startDateTime.value = dateTimeFormat(props.modelValue[0], props.timeType);

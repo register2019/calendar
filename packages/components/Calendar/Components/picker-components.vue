@@ -58,7 +58,7 @@ type Props = {
 };
 
 const props = withDefaults(defineProps<Props>(), {});
-const emit = defineEmits(["dateRange"]);
+const emit = defineEmits(["dateRange", "isCompleteSelection"]);
 
 const startYear = ref(0);
 const startMonth = ref(0);
@@ -157,14 +157,17 @@ const emitSelectedDate = (val: IDate, category: string) => {
 	) {
 		selectedDateList.value = [];
 		selectedDateList.value.push({ val: timestamp, category });
+		emit("isCompleteSelection", false);
 	} else if (selectedDateList.value.length === 0 && category === "click") {
 		selectedDateList.value.push({ val: timestamp, category });
+		emit("isCompleteSelection", false);
 	} else if (selectedDateList.value.length === 1 && category === "mouse") {
 		if (timestamp >= selectedDateList.value[0].val) {
 			selectedDateList.value.push({ val: timestamp, category });
 		} else {
 			selectedDateList.value.unshift({ val: timestamp, category });
 		}
+		emit("isCompleteSelection", false);
 	} else if (
 		(selectedDateList.value.length === 2 && category === "mouse") ||
 		(selectedDateList.value.length === 2 && category === "click")
@@ -184,6 +187,9 @@ const emitSelectedDate = (val: IDate, category: string) => {
 				selectedDateList.value[0].val,
 				selectedDateList.value[1].val,
 			]);
+			emit("isCompleteSelection", true);
+		} else {
+			emit("isCompleteSelection", false);
 		}
 	}
 };
@@ -236,7 +242,6 @@ watch(
 	() => props.selectedDateList,
 	(val) => {
 		selectedDateList.value = [...val!];
-		console.log("----->", selectedDateList);
 
 		const { year, month } = getTimeUtils(selectedDateList.value[0].val);
 		initTable(year, Number(month));
