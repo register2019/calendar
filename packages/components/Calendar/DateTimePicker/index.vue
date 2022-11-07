@@ -158,8 +158,16 @@ const getDateRange = (params: number[]) => {
 		panelStartTime.value = "00:00";
 		panelEndTime.value = "00:00";
 	} else {
-		panelStartTime.value = "00:00:00";
-		panelEndTime.value = "00:00:00";
+		if (attrs.showCategory === "yyyy-MM-DD HH") {
+			panelStartTime.value = "00";
+			panelEndTime.value = "00";
+		} else if (attrs.showCategory === "yyyy-MM-DD HH:mm") {
+			panelStartTime.value = "00:00";
+			panelEndTime.value = "00:00";
+		} else {
+			panelStartTime.value = "00:00:00";
+			panelEndTime.value = "00:00:00";
+		}
 	}
 	initSelectedDateList(params);
 };
@@ -226,8 +234,6 @@ if (props.modelValue && props.modelValue.length === 2) {
 	}
 
 	// initSelectedDateTimeRange(props.modelValue);
-} else {
-	// 没有默认时间
 }
 
 const cancelBtn = () => {
@@ -236,11 +242,22 @@ const cancelBtn = () => {
 };
 
 const submitBtn = () => {
+	let startTime = "";
+	let endTime = "";
+	if (attrs.showCategory === "yyyy-MM-DD HH") {
+		startTime = panelStartTime.value + ":00:00";
+		endTime = panelEndTime.value + ":00:00";
+	} else if (attrs.showCategory === "yyyy-MM-DD HH:mm") {
+		startTime = panelStartTime.value + ":00";
+		endTime = panelEndTime.value + ":00";
+	} else {
+		startTime = panelStartTime.value;
+		endTime = panelEndTime.value;
+	}
 	startDateTime.value =
-		dateFormat(selectedDateList.value[0].val) + " " + panelStartTime.value;
+		dateFormat(selectedDateList.value[0].val) + " " + startTime;
 
-	endDateTime.value =
-		dateFormat(selectedDateList.value[1].val) + " " + panelEndTime.value;
+	endDateTime.value = dateFormat(selectedDateList.value[1].val) + " " + endTime;
 
 	calendarPanel.value = false;
 
