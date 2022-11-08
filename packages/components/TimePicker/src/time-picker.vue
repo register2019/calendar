@@ -57,14 +57,14 @@ const currMinu = ref("");
 const currSeco = ref("");
 
 type Props = {
-	showCategory?: string;
+	timeTypeFormat?: string;
 	isMountBody?: boolean; // 是否挂载到body中 默认挂载到body
 	modelValue?: string;
 	size?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
-	showCategory: "yyyy-MM-DD HH:mm:ss",
+	timeTypeFormat: "yyyy-MM-DD HH:mm:ss",
 	isMountBody: true,
 	modelValue: "",
 });
@@ -83,44 +83,54 @@ if (props.modelValue) {
 	currMinu.value = minu.toString();
 	currSeco.value = seco.toString();
 }
-
+const ulWidth = ref("40px");
+const timePickerWidth = ref("160px");
 let showUlNum = computed(() => {
-	let showCategory: string[] = [];
-	if (props.showCategory === "yyyy-MM-DD HH:mm") {
-		showCategory = ["hour", "minu"];
-	} else if (props.showCategory === "yyyy-MM-DD HH") {
-		showCategory = ["hour"];
+	let timeTypeFormat: string[] = [];
+	if (props.timeTypeFormat === "yyyy-MM-DD HH:mm") {
+		timeTypeFormat = ["hour", "minu"];
+		ulWidth.value = "80px";
+	} else if (props.timeTypeFormat === "yyyy-MM-DD HH") {
+		timeTypeFormat = ["hour"];
+		ulWidth.value = "138px";
+		timePickerWidth.value = "139px";
 	} else {
-		showCategory = ["hour", "minu", "seco"];
+		timeTypeFormat = ["hour", "minu", "seco"];
+		ulWidth.value = "40px";
 	}
-	return ulList.filter((item) => showCategory.includes(item.id));
+	return ulList.filter((item) => timeTypeFormat.includes(item.id));
 });
 
 // 需要显示时间的格式 默认是 时:分:秒
 let inputValue = computed(() => {
-	if (props.showCategory === "yyyy-MM-DD HH:mm") {
+	if (props.timeTypeFormat === "yyyy-MM-DD HH:mm") {
 		return currHour.value + ":" + currMinu.value;
-	} else if (props.showCategory === "yyyy-MM-DD HH") {
+	} else if (props.timeTypeFormat === "yyyy-MM-DD HH") {
 		return currHour.value;
 	}
 
 	return currHour.value + ":" + currMinu.value + ":" + currSeco.value;
 });
 
-console.log("----->", inputValue);
-
 // 用于保留之前的时间
 let initValOfInputRef = "";
 const inputFocus = () => {
 	if (!inputRef.value) {
 		const { hour, minu, seco } = getTimeUtils();
-		inputRef.value = hour + ":" + minu + ":" + seco;
+		if (props.timeTypeFormat === "yyyy-MM-DD HH:mm:ss") {
+			inputRef.value = hour + ":" + minu + ":" + seco;
+		} else if (props.timeTypeFormat === "yyyy-MM-DD HH:mm") {
+			inputRef.value = hour + ":" + minu;
+		} else {
+			inputRef.value = hour;
+		}
 	}
 	if (inputRef.value === "00:00:00") {
 		currHour.value = "00";
 		currMinu.value = "00";
 		currSeco.value = "00";
 	}
+
 	initValOfInputRef = inputRef.value;
 	timePickerStatus.value = true;
 	const temList = [currHour, currMinu, currSeco];
@@ -146,6 +156,17 @@ watch(
 	() => props.modelValue,
 	(val) => {
 		inputRef.value = val;
+
+		if (props.timeTypeFormat === "yyyy-MM-DD HH:mm:ss") {
+			currHour.value = val.split(":")[0];
+			currMinu.value = val.split(":")[1];
+			currSeco.value = val.split(":")[2];
+		} else if (props.timeTypeFormat === "yyyy-MM-DD HH:mm") {
+			currHour.value = val.split(":")[0];
+			currMinu.value = val.split(":")[1];
+		} else if (props.timeTypeFormat === "yyyy-MM-DD HH") {
+			currHour.value = val;
+		}
 	}
 );
 /**
@@ -188,7 +209,7 @@ const submitBtn = () => {
 .dc-time-picker {
 	display: flex;
 	height: 170px;
-	width: 160px;
+	width: v-bind(timePickerWidth);
 	overflow: hidden;
 	border-bottom: 1px solid #e4e7ed;
 }
@@ -253,7 +274,7 @@ const submitBtn = () => {
 .dc-li {
 	list-style: none;
 	text-align: center;
-	width: 40px;
+	width: v-bind(ulWidth);
 	height: 32px;
 	line-height: 32px;
 	font-size: 12px;

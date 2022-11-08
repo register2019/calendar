@@ -64,7 +64,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { ref, CSSProperties, useAttrs } from "vue";
+import { ref, CSSProperties, useAttrs, watch } from "vue";
 import { onClickOutside, useElementBounding } from "@vueuse/core";
 import {
 	dateFormat,
@@ -78,6 +78,7 @@ import PanelSider from "../Components/panelSider.vue";
 import PickerComponents from "../Components/picker-components.vue";
 import DefaultButton from "../../Button/index.vue";
 import { PickerOptions, SelectedDateList } from "../constants";
+import { SelectOptions } from "../../../utils/timeSelect";
 
 const calendarPanel = ref(false);
 const calendarRef = ref();
@@ -138,6 +139,33 @@ const initSelectedDateList = (val: number[]) => {
 	});
 };
 const computedSelection = (val: boolean) => {
+	if (val) {
+		if (props.timeType === "Select") {
+			if (attrs.selectOptions) {
+				panelStartTime.value = (attrs.selectOptions as SelectOptions).start;
+				panelEndTime.value = (attrs.selectOptions as SelectOptions).start;
+			} else {
+				panelStartTime.value = "08:30";
+				panelEndTime.value = "08:30";
+			}
+		} else if (props.timeType === "Picker") {
+			if (attrs.timeTypeFormat) {
+				if (attrs.timeTypeFormat === "yyyy-MM-DD HH") {
+					panelStartTime.value = "00";
+					panelEndTime.value = "00";
+				} else if (attrs.timeTypeFormat === "yyyy-MM-DD HH:mm") {
+					panelStartTime.value = "00:00";
+					panelEndTime.value = "00:00";
+				} else {
+					panelStartTime.value = "00:00:00";
+					panelEndTime.value = "00:00:00";
+				}
+			} else {
+				panelStartTime.value = "00:00:00";
+				panelEndTime.value = "00:00:00";
+			}
+		}
+	}
 	inputIsDisabled.value = !val;
 };
 /**
@@ -154,21 +182,7 @@ const selectedPickerOptions = (val: PickerOptions) => {
 const getDateRange = (params: number[]) => {
 	panelStartDate.value = dateFormat(params[0]);
 	panelEndDate.value = dateFormat(params[1]);
-	if (props.timeType === "Select") {
-		panelStartTime.value = "00:00";
-		panelEndTime.value = "00:00";
-	} else {
-		if (attrs.showCategory === "yyyy-MM-DD HH") {
-			panelStartTime.value = "00";
-			panelEndTime.value = "00";
-		} else if (attrs.showCategory === "yyyy-MM-DD HH:mm") {
-			panelStartTime.value = "00:00";
-			panelEndTime.value = "00:00";
-		} else {
-			panelStartTime.value = "00:00:00";
-			panelEndTime.value = "00:00:00";
-		}
-	}
+
 	initSelectedDateList(params);
 };
 
@@ -232,8 +246,6 @@ if (props.modelValue && props.modelValue.length === 2) {
 		panelStartTime.value = leftHour + ":" + leftMinu;
 		panelEndTime.value = rightHour + ":" + rightMinu;
 	}
-
-	// initSelectedDateTimeRange(props.modelValue);
 }
 
 const cancelBtn = () => {
@@ -244,27 +256,33 @@ const cancelBtn = () => {
 const submitBtn = () => {
 	let startTime = "";
 	let endTime = "";
-	if (attrs.showCategory === "yyyy-MM-DD HH") {
-		startTime = panelStartTime.value + ":00:00";
-		endTime = panelEndTime.value + ":00:00";
-	} else if (attrs.showCategory === "yyyy-MM-DD HH:mm") {
-		startTime = panelStartTime.value + ":00";
-		endTime = panelEndTime.value + ":00";
-	} else {
-		startTime = panelStartTime.value;
-		endTime = panelEndTime.value;
+
+	if (props.timeType === "Picker") {
+		if (attrs.timeTypeFormat === "yyyy-MM-DD HH") {
+			startTime = panelStartTime.value + ":00:00";
+			endTime = panelEndTime.value + ":00:00";
+		} else if (attrs.timeTypeFormat === "yyyy-MM-DD HH:mm") {
+			startTime = panelStartTime.value + ":00";
+			endTime = panelEndTime.value + ":00";
+		} else if (attrs.timeTypeFormat === "yyyy-MM-DD HH:mm:ss") {
+			startTime = panelStartTime.value;
+			endTime = panelEndTime.value;
+		}
 	}
+
 	startDateTime.value =
-		dateFormat(selectedDateList.value[0].val) + " " + startTime;
+		dateFormat(selectedDateList.value[0].val) + " " + panelStartTime.value;
 
-	endDateTime.value = dateFormat(selectedDateList.value[1].val) + " " + endTime;
-
+	endDateTime.value =
+		dateFormat(selectedDateList.value[1].val) + " " + panelEndTime.value;
+	emit("onClick", [
+		dateToTimeStamp(
+			dateFormat(selectedDateList.value[0].val) + " " + startTime
+		),
+		dateToTimeStamp(dateFormat(selectedDateList.value[0].val) + " " + endTime),
+	]);
 	calendarPanel.value = false;
 
-	emit("onClick", [
-		dateToTimeStamp(startDateTime.value),
-		dateToTimeStamp(endDateTime.value),
-	]);
 	isSelectedDateRange.value = false;
 };
 </script>

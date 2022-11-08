@@ -21,7 +21,7 @@
 				size="small"
 				v-model="inputTime"
 				:disabled="inputIsDisabled"
-				:showCategory="showCategory"
+				:timeTypeFormat="timeTypeFormat"
 			/>
 		</span>
 	</span>
@@ -45,11 +45,11 @@ const props = withDefaults(defineProps<Props>(), {
 	inputIsDisabled: false,
 	date: "",
 });
-const showCategory = ref("");
+const timeTypeFormat = ref("");
 const emit = defineEmits(["update:date", "update:time", "updateInputPosition"]);
 const attrs = useAttrs();
-if (attrs.showCategory) {
-	showCategory.value = attrs.showCategory as string;
+if (attrs.timeTypeFormat) {
+	timeTypeFormat.value = attrs.timeTypeFormat as string;
 }
 
 const selectOptions = ref<SelectOptions>(attrs.selectOptions as SelectOptions);
