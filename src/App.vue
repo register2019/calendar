@@ -1,45 +1,46 @@
 <template>
-	<DefaultCalendar
-		v-model="selectedTimeRange"
-		@onClick="getSelectedTimeRange"
-		:pickerOptions="pickerOptions"
-		showCategory="yyyy-MM-DD HH"
-		timeType="Picker"
-		type="DateTimePicker"
-		:selectOptions="selectOptions"
-		:disabledDate="disabledDate"
-	/>
+	<div>
+		<DefaultCalendar
+			v-model="defaultValue"
+			type="DateTime"
+			timeTypeFormat="yyyy-MM-DD HH:mm:ss"
+			timeType="Select"
+			:picker-options="pickerOptions"
+			:selectOptions="selectOptions"
+			:disabledDate="disabledDate"
+			@onClick="getSelectedTime"
+		/>
+	</div>
 </template>
 
 <script lang="ts" setup>
 import { ref, reactive, watch, computed } from "vue";
-const selectedTimeRange = ref<Date[]>([]);
-// const selectedTimeRange = ref<[Date, Date]>([
-// 	new Date(2000, 10, 10, 10, 14),
-// 	new Date(2000, 10, 11, 12, 24),
-// ]);
+const defaultValue = ref(new Date(2000, 10, 10, 8, 30));
 const pickerOptions = [
 	{
-		text: "最近一周",
-		value: () => {
-			const end = new Date().getTime();
-			const start = new Date().getTime() - 3600 * 1000 * 24 * 7;
-
-			return [start, end];
-		},
+		text: "今天",
+		value: () => new Date().getTime(),
+	},
+	{
+		text: "昨天",
+		value: () => new Date().getTime() - 3600 * 1000 * 24,
+	},
+	{
+		text: "一周前",
+		value: () => new Date().getTime() - 3600 * 1000 * 24 * 7,
 	},
 ];
 const selectOptions = {
-	start: "08:30",
+	start: "08:00",
 	step: "00:15",
 	end: "18:30",
 };
-const getSelectedTimeRange = (val: number[]) => {
+const getSelectedTime = (val: number) => {
 	console.log(val);
 };
 const disabledDate = {
-	type: "today",
-	range: "2022-11-06 00:00:00",
+	type: "range",
+	range: ["2022-11-06 00:00:00", "2022-11-16 00:00:00"],
 };
 </script>
 
