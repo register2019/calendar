@@ -3,8 +3,9 @@
 		<DefaultCalendar
 			v-model="defaultValue"
 			type="DateTime"
-			timeTypeFormat="yyyy-MM-DD HH:mm:ss"
 			timeType="Select"
+			format="yyyy-MM-DD HH"
+			timeTypeFormat="yyyy-MM-DD HH"
 			:picker-options="pickerOptions"
 			:selectOptions="selectOptions"
 			:disabledDate="disabledDate"

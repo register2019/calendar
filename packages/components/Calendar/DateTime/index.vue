@@ -135,12 +135,16 @@ const dynamicPanelWidth = ref<CSSProperties>({
 });
 
 type Props = {
+	format?: string;
 	pickerOptions?: PickerOptions[];
 	modelValue?: Date;
 	timeType?: string;
 };
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+	timeType: "Picker",
+	format: "yyyy-MM-DD HH:mm:ss",
+});
 
 const emit = defineEmits(["onClick"]);
 const nearlyADecade = ref(dateTimeYear());
@@ -236,24 +240,10 @@ const selectMonth = () => {
 	panelType.value = "month";
 };
 
-const formatTime = (hour: string, minu: string, seco: string) => {
-	if (props.timeType === "Select") {
-		inputTime.value = hour + ":" + minu;
-	} else {
-		if (attrs.timeTypeFormat === "yyyy-MM-DD HH:mm") {
-			inputTime.value = hour + ":" + minu;
-		} else if (attrs.timeTypeFormat === "yyyy-MM-DD HH") {
-			inputTime.value = hour;
-		} else if (attrs.timeTypeFormat === "yyyy-MM-DD HH:mm:ss") {
-			inputTime.value = hour + ":" + minu + ":" + seco;
-		}
-	}
-};
-
 const emitSelectedDate = (val: IDate) => {
 	const { year, month, day, hour, minu, seco } = getTimeUtils(val.timestamp);
 	inputDate.value = year + "-" + month + "-" + day;
-	formatTime(hour, month, seco);
+	panelTimeFormat(hour, minu, seco);
 };
 const emitSelectedYearOrMonth = (val: number) => {
 	if (val > 0 && val <= 12) {
@@ -282,7 +272,7 @@ const selectedPickerOptions = (val: PickerOptions) => {
 		val.value() as number
 	);
 	inputDate.value = year + "-" + month + "-" + day;
-	formatTime(hour, minu, seco);
+	panelTimeFormat(hour, minu, seco);
 	if (year !== currYear.value || Number(month) !== currMonth.value) {
 		getTableData(year, Number(month));
 		currYear.value = year;
@@ -300,11 +290,43 @@ const getCurrDateTime = () => {
 		currMonth.value = Number(month);
 	}
 };
-const submitBtn = () => {
-	if (inputDate.value && inputTime.value) {
-		selectedDateTime.value = inputDate.value + " " + inputTime.value;
+const panelTimeFormat = (hour: string, minu: string, seco: string) => {
+	if (props.timeType === "Select") {
+		inputTime.value = hour + ":" + minu;
+	} else {
+		if (attrs.timeTypeFormat === "yyyy-MM-DD HH:mm") {
+			inputTime.value = hour + ":" + minu;
+		} else if (attrs.timeTypeFormat === "yyyy-MM-DD HH") {
+			inputTime.value = hour;
+		} else {
+			inputTime.value = hour + ":" + minu + ":" + seco;
+		}
 	}
-	emit("onClick", dateToTimeStamp(selectedDateTime.value));
+};
+const inputDateTimeFormat = (formatType: string) => {
+	const midInputTime =
+		attrs.timeTypeFormat === "yyyy-MM-DD HH"
+			? inputTime.value + ":00"
+			: inputTime.value;
+	const { hour, minu, seco } = getTimeUtils(
+		inputDate.value + " " + midInputTime
+	);
+
+	if (formatType === "yyyy-MM-DD HH:mm") {
+		selectedDateTime.value = inputDate.value + " " + hour + ":" + minu;
+		emit("onClick", dateToTimeStamp(selectedDateTime.value));
+	} else if (formatType === "yyyy-MM-DD HH") {
+		selectedDateTime.value = inputDate.value + " " + hour;
+		emit("onClick", dateToTimeStamp(selectedDateTime.value + ":00"));
+	} else {
+		selectedDateTime.value =
+			inputDate.value + " " + hour + ":" + minu + ":" + seco;
+		emit("onClick", dateToTimeStamp(selectedDateTime.value));
+	}
+};
+const submitBtn = () => {
+	if (props.format) inputDateTimeFormat(props.format);
+
 	panelType.value = "day";
 	isShowPanel.value = false;
 };
@@ -312,8 +334,10 @@ const submitBtn = () => {
 if (props.modelValue) {
 	const { year, month, day, hour, minu, seco } = getTimeUtils(props.modelValue);
 	inputDate.value = year + "-" + month + "-" + day;
-	formatTime(hour, minu, seco);
-	selectedDateTime.value = inputDate.value + " " + inputTime.value;
+	if (attrs.timeTypeFormat) panelTimeFormat(hour, minu, seco);
+
+	if (props.format) inputDateTimeFormat(props.format);
+
 	currYear.value = year;
 	currMonth.value = Number(month);
 }

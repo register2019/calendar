@@ -72,6 +72,7 @@ import {
 	initCalendarPanel,
 	dateToTimeStamp,
 	determineTheDateFormat,
+	getTimeUtils,
 } from "../../../utils";
 import PanelInput from "../Components/panelInput.vue";
 import PanelSider from "../Components/panelSider.vue";
@@ -106,11 +107,13 @@ type Props = {
 	timeType?: string; // 默认是Picker 可选值为Picker和Select
 	pickerOptions?: PickerOptions[];
 	rangeSeparator?: string;
+	format?: string;
 };
 const props = withDefaults(defineProps<Props>(), {
 	modelValue: (): Date[] => [],
 	timeType: "Picker",
 	rangeSeparator: "至",
+	format: "yyyy-MM-DD HH:mm:ss",
 });
 
 const emit = defineEmits(["update:modelValue", "onClick"]);
@@ -226,61 +229,118 @@ const updateInputPosition = () => {
 	panelEndDate.value = dateFormat(selectedDateList.value[1].val);
 };
 
+const panelDateTimeFormat = () => {
+	const { leftHour, leftMinu, leftSeco, rightHour, rightMinu, rightSeco } =
+		initCalendarPanel(props.modelValue);
+	if (props.timeType === "Select") {
+		panelStartTime.value = leftHour + ":" + leftMinu;
+		panelEndTime.value = rightHour + ":" + rightMinu;
+	} else {
+		if (attrs.timeTypeFormat === "yyyy-MM-DD HH") {
+			panelStartTime.value = leftHour;
+			panelEndTime.value = rightHour;
+		} else if (attrs.timeTypeFormat === "yyyy-MM-DD HH:mm") {
+			panelStartTime.value = leftHour + ":" + leftMinu;
+			panelEndTime.value = rightHour + ":" + rightMinu;
+		} else {
+			panelStartTime.value = leftHour + ":" + leftMinu + ":" + leftSeco;
+			panelEndTime.value = rightHour + ":" + rightMinu + ":" + rightSeco;
+		}
+	}
+};
+const inputDateTimeFormat = (formatType: string) => {
+	const midPanelStartTime =
+		attrs.timeTypeFormat === "yyyy-MM-DD HH"
+			? panelStartTime.value + ":00"
+			: panelStartTime.value;
+	const midPanelEndTime =
+		attrs.timeTypeFormat === "yyyy-MM-DD HH"
+			? panelEndTime.value + ":00"
+			: panelEndTime.value;
+	const {
+		hour: startHour,
+		minu: startMinu,
+		seco: startSeco,
+	} = getTimeUtils(
+		dateFormat(selectedDateList.value[0].val) + " " + midPanelStartTime
+	);
+	const {
+		hour: endHour,
+		minu: endMinu,
+		seco: endSeco,
+	} = getTimeUtils(
+		dateFormat(selectedDateList.value[1].val) + " " + midPanelEndTime
+	);
+	if (formatType === "yyyy-MM-DD HH") {
+		startDateTime.value =
+			dateFormat(selectedDateList.value[0].val) + " " + startHour;
+		endDateTime.value =
+			dateFormat(selectedDateList.value[1].val) + " " + endHour;
+		emit("onClick", [
+			dateToTimeStamp(startDateTime.value + ":00"),
+			dateToTimeStamp(endDateTime.value + ":00"),
+		]);
+	} else if (formatType === "yyyy-MM-DD HH:mm") {
+		startDateTime.value =
+			dateFormat(selectedDateList.value[0].val) +
+			" " +
+			startHour +
+			":" +
+			startMinu;
+		endDateTime.value =
+			dateFormat(selectedDateList.value[1].val) + " " + endHour + ":" + endMinu;
+		emit("onClick", [
+			dateToTimeStamp(startDateTime.value),
+			dateToTimeStamp(endDateTime.value),
+		]);
+	} else {
+		startDateTime.value =
+			dateFormat(selectedDateList.value[0].val) +
+			" " +
+			startHour +
+			":" +
+			startMinu +
+			":" +
+			startSeco;
+
+		endDateTime.value =
+			dateFormat(selectedDateList.value[1].val) +
+			" " +
+			endHour +
+			":" +
+			endMinu +
+			":" +
+			endSeco;
+		emit("onClick", [
+			dateToTimeStamp(startDateTime.value),
+			dateToTimeStamp(endDateTime.value),
+		]);
+	}
+};
+
 if (props.modelValue && props.modelValue.length === 2) {
 	initSelectedDateList([
 		dateToTimeStamp(props.modelValue[0]),
 		dateToTimeStamp(props.modelValue[1]),
 	]);
 
-	// 有默认时间
-	startDateTime.value = dateTimeFormat(props.modelValue[0], props.timeType);
-	endDateTime.value = dateTimeFormat(props.modelValue[1], props.timeType);
-	const { leftHour, leftMinu, leftSeco, rightHour, rightMinu, rightSeco } =
-		initCalendarPanel(props.modelValue);
+	if (attrs.timeTypeFormat) {
+		panelDateTimeFormat();
+	}
 
-	// 初始化时间
-	if (props.timeType === "Picker") {
-		panelStartTime.value = leftHour + ":" + leftMinu + ":" + leftSeco;
-		panelEndTime.value = rightHour + ":" + rightMinu + ":" + rightSeco;
-	} else {
-		panelStartTime.value = leftHour + ":" + leftMinu;
-		panelEndTime.value = rightHour + ":" + rightMinu;
+	if (props.format) {
+		inputDateTimeFormat(props.format);
 	}
 }
-
 const cancelBtn = () => {
 	calendarPanel.value = false;
 	isSelectedDateRange.value = false;
 };
 
 const submitBtn = () => {
-	let startTime = "";
-	let endTime = "";
-
-	if (props.timeType === "Picker") {
-		if (attrs.timeTypeFormat === "yyyy-MM-DD HH") {
-			startTime = panelStartTime.value + ":00:00";
-			endTime = panelEndTime.value + ":00:00";
-		} else if (attrs.timeTypeFormat === "yyyy-MM-DD HH:mm") {
-			startTime = panelStartTime.value + ":00";
-			endTime = panelEndTime.value + ":00";
-		} else if (attrs.timeTypeFormat === "yyyy-MM-DD HH:mm:ss") {
-			startTime = panelStartTime.value;
-			endTime = panelEndTime.value;
-		}
+	if (props.format) {
+		inputDateTimeFormat(props.format);
 	}
-
-	startDateTime.value =
-		dateFormat(selectedDateList.value[0].val) + " " + panelStartTime.value;
-
-	endDateTime.value =
-		dateFormat(selectedDateList.value[1].val) + " " + panelEndTime.value;
-	emit("onClick", [
-		dateToTimeStamp(
-			dateFormat(selectedDateList.value[0].val) + " " + startTime
-		),
-		dateToTimeStamp(dateFormat(selectedDateList.value[0].val) + " " + endTime),
-	]);
 	calendarPanel.value = false;
 
 	isSelectedDateRange.value = false;
