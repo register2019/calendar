@@ -145,6 +145,7 @@ const inputFocus = () => {
 };
 onClickOutside(timePickerRef, () => {
 	timePickerStatus.value = false;
+
 	inputRef.value = initValOfInputRef;
 });
 watch(inputValue, (val) => {

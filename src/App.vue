@@ -2,8 +2,9 @@
 	<div>
 		<DefaultCalendar
 			v-model="defaultValue"
+			timeType="Select"
 			type="DateTime"
-			format="yyyy-MM-DD HH"
+			format="yyyy"
 			pickerFormat="HH"
 			:picker-options="pickerOptions"
 			:selectOptions="selectOptions"

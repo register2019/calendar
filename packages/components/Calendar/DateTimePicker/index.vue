@@ -1,7 +1,7 @@
 <template>
 	<div @click="openCalendar" class="dc-calendar-input" ref="calendarInput">
 		<input type="text" class="dc-input" v-model="startDateTime" />
-		<span>{{ props.rangeSeparator }}</span>
+		<span>{{ rangeSeparator }}</span>
 		<input type="text" class="dc-input" v-model="endDateTime" />
 	</div>
 	<Teleport to="body">
@@ -13,8 +13,8 @@
 		>
 			<div style="display: flex; border-bottom: 1px solid #ebeef5">
 				<PanelSider
-					v-if="props.pickerOptions && props.pickerOptions.length !== 0"
-					:pickerOptions="props.pickerOptions"
+					v-if="pickerOptions && pickerOptions.length !== 0"
+					:pickerOptions="pickerOptions"
 					@selected-picker-options="selectedPickerOptions"
 				/>
 				<div>
@@ -23,7 +23,7 @@
 							v-model:date="panelStartDate"
 							v-model:time="panelStartTime"
 							:inputIsDisabled="inputIsDisabled"
-							:timeType="props.timeType"
+							:timeType="timeType"
 							@update-input-position="updateInputPosition"
 							v-bind="$attrs"
 						/>
@@ -32,14 +32,14 @@
 							v-model:date="panelEndDate"
 							v-model:time="panelEndTime"
 							:inputIsDisabled="inputIsDisabled"
-							:timeType="props.timeType"
+							:timeType="timeType"
 							@update-input-position="updateInputPosition"
 							v-bind="$attrs"
 						/>
 					</div>
 					<PickerComponents
-						:modelValue="props.modelValue"
-						:pickerOptions="props.pickerOptions"
+						:modelValue="modelValue"
+						:pickerOptions="pickerOptions"
 						:selectedDateList="selectedDateList"
 						v-bind="$attrs"
 						@date-range="getDateRange"
@@ -68,7 +68,6 @@ import { ref, CSSProperties, useAttrs, watch } from "vue";
 import { onClickOutside, useElementBounding } from "@vueuse/core";
 import {
 	dateFormat,
-	dateTimeFormat,
 	initCalendarPanel,
 	dateToTimeStamp,
 	determineTheDateFormat,
@@ -108,25 +107,25 @@ type Props = {
 	rangeSeparator?: string;
 	format?: string;
 };
-const props = withDefaults(defineProps<Props>(), {
-	modelValue: (): Date[] => [],
-	timeType: "Picker",
-	rangeSeparator: "至",
-	format: "yyyy-MM-DD HH:mm:ss",
-});
+const { modelValue, timeType, pickerOptions, rangeSeparator, format } =
+	withDefaults(defineProps<Props>(), {
+		modelValue: (): Date[] => [],
+		timeType: "Picker",
+		rangeSeparator: "至",
+		format: "yyyy-MM-DD HH:mm:ss",
+	});
 
 const emit = defineEmits(["update:modelValue", "onClick"]);
 
-if (props.pickerOptions && props.pickerOptions.length > 0) {
+if (pickerOptions && pickerOptions.length > 0) {
 	calendarStyle.value.width = "782px";
 }
-
-let panelStartDate = ref();
-let panelEndDate = ref();
 
 // 是否完成选择
 const inputIsDisabled = ref(false);
 
+const panelStartDate = ref();
+const panelEndDate = ref();
 const panelStartTime = ref();
 const panelEndTime = ref();
 const attrs = useAttrs();
@@ -140,9 +139,10 @@ const initSelectedDateList = (val: number[]) => {
 		});
 	});
 };
+
 const computedSelection = (val: boolean) => {
 	if (val) {
-		if (props.timeType === "Select") {
+		if (timeType === "Select") {
 			if (attrs.selectOptions) {
 				panelStartTime.value = (attrs.selectOptions as SelectOptions).start;
 				panelEndTime.value = (attrs.selectOptions as SelectOptions).start;
@@ -150,18 +150,13 @@ const computedSelection = (val: boolean) => {
 				panelStartTime.value = "08:30";
 				panelEndTime.value = "08:30";
 			}
-		} else if (props.timeType === "Picker") {
-			if (attrs.pickerFormat) {
-				if (attrs.pickerFormat === "HH") {
-					panelStartTime.value = "00";
-					panelEndTime.value = "00";
-				} else if (attrs.pickerFormat === "HH:mm") {
-					panelStartTime.value = "00:00";
-					panelEndTime.value = "00:00";
-				} else {
-					panelStartTime.value = "00:00:00";
-					panelEndTime.value = "00:00:00";
-				}
+		} else {
+			if (attrs.pickerFormat === "HH") {
+				panelStartTime.value = "00";
+				panelEndTime.value = "00";
+			} else if (attrs.pickerFormat === "HH:mm") {
+				panelStartTime.value = "00:00";
+				panelEndTime.value = "00:00";
 			} else {
 				panelStartTime.value = "00:00:00";
 				panelEndTime.value = "00:00:00";
@@ -203,6 +198,29 @@ const openCalendar = () => {
 	}
 	calendarStyle.value.left = inputLeft.value + "px";
 
+	if (startDateTime.value && endDateTime.value) {
+		const midStartDateTime =
+			format === "yyyy-MM-DD HH"
+				? startDateTime.value + ":00"
+				: startDateTime.value;
+		const midEndDateTime =
+			format === "yyyy-MM-DD HH"
+				? endDateTime.value + ":00"
+				: endDateTime.value;
+		initSelectedDateList([
+			dateToTimeStamp(midStartDateTime),
+			dateToTimeStamp(midEndDateTime),
+		]);
+
+		panelDateTimeFormat();
+	} else {
+		initSelectedDateList([]);
+		panelStartDate.value = "";
+		panelStartTime.value = "";
+		panelEndDate.value = "";
+		panelEndTime.value = "";
+	}
+
 	calendarPanel.value = true;
 };
 
@@ -227,8 +245,8 @@ const updateInputPosition = () => {
 
 const panelDateTimeFormat = () => {
 	const { leftHour, leftMinu, leftSeco, rightHour, rightMinu, rightSeco } =
-		initCalendarPanel(props.modelValue);
-	if (props.timeType === "Select") {
+		initCalendarPanel(modelValue);
+	if (timeType === "Select") {
 		panelStartTime.value = leftHour + ":" + leftMinu;
 		panelEndTime.value = rightHour + ":" + rightMinu;
 	} else {
@@ -314,27 +332,23 @@ const inputDateTimeFormat = (formatType: string) => {
 	}
 };
 
-if (props.modelValue && props.modelValue.length === 2) {
+if (modelValue && modelValue.length === 2) {
 	initSelectedDateList([
-		dateToTimeStamp(props.modelValue[0]),
-		dateToTimeStamp(props.modelValue[1]),
+		dateToTimeStamp(modelValue[0]),
+		dateToTimeStamp(modelValue[1]),
 	]);
 
-	if (attrs.pickerFormat) {
-		panelDateTimeFormat();
-	}
+	panelDateTimeFormat();
 
-	if (props.format) {
-		inputDateTimeFormat(props.format);
-	}
+	inputDateTimeFormat(format);
 }
 const cancelBtn = () => {
 	calendarPanel.value = false;
 };
 
 const submitBtn = () => {
-	if (props.format) {
-		inputDateTimeFormat(props.format);
+	if (format) {
+		inputDateTimeFormat(format);
 	}
 	calendarPanel.value = false;
 };

@@ -241,6 +241,11 @@ if (props.modelValue && props.modelValue.length !== 0) {
 watch(
 	() => props.selectedDateList,
 	(val) => {
+		if (val?.length === 0) {
+			selectedDateList.value = [];
+			return;
+		}
+
 		selectedDateList.value = [...val!];
 
 		const { year, month } = getTimeUtils(selectedDateList.value[0].val);

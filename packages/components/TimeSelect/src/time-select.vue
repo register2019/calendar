@@ -31,7 +31,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { nextTick, ref, useAttrs, watch } from "vue";
+import { nextTick, ref, watch } from "vue";
 import DefaultInput from "../../Input/src/input.vue";
 import { onClickOutside, useElementBounding } from "@vueuse/core";
 import { initTimeSelectPanel, SelectOptions } from "../../../utils/timeSelect";
@@ -66,15 +66,6 @@ watch(
 		immediate: true,
 	}
 );
-const attrs = useAttrs();
-// watch(
-// 	() => attrs.disabled,
-// 	(val) => {
-// 		if (val) {
-// 			selectTime(props.selectOptions.start);
-// 		}
-// 	}
-// );
 
 // 获取time-select输入框的size
 const timeSelectInputRef = ref(null);

@@ -151,6 +151,10 @@ const nearlyADecade = ref(dateTimeYear());
 const dateTimeInputRef = ref();
 const attrs = useAttrs();
 
+const getTableData = (year: number, month: number) => {
+	tds.value = getCurrPageDays(year, month);
+};
+
 const openDialog = () => {
 	isShowPanel.value = true;
 	if (props.pickerOptions) {
@@ -172,10 +176,18 @@ const openDialog = () => {
 			inputTop.value - panelHeight.value - 10 + "px";
 		dynamicPanelWidth.value.left = inputLeft.value + "px";
 	}
+
+	const midSelectedDateTime =
+		props.format === "yyyy-MM-DD HH"
+			? selectedDateTime.value + ":00"
+			: selectedDateTime.value;
+	const { year, month, day, hour, minu, seco } =
+		getTimeUtils(midSelectedDateTime);
+	inputDate.value = year + "-" + month + "-" + day;
+	panelTimeFormat(hour, minu, seco);
+	currYear.value = year;
+	currMonth.value = Number(month);
 };
-onClickOutside(DateTimeRef, () => {
-	isShowPanel.value = false;
-});
 
 const { year, month } = getTimeUtils();
 const tds = ref<IDate[]>([]);
@@ -186,9 +198,17 @@ const selectedDateTime = ref("");
 const inputDate = ref("");
 const inputTime = ref();
 
-const getTableData = (year: number, month: number) => {
-	tds.value = getCurrPageDays(year, month);
-};
+onClickOutside(DateTimeRef, () => {
+	isShowPanel.value = false;
+	const midSelectedDateTime =
+		props.format === "yyyy-MM-DD HH"
+			? selectedDateTime.value + ":00"
+			: selectedDateTime.value;
+
+	const { year, month, day } = getTimeUtils(midSelectedDateTime);
+	inputDate.value = year + "-" + month + "-" + day;
+	getTableData(year, Number(month));
+});
 
 /**
  * 获取之前的日期
