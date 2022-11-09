@@ -5,7 +5,7 @@
 		:pickerOptions="pickerOptions"
 		timeType="Select"
 		format="yyyy-MM-DD HH"
-		timeTypeFormat="yyyy-MM-DD HH"
+		pickerFormat="HH:mm"
 		type="DateTimePicker"
 		:selectOptions="selectOptions"
 		:disabledDate="disabledDate"
