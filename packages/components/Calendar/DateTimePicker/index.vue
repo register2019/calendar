@@ -99,7 +99,6 @@ const calendarStyle = ref<CSSProperties>({
 
 onClickOutside(calendarRef, () => {
 	calendarPanel.value = false;
-	isSelectedDateRange.value = false;
 });
 
 type Props = {
@@ -152,11 +151,11 @@ const computedSelection = (val: boolean) => {
 				panelEndTime.value = "08:30";
 			}
 		} else if (props.timeType === "Picker") {
-			if (attrs.timeTypeFormat) {
-				if (attrs.timeTypeFormat === "yyyy-MM-DD HH") {
+			if (attrs.pickerFormat) {
+				if (attrs.pickerFormat === "HH") {
 					panelStartTime.value = "00";
 					panelEndTime.value = "00";
-				} else if (attrs.timeTypeFormat === "yyyy-MM-DD HH:mm") {
+				} else if (attrs.pickerFormat === "HH:mm") {
 					panelStartTime.value = "00:00";
 					panelEndTime.value = "00:00";
 				} else {
@@ -188,9 +187,6 @@ const getDateRange = (params: number[]) => {
 
 	initSelectedDateList(params);
 };
-
-// 是否是点击日历面板选择日期 主要用于区别输入框修改日期 日历面板更新的情况
-const isSelectedDateRange = ref(false);
 
 const openCalendar = () => {
 	const {
@@ -236,10 +232,10 @@ const panelDateTimeFormat = () => {
 		panelStartTime.value = leftHour + ":" + leftMinu;
 		panelEndTime.value = rightHour + ":" + rightMinu;
 	} else {
-		if (attrs.timeTypeFormat === "yyyy-MM-DD HH") {
+		if (attrs.pickerFormat === "HH") {
 			panelStartTime.value = leftHour;
 			panelEndTime.value = rightHour;
-		} else if (attrs.timeTypeFormat === "yyyy-MM-DD HH:mm") {
+		} else if (attrs.pickerFormat === "HH:mm") {
 			panelStartTime.value = leftHour + ":" + leftMinu;
 			panelEndTime.value = rightHour + ":" + rightMinu;
 		} else {
@@ -250,11 +246,11 @@ const panelDateTimeFormat = () => {
 };
 const inputDateTimeFormat = (formatType: string) => {
 	const midPanelStartTime =
-		attrs.timeTypeFormat === "yyyy-MM-DD HH"
+		attrs.pickerFormat === "HH"
 			? panelStartTime.value + ":00"
 			: panelStartTime.value;
 	const midPanelEndTime =
-		attrs.timeTypeFormat === "yyyy-MM-DD HH"
+		attrs.pickerFormat === "HH"
 			? panelEndTime.value + ":00"
 			: panelEndTime.value;
 	const {
@@ -324,7 +320,7 @@ if (props.modelValue && props.modelValue.length === 2) {
 		dateToTimeStamp(props.modelValue[1]),
 	]);
 
-	if (attrs.timeTypeFormat) {
+	if (attrs.pickerFormat) {
 		panelDateTimeFormat();
 	}
 
@@ -334,7 +330,6 @@ if (props.modelValue && props.modelValue.length === 2) {
 }
 const cancelBtn = () => {
 	calendarPanel.value = false;
-	isSelectedDateRange.value = false;
 };
 
 const submitBtn = () => {
@@ -342,8 +337,6 @@ const submitBtn = () => {
 		inputDateTimeFormat(props.format);
 	}
 	calendarPanel.value = false;
-
-	isSelectedDateRange.value = false;
 };
 </script>
 

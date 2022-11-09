@@ -57,14 +57,14 @@ const currMinu = ref("");
 const currSeco = ref("");
 
 type Props = {
-	timeTypeFormat?: string;
+	pickerFormat?: string;
 	isMountBody?: boolean; // 是否挂载到body中 默认挂载到body
 	modelValue?: string;
 	size?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
-	timeTypeFormat: "yyyy-MM-DD HH:mm:ss",
+	pickerFormat: "yyyy-MM-DD HH:mm:ss",
 	isMountBody: true,
 	modelValue: "",
 });
@@ -86,26 +86,26 @@ if (props.modelValue) {
 const ulWidth = ref("40px");
 const timePickerWidth = ref("160px");
 let showUlNum = computed(() => {
-	let timeTypeFormat: string[] = [];
-	if (props.timeTypeFormat === "yyyy-MM-DD HH:mm") {
-		timeTypeFormat = ["hour", "minu"];
+	let pickerFormat: string[] = [];
+	if (props.pickerFormat === "HH:mm") {
+		pickerFormat = ["hour", "minu"];
 		ulWidth.value = "80px";
-	} else if (props.timeTypeFormat === "yyyy-MM-DD HH") {
-		timeTypeFormat = ["hour"];
+	} else if (props.pickerFormat === "HH") {
+		pickerFormat = ["hour"];
 		ulWidth.value = "138px";
 		timePickerWidth.value = "139px";
 	} else {
-		timeTypeFormat = ["hour", "minu", "seco"];
+		pickerFormat = ["hour", "minu", "seco"];
 		ulWidth.value = "40px";
 	}
-	return ulList.filter((item) => timeTypeFormat.includes(item.id));
+	return ulList.filter((item) => pickerFormat.includes(item.id));
 });
 
 // 需要显示时间的格式 默认是 时:分:秒
 let inputValue = computed(() => {
-	if (props.timeTypeFormat === "yyyy-MM-DD HH:mm") {
+	if (props.pickerFormat === "HH:mm") {
 		return currHour.value + ":" + currMinu.value;
-	} else if (props.timeTypeFormat === "yyyy-MM-DD HH") {
+	} else if (props.pickerFormat === "HH") {
 		return currHour.value;
 	}
 
@@ -117,9 +117,9 @@ let initValOfInputRef = "";
 const inputFocus = () => {
 	if (!inputRef.value) {
 		const { hour, minu, seco } = getTimeUtils();
-		if (props.timeTypeFormat === "yyyy-MM-DD HH:mm:ss") {
+		if (props.pickerFormat === "HH:mm:ss") {
 			inputRef.value = hour + ":" + minu + ":" + seco;
-		} else if (props.timeTypeFormat === "yyyy-MM-DD HH:mm") {
+		} else if (props.pickerFormat === "HH:mm") {
 			inputRef.value = hour + ":" + minu;
 		} else {
 			inputRef.value = hour;
@@ -145,6 +145,7 @@ const inputFocus = () => {
 };
 onClickOutside(timePickerRef, () => {
 	timePickerStatus.value = false;
+	inputRef.value = initValOfInputRef;
 });
 watch(inputValue, (val) => {
 	inputRef.value = val;
@@ -157,14 +158,14 @@ watch(
 	(val) => {
 		inputRef.value = val;
 
-		if (props.timeTypeFormat === "yyyy-MM-DD HH:mm:ss") {
+		if (props.pickerFormat === "HH:mm:ss") {
 			currHour.value = val.split(":")[0];
 			currMinu.value = val.split(":")[1];
 			currSeco.value = val.split(":")[2];
-		} else if (props.timeTypeFormat === "yyyy-MM-DD HH:mm") {
+		} else if (props.pickerFormat === "HH:mm") {
 			currHour.value = val.split(":")[0];
 			currMinu.value = val.split(":")[1];
-		} else if (props.timeTypeFormat === "yyyy-MM-DD HH") {
+		} else if (props.pickerFormat === "HH") {
 			currHour.value = val;
 		}
 	}

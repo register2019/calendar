@@ -294,9 +294,9 @@ const panelTimeFormat = (hour: string, minu: string, seco: string) => {
 	if (props.timeType === "Select") {
 		inputTime.value = hour + ":" + minu;
 	} else {
-		if (attrs.timeTypeFormat === "yyyy-MM-DD HH:mm") {
+		if (attrs.pickerFormat === "HH:mm") {
 			inputTime.value = hour + ":" + minu;
-		} else if (attrs.timeTypeFormat === "yyyy-MM-DD HH") {
+		} else if (attrs.pickerFormat === "HH") {
 			inputTime.value = hour;
 		} else {
 			inputTime.value = hour + ":" + minu + ":" + seco;
@@ -305,9 +305,7 @@ const panelTimeFormat = (hour: string, minu: string, seco: string) => {
 };
 const inputDateTimeFormat = (formatType: string) => {
 	const midInputTime =
-		attrs.timeTypeFormat === "yyyy-MM-DD HH"
-			? inputTime.value + ":00"
-			: inputTime.value;
+		attrs.pickerFormat === "HH" ? inputTime.value + ":00" : inputTime.value;
 	const { hour, minu, seco } = getTimeUtils(
 		inputDate.value + " " + midInputTime
 	);
@@ -334,7 +332,7 @@ const submitBtn = () => {
 if (props.modelValue) {
 	const { year, month, day, hour, minu, seco } = getTimeUtils(props.modelValue);
 	inputDate.value = year + "-" + month + "-" + day;
-	if (attrs.timeTypeFormat) panelTimeFormat(hour, minu, seco);
+	if (attrs.pickerFormat) panelTimeFormat(hour, minu, seco);
 
 	if (props.format) inputDateTimeFormat(props.format);
 

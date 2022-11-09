@@ -21,7 +21,7 @@
 				size="small"
 				v-model="inputTime"
 				:disabled="inputIsDisabled"
-				:timeTypeFormat="timeTypeFormat"
+				:pickerFormat="pickerFormat"
 			/>
 		</span>
 	</span>
@@ -45,11 +45,11 @@ const props = withDefaults(defineProps<Props>(), {
 	inputIsDisabled: false,
 	date: "",
 });
-const timeTypeFormat = ref("");
+const pickerFormat = ref("");
 const emit = defineEmits(["update:date", "update:time", "updateInputPosition"]);
 const attrs = useAttrs();
-if (attrs.timeTypeFormat) {
-	timeTypeFormat.value = attrs.timeTypeFormat as string;
+if (attrs.pickerFormat) {
+	pickerFormat.value = attrs.pickerFormat as string;
 }
 
 const selectOptions = ref<SelectOptions>(attrs.selectOptions as SelectOptions);
