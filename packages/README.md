@@ -129,14 +129,14 @@ const disabledDate = {
 };
 ```
 
-| 参数           | 描述                                                                    | 类型    | 默认值              |
-| -------------- | ----------------------------------------------------------------------- | ------- | ------------------- |
-| unlinkPanels   | 可选 是否取消左右 日期面板的联动                                        | boolean | false               |
-| timeType       | 日期面板时间类型 可选 Picker 和 Select                                  | string  | Picker              |
-| pickerOptions  | 设置快捷选项                                                            | Array   | ~                   |
-| selectOptions  | 当 timeType 为 Select 时 用于设置 TimeSelect 的开始、结束及间隔时间     | Object  | ~                   |
-| type           | 日历面板的类型 目前支持 DateTimePicker、DateTime、Date、DatePicker      | String  | DateTimePicker      |
-| disabledDate   | 禁用日期 支持 before、after、today、range 四种类型                      | Object  | ~                   |
-| rangeSeparator | 类型为 DatePicker 或 DateTimePicker 时 分隔符可自定义                   | String  | 至                  |
-| format         | 用于格式化选中日期的类型 支持 yyyy-MM-DD（HH:mm:ss、HH:mm、HH）         | String  | yyyy-MM-DD HH:mm:ss |
-| pickerFormat   | 用于格式化 TimeType 为 Picker 时的时间显示格式 支持 HH:mm:ss、HH:mm、HH | String  | HH:mm:ss            |
+| 参数           | 描述                                                                     | 类型    | 默认值              |
+| -------------- | ------------------------------------------------------------------------| ------- | ------------------- |
+| unlinkPanels   | 可选 是否取消左右 日期面板的联动                                        		 | boolean | false               |
+| timeType       | 日期面板时间类型 可选 Picker 和 Select                                     | string  | Picker              |
+| pickerOptions  | 设置快捷选项                                                              | Array   | ~                   |
+| selectOptions  | 当 timeType 为 Select 时 用于设置 TimeSelect 的开始、结束及间隔时间          | Object  | ~                   |
+| type           | 日历面板的类型 目前支持 DateTimePicker、DateTime、Date、DatePicker          | String  | DateTimePicker      |
+| disabledDate   | 禁用日期 支持 before、after、today、range 四种类型                          | Object  | ~                   |
+| rangeSeparator | 类型为 DatePicker 或 DateTimePicker 时 分隔符可自定义                      | String  | 至                  |
+| format         | 用于格式化选中日期的类型 支持 yyyy-MM-DD（HH:mm:ss、HH:mm、HH）              | String  | yyyy-MM-DD HH:mm:ss |
+| pickerFormat   | 用于格式化 TimeType 为 Picker 时的时间显示格式 支持 HH:mm:ss、HH:mm、HH      | String  | HH:mm:ss            |
