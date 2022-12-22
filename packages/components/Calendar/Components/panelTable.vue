@@ -2,7 +2,9 @@
 	<table class="dc-table">
 		<thead>
 			<tr>
-				<th v-for="item in tableHeader" :key="item">{{ item }}</th>
+				<th v-for="item in tableHeader" :key="item.zh">
+					{{ item[props.i18n] }}
+				</th>
 			</tr>
 		</thead>
 		<tbody class="dc-table-tbody">
@@ -46,12 +48,15 @@ type Props = {
 	selectedDateList?: SelectedDateList[];
 	type?: string;
 	currDateTime?: string; // 当且仅当类型为DateTime是使用
+	i18n?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
 	selectedDateList: (): SelectedDateList[] => [],
 	type: "DateTimePicker",
+	i18n: "zh",
 });
+
 const emit = defineEmits(["emitSelectedDate"]);
 const tdStyle = "dc-table-tbody-td";
 const attrs = useAttrs() as Attrs;

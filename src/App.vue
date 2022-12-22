@@ -6,11 +6,14 @@
 			type="DateTime"
 			format="yyyy"
 			pickerFormat="HH"
+			:i18n="i18n"
 			:picker-options="pickerOptions"
 			:selectOptions="selectOptions"
 			:disabledDate="disabledDate"
 			@onClick="getSelectedTime"
 		/>
+
+		<DefaultButton @click="changeLang">change</DefaultButton>
 	</div>
 </template>
 
@@ -31,6 +34,7 @@ const pickerOptions = [
 		value: () => new Date().getTime() - 3600 * 1000 * 24 * 7,
 	},
 ];
+const i18n = ref("en");
 const selectOptions = {
 	start: "08:00",
 	step: "00:15",
@@ -42,6 +46,10 @@ const getSelectedTime = (val: number) => {
 const disabledDate = {
 	type: "range",
 	range: ["2022-11-06 00:00:00", "2022-11-16 00:00:00"],
+};
+
+const changeLang = () => {
+	i18n.value = i18n.value === "zh" ? "en" : "zh";
 };
 </script>
 

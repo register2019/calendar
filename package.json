@@ -1,41 +1,41 @@
 {
-  "name": "calendar",
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@default/components": "link:packages\\components",
-    "@default/style": "link:packages\\style",
-    "@default/utils": "link:packages\\utils",
-    "@vueuse/core": "^9.2.0",
-    "lodash": "^4.17.21",
-    "vue": "^3.2.37"
-  },
-  "devDependencies": {
-    "@types/lodash": "^4.14.185",
-    "@types/node": "^18.7.18",
-    "@vitejs/plugin-vue": "^3.1.0",
-    "sass": "^1.54.9",
-    "typescript": "^4.6.4",
-    "unplugin-vue-define-options": "^0.11.1",
-    "vite": "^3.1.0",
-    "vite-plugin-dts": "^1.5.0",
-    "vue-tsc": "^1.0.7"
-  },
-  "files": [
-    "dist"
-  ],
-  "main": "dist/default-calendar.umd.js",
-  "module": "dist/default-calendar.es.js",
-  "exports": {
-    ".": {
-      "import": "./dist/default-calendar.es.js",
-      "require": "./dist/default-calendar.umd.js"
-    },
-    "./dist/style.css": "./dist/style.css"
-  }
+	"name": "calendar",
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vue-tsc --noEmit && vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"@default/components": "link:packages\\components",
+		"@default/style": "link:packages\\style",
+		"@default/utils": "link:packages\\utils",
+		"@vueuse/core": "^9.2.0",
+		"lodash": "^4.17.21",
+		"vue": "^3.2.37"
+	},
+	"devDependencies": {
+		"@types/lodash": "^4.14.185",
+		"@types/node": "^18.7.18",
+		"@vitejs/plugin-vue": "^3.1.0",
+		"sass": "^1.54.9",
+		"typescript": "^4.6.4",
+		"unplugin-vue-define-options": "^0.11.1",
+		"vite": "^4.0.3",
+		"vite-plugin-dts": "^1.5.0",
+		"vue-tsc": "^1.0.7"
+	},
+	"files": [
+		"dist"
+	],
+	"main": "dist/default-calendar.umd.js",
+	"module": "dist/default-calendar.es.js",
+	"exports": {
+		".": {
+			"import": "./dist/default-calendar.es.js",
+			"require": "./dist/default-calendar.umd.js"
+		},
+		"./dist/style.css": "./dist/style.css"
+	}
 }

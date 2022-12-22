@@ -369,6 +369,7 @@ getTableData(currYear.value, currMonth.value);
 	}
 	&-dialog {
 		border: 1px solid #ebeefa;
+		background-color: #fff;
 		&-input {
 			padding: 10px 6px;
 			border-bottom: 1px solid #ebeefa;
