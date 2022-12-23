@@ -29,53 +29,141 @@ export const tableHeader = {
 	},
 };
 
-export const months = {
-	1: {
+export const i18nMonths = {
+	"01": {
 		zh: "1月",
 		en: "January",
 	},
-	2: {
+	"02": {
 		zh: "2月",
 		en: "February",
 	},
-	3: {
+	"03": {
 		zh: "3月",
 		en: "March",
 	},
-	4: {
+	"04": {
 		zh: "4月",
 		en: "April",
 	},
-	5: {
+	"05": {
 		zh: "5月",
 		en: "May",
 	},
-	6: {
+	"06": {
 		zh: "6月",
 		en: "June",
 	},
-	7: {
+	"07": {
 		zh: "7月",
 		en: "July",
 	},
-	8: {
+	"08": {
 		zh: "8月",
 		en: "August",
 	},
-	9: {
+	"09": {
 		zh: "9月",
 		en: "September",
 	},
-	10: {
+	"10": {
 		zh: "10月",
 		en: "October",
 	},
-	11: {
+	"11": {
 		zh: "11月",
 		en: "November",
 	},
-	12: {
+	"12": {
 		zh: "12月",
 		en: "December",
+	},
+};
+
+export const i18nDATETIMEMONTH = [
+	[
+		{
+			zh: "一月",
+			en: "Jan",
+			val: 1,
+		},
+		{
+			zh: "二月",
+			en: "Feb",
+			val: 2,
+		},
+		{
+			zh: "三月",
+			en: "Mar",
+			val: 3,
+		},
+		{
+			zh: "四月",
+			en: "Apr",
+			val: 4,
+		},
+	],
+	[
+		{
+			zh: "五月",
+			en: "May",
+			val: 5,
+		},
+		{
+			zh: "六月",
+			en: "Jun",
+			val: 6,
+		},
+		{
+			zh: "七月",
+			en: "Jul",
+			val: 7,
+		},
+		{
+			zh: "八月",
+			en: "Aug",
+			val: 8,
+		},
+	],
+	[
+		{
+			zh: "九月",
+			en: "Sep",
+			val: 9,
+		},
+		{
+			zh: "十月",
+			en: "Oct",
+			val: 10,
+		},
+		{
+			zh: "十一月",
+			en: "Nov",
+			val: 11,
+		},
+		{
+			zh: "十二月",
+			en: "Dec",
+			val: 12,
+		},
+	],
+];
+
+export const i18nFooterBtn = {
+	cancel: {
+		zh: "取消",
+		en: "cancel",
+	},
+	now: {
+		zh: "此刻",
+		en: "now",
+	},
+	submit: {
+		zh: "确定",
+		en: "ok",
+	},
+	to: {
+		zh: "至",
+		en: "to",
 	},
 };

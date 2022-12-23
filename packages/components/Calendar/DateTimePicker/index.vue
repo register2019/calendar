@@ -1,7 +1,7 @@
 <template>
 	<div @click="openCalendar" class="dc-calendar-input" ref="calendarInput">
 		<input type="text" class="dc-input" v-model="startDateTime" />
-		<span>{{ rangeSeparator }}</span>
+		<span>{{ computedRangeSeparator }}</span>
 		<input type="text" class="dc-input" v-model="endDateTime" />
 	</div>
 	<Teleport to="body">
@@ -41,6 +41,7 @@
 						:modelValue="modelValue"
 						:pickerOptions="pickerOptions"
 						:selectedDateList="selectedDateList"
+						:i18n="i18n"
 						v-bind="$attrs"
 						@date-range="getDateRange"
 						@isCompleteSelection="computedSelection"
@@ -50,9 +51,11 @@
 
 			<div class="dc-calendar-footer">
 				<DefaultButton type="text" size="small" @click="cancelBtn">
-					取消
+					{{ i18nFooterBtn.cancel[i18n] }}
 				</DefaultButton>
-				<DefaultButton size="small" @click="submitBtn"> 确定 </DefaultButton>
+				<DefaultButton size="small" @click="submitBtn">
+					{{ i18nFooterBtn.submit[i18n] }}
+				</DefaultButton>
 			</div>
 		</div>
 	</Teleport>
@@ -64,7 +67,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { ref, CSSProperties, useAttrs, watch } from "vue";
+import { ref, CSSProperties, useAttrs, watch, computed } from "vue";
 import { onClickOutside, useElementBounding } from "@vueuse/core";
 import {
 	dateFormat,
@@ -72,6 +75,7 @@ import {
 	dateToTimeStamp,
 	determineTheDateFormat,
 	getTimeUtils,
+	i18nFooterBtn,
 } from "../../../utils";
 import PanelInput from "../Components/panelInput.vue";
 import PanelSider from "../Components/panelSider.vue";
@@ -106,13 +110,15 @@ type Props = {
 	pickerOptions?: PickerOptions[];
 	rangeSeparator?: string;
 	format?: string;
+	i18n?: string;
 };
-const { modelValue, timeType, pickerOptions, rangeSeparator, format } =
+const { modelValue, timeType, pickerOptions, rangeSeparator, format, i18n } =
 	withDefaults(defineProps<Props>(), {
 		modelValue: (): Date[] => [],
 		timeType: "Picker",
 		rangeSeparator: "至",
 		format: "yyyy-MM-DD HH:mm:ss",
+		i18n: "zh",
 	});
 
 const emit = defineEmits(["update:modelValue", "onClick"]);
@@ -121,6 +127,13 @@ if (pickerOptions && pickerOptions.length > 0) {
 	calendarStyle.value.width = "782px";
 }
 
+const computedRangeSeparator = computed(() => {
+	if (rangeSeparator === "至") {
+		return i18nFooterBtn.to[i18n];
+	} else {
+		return rangeSeparator;
+	}
+});
 // 是否完成选择
 const inputIsDisabled = ref(false);
 
@@ -359,6 +372,7 @@ $common-border: 1px solid #ebeef5;
 .dc-input {
 	outline: none;
 	border: none;
+	padding: 5px 0 0 5px;
 }
 .dc-table {
 	min-width: 291px;

@@ -35,11 +35,11 @@
 							>
 						</div>
 						<div v-show="panelType === 'day'">
-							<span @click="selectYear">{{ currYear }} 年 </span>
-							<span @click="selectMonth">{{ timeFormat(currMonth) }} 月 </span>
+							<span @click="selectYear">{{ i18nCurrDate.year }}</span>
+							<span @click="selectMonth">{{ i18nCurrDate.month }} </span>
 						</div>
 						<div v-show="panelType === 'month'" @click="clickPanelTypeIsMonth">
-							{{ currYear }} 年
+							{{ i18nCurrDate.year }}
 						</div>
 						<div v-show="panelType === 'year'">
 							{{ panelTypeIsYearTitle }}
@@ -59,6 +59,7 @@
 							v-show="panelType === 'day'"
 							:tds="tds"
 							type="DateTime"
+							:i18n="props.i18n"
 							:curr-date-time="inputDate"
 							@emit-selected-date="emitSelectedDate"
 							v-bind="$attrs"
@@ -72,9 +73,10 @@
 						</div>
 						<div v-show="panelType === 'month'">
 							<PanelMonthAndYear
-								:dates="DATETIMEMONTH"
+								:dates="i18nDATETIMEMONTH"
+								:i18n="props.i18n"
 								:currDate="
-                  CASECONVERSION.find((item) => item.val === currMonth)!.name
+                  i18nDATETIMEMONTH.flat().find((item) => item.val === currMonth)![props.i18n]
                 "
 								@emit-selected-year-or-month="emitSelectedYearOrMonth"
 							/>
@@ -88,9 +90,11 @@
 					type="text"
 					style="margin-right: 10px"
 					@click="getCurrDateTime"
-					>此刻</DefaultButton
+					>{{ i18nFooterBtn.now[props.i18n] }}</DefaultButton
 				>
-				<DefaultButton @click="submitBtn" size="small">确定</DefaultButton>
+				<DefaultButton @click="submitBtn" size="small">{{
+					i18nFooterBtn.submit[props.i18n]
+				}}</DefaultButton>
 			</div>
 		</div>
 	</Teleport>
@@ -115,12 +119,15 @@ import {
 	getTimeUtils,
 	IDate,
 	timeFormat,
+	i18nMonths,
+	i18nDATETIMEMONTH,
+	i18nFooterBtn,
 } from "../../../utils";
 import DefaultInput from "../../Input/src/input.vue";
 import PanelInput from "../Components/panelInput.vue";
 import PanelTable from "../Components/panelTable.vue";
 import DefaultButton from "../../Button/index.vue";
-import { PickerOptions, DATETIMEMONTH, CASECONVERSION } from "../constants";
+import { PickerOptions } from "../constants";
 import PanelSider from "../Components/panelSider.vue";
 import PanelMonthAndYear from "../Components/panelMonthAndYear.vue";
 
@@ -139,11 +146,13 @@ type Props = {
 	pickerOptions?: PickerOptions[];
 	modelValue?: Date;
 	timeType?: string;
+	i18n?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
 	timeType: "Picker",
 	format: "yyyy-MM-DD HH:mm:ss",
+	i18n: "zh",
 });
 
 const emit = defineEmits(["onClick"]);
@@ -197,6 +206,21 @@ const selectedDateTime = ref("");
 
 const inputDate = ref("");
 const inputTime = ref();
+
+const i18nCurrDate = computed(() => {
+	const { i18n } = props;
+	if (i18n === "zh") {
+		return {
+			year: currYear.value + " 年 ",
+			month: timeFormat(currMonth.value) + "月",
+		};
+	} else {
+		return {
+			year: currYear.value + " ",
+			month: i18nMonths[timeFormat(currMonth.value)][i18n],
+		};
+	}
+});
 
 onClickOutside(DateTimeRef, () => {
 	isShowPanel.value = false;
@@ -277,12 +301,19 @@ const emitSelectedYearOrMonth = (val: number) => {
 	}
 };
 const panelTypeIsYearTitle = computed(() => {
-	return (
-		nearlyADecade.value.flat()[0] +
-		"年 -" +
-		nearlyADecade.value.flat()[1] +
-		"年"
-	);
+	const { i18n } = props;
+	if (i18n === "zh") {
+		return (
+			nearlyADecade.value.flat()[0] +
+			"年 - " +
+			nearlyADecade.value.flat()[1] +
+			"年"
+		);
+	} else {
+		return (
+			nearlyADecade.value.flat()[0] + " - " + nearlyADecade.value.flat()[1]
+		);
+	}
 });
 const clickPanelTypeIsMonth = () => {
 	panelType.value = "year";

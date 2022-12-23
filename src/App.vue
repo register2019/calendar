@@ -1,55 +1,48 @@
 <template>
-	<div>
-		<DefaultCalendar
-			v-model="defaultValue"
-			timeType="Select"
-			type="DateTime"
-			format="yyyy"
-			pickerFormat="HH"
-			:i18n="i18n"
-			:picker-options="pickerOptions"
-			:selectOptions="selectOptions"
-			:disabledDate="disabledDate"
-			@onClick="getSelectedTime"
-		/>
-
-		<DefaultButton @click="changeLang">change</DefaultButton>
-	</div>
+	<DefaultCalendar
+		v-model="selectedTimeRange"
+		@onClick="getSelectedTimeRange"
+		:pickerOptions="pickerOptions"
+		timeType="Select"
+		:i18n="i18n"
+		format="yyyy-MM-DD HH"
+		pickerFormat="HH:mm"
+		type="DateTimePicker"
+		:selectOptions="selectOptions"
+		:disabledDate="disabledDate"
+	/>
 </template>
 
 <script lang="ts" setup>
 import { ref, reactive, watch, computed } from "vue";
-const defaultValue = ref(new Date(2000, 10, 10, 8, 30));
+const selectedTimeRange = ref<[Date, Date]>([
+	new Date(2000, 10, 10, 10, 14),
+	new Date(2000, 10, 11, 12, 24),
+]);
+// const selectedTimeRange = ref<Date[]>([]);
+const i18n = ref("en");
 const pickerOptions = [
 	{
-		text: "今天",
-		value: () => new Date().getTime(),
-	},
-	{
-		text: "昨天",
-		value: () => new Date().getTime() - 3600 * 1000 * 24,
-	},
-	{
-		text: "一周前",
-		value: () => new Date().getTime() - 3600 * 1000 * 24 * 7,
+		text: "最近一周",
+		value: () => {
+			const end = new Date().getTime();
+			const start = new Date().getTime() - 3600 * 1000 * 24 * 7;
+
+			return [start, end];
+		},
 	},
 ];
-const i18n = ref("en");
 const selectOptions = {
-	start: "08:00",
+	start: "08:30",
 	step: "00:15",
 	end: "18:30",
 };
-const getSelectedTime = (val: number) => {
+const getSelectedTimeRange = (val: number[]) => {
 	console.log(val);
 };
 const disabledDate = {
-	type: "range",
-	range: ["2022-11-06 00:00:00", "2022-11-16 00:00:00"],
-};
-
-const changeLang = () => {
-	i18n.value = i18n.value === "zh" ? "en" : "zh";
+	type: "today",
+	range: "2022-11-06 00:00:00",
 };
 </script>
 

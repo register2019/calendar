@@ -13,6 +13,7 @@
 			</div>
 			<PanelTable
 				v-bind="$attrs"
+				:i18n="props.i18n"
 				:tds="leftTds"
 				:selected-date-list="selectedDateList"
 				@emit-selected-date="emitSelectedDate"
@@ -31,6 +32,7 @@
 			</div>
 			<PanelTable
 				v-bind="$attrs"
+				:i18n="props.i18n"
 				:tds="rightTds"
 				:selected-date-list="selectedDateList"
 				@emit-selected-date="emitSelectedDate"
@@ -45,6 +47,7 @@ import {
 	dateToTimeStamp,
 	getCurrPageDays,
 	getTimeUtils,
+	i18nMonths,
 	IDate,
 	timeFormat,
 } from "../../../utils";
@@ -55,9 +58,15 @@ type Props = {
 	modelValue?: Date[];
 	pickerOptions?: PickerOptions[];
 	selectedDateList?: SelectedDateList[];
+	i18n?: string;
 };
 
-const props = withDefaults(defineProps<Props>(), {});
+const props = withDefaults(defineProps<Props>(), {
+	i18n: "zh",
+});
+
+console.log("------>", props);
+
 const emit = defineEmits(["dateRange", "isCompleteSelection"]);
 
 const startYear = ref(0);
@@ -194,12 +203,24 @@ const emitSelectedDate = (val: IDate, category: string) => {
 	}
 };
 
-const startDate = computed(
-	() => startYear.value + "年" + timeFormat(startMonth.value) + "月"
-);
-const endDate = computed(
-	() => endYear.value + "年" + timeFormat(endMonth.value) + "月"
-);
+const startDate = computed(() => {
+	const { i18n } = props;
+	if (i18n === "zh") {
+		return startYear.value + "年" + timeFormat(startMonth.value) + "月";
+	} else {
+		return (
+			startYear.value + " " + i18nMonths[timeFormat(startMonth.value)][i18n]
+		);
+	}
+});
+const endDate = computed(() => {
+	const { i18n } = props;
+	if (i18n === "zh") {
+		return endYear.value + "年" + timeFormat(endMonth.value) + "月";
+	} else {
+		return endYear.value + " " + i18nMonths[timeFormat(endMonth.value)][i18n];
+	}
+});
 
 const initTable = (year: number, month: number) => {
 	let startDateYear = year;

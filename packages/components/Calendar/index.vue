@@ -1,10 +1,10 @@
 <template>
-  <component :is="componentType" v-bind="$attrs" />
+	<component :is="componentType" v-bind="$attrs" />
 </template>
 
 <script lang="ts">
 export default {
-  name: "DefaultCalendar",
+	name: "DefaultCalendar",
 };
 </script>
 <script lang="ts" setup>
@@ -15,28 +15,28 @@ import DefaultDate from "./Date/index.vue";
 import DefaultDatePicker from "./DatePicker/index.vue";
 
 type Props = {
-  type?: string;
+	type?: string;
 };
 
 const props = defineProps<Props>();
 
 const componentType = shallowRef<Component>();
 switch (props.type) {
-  case "DateTimePicker":
-    componentType.value = DefaultDateTimePicker;
-    break;
-  case "DateTime":
-    componentType.value = DefaultDateTime;
-    break;
-  case "Date":
-    componentType.value = DefaultDate;
-    break;
-  case "DatePicker":
-    componentType.value = DefaultDatePicker;
-    break;
-  default:
-    componentType.value = DefaultDateTimePicker;
-    break;
+	case "DateTimePicker":
+		componentType.value = DefaultDateTimePicker;
+		break;
+	case "DateTime":
+		componentType.value = DefaultDateTime;
+		break;
+	case "Date":
+		componentType.value = DefaultDate;
+		break;
+	case "DatePicker":
+		componentType.value = DefaultDatePicker;
+		break;
+	default:
+		componentType.value = DefaultDateTimePicker;
+		break;
 }
 </script>
 <style lang="scss" scoped></style>
