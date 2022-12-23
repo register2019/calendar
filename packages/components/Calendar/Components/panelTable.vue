@@ -2,7 +2,7 @@
 	<table class="dc-table">
 		<thead>
 			<tr>
-				<th v-for="item in tableHeader" :key="item.zh">
+				<th v-for="item in tableHeader" class="dc-table-th" :key="item.zh">
 					{{ item[props.i18n] }}
 				</th>
 			</tr>
@@ -312,6 +312,10 @@ const selectedDate = (td: IDate) => {
 		display: inline-block;
 		background-color: var(--primary-color);
 		color: #fff;
+	}
+	&-th {
+		font-size: 14px;
+		font-weight: normal;
 	}
 }
 .start {
