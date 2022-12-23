@@ -268,6 +268,13 @@ watch(
 		selectedDateList.value = [...val!];
 
 		const { year, month } = getTimeUtils(selectedDateList.value[0].val);
+		if (
+			(startYear.value === year && startMonth.value === Number(month)) ||
+			(endYear.value === year && endMonth.value === Number(month))
+		) {
+			return;
+		}
+
 		initTable(year, Number(month));
 	},
 	{
