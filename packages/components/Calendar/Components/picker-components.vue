@@ -65,8 +65,6 @@ const props = withDefaults(defineProps<Props>(), {
 	i18n: "zh",
 });
 
-console.log("------>", props);
-
 const emit = defineEmits(["dateRange", "isCompleteSelection"]);
 
 const startYear = ref(0);
@@ -284,6 +282,7 @@ $border: 1px solid var(--border-color);
 	display: flex;
 	width: 100%;
 	padding: 10px;
+	background-color: #fff;
 	&-left,
 	&-right {
 		width: 50%;

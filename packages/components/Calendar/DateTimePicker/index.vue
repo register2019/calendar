@@ -41,7 +41,6 @@
 						:modelValue="modelValue"
 						:pickerOptions="pickerOptions"
 						:selectedDateList="selectedDateList"
-						:i18n="i18n"
 						v-bind="$attrs"
 						@date-range="getDateRange"
 						@isCompleteSelection="computedSelection"
@@ -51,10 +50,10 @@
 
 			<div class="dc-calendar-footer">
 				<DefaultButton type="text" size="small" @click="cancelBtn">
-					{{ i18nFooterBtn.cancel[i18n] }}
+					{{ i18nCancelBtn }}
 				</DefaultButton>
 				<DefaultButton size="small" @click="submitBtn">
-					{{ i18nFooterBtn.submit[i18n] }}
+					{{ i18nSubmitBtn }}
 				</DefaultButton>
 			</div>
 		</div>
@@ -67,7 +66,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { ref, CSSProperties, useAttrs, watch, computed } from "vue";
+import { ref, CSSProperties, useAttrs, onMounted, onUpdated } from "vue";
 import { onClickOutside, useElementBounding } from "@vueuse/core";
 import {
 	dateFormat,
@@ -110,15 +109,13 @@ type Props = {
 	pickerOptions?: PickerOptions[];
 	rangeSeparator?: string;
 	format?: string;
-	i18n?: string;
 };
-const { modelValue, timeType, pickerOptions, rangeSeparator, format, i18n } =
+const { modelValue, timeType, pickerOptions, rangeSeparator, format } =
 	withDefaults(defineProps<Props>(), {
 		modelValue: (): Date[] => [],
 		timeType: "Picker",
 		rangeSeparator: "至",
 		format: "yyyy-MM-DD HH:mm:ss",
-		i18n: "zh",
 	});
 
 const emit = defineEmits(["update:modelValue", "onClick"]);
@@ -127,13 +124,28 @@ if (pickerOptions && pickerOptions.length > 0) {
 	calendarStyle.value.width = "782px";
 }
 
-const computedRangeSeparator = computed(() => {
+const computedRangeSeparator = ref("");
+const i18nCancelBtn = ref("");
+const i18nSubmitBtn = ref("");
+const initSeparator = () => {
+	const { i18n } = useAttrs();
+
+	i18nCancelBtn.value = i18nFooterBtn.cancel[i18n as string];
+	i18nSubmitBtn.value = i18nFooterBtn.submit[i18n as string];
+
 	if (rangeSeparator === "至") {
-		return i18nFooterBtn.to[i18n];
+		computedRangeSeparator.value = i18nFooterBtn.to[i18n as string];
 	} else {
-		return rangeSeparator;
+		computedRangeSeparator.value = rangeSeparator;
 	}
+};
+onMounted(() => {
+	initSeparator();
 });
+onUpdated(() => {
+	initSeparator();
+});
+
 // 是否完成选择
 const inputIsDisabled = ref(false);
 

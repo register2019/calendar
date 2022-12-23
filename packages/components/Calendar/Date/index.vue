@@ -49,7 +49,14 @@ import {
 	useElementBounding,
 	useWindowSize,
 } from "@vueuse/core";
-import { ref, computed, CSSProperties, nextTick, watch, useAttrs } from "vue";
+import {
+	ref,
+	CSSProperties,
+	nextTick,
+	useAttrs,
+	onUpdated,
+	onMounted,
+} from "vue";
 import {
 	dateToTimeStamp,
 	getCurrPageDays,
@@ -77,12 +84,11 @@ const tds = ref(getCurrPageDays(year, Number(month)));
 const emit = defineEmits(["onClick"]);
 
 type Props = {
-	modelValue: Date;
+	modelValue?: Date;
 	pickerOptions?: PickerOptions[];
 };
 
 const props = defineProps<Props>();
-const { i18n } = useAttrs();
 
 const openPanel = () => {
 	const { top, left, height, bottom } = useElementBounding(inputRef);
@@ -129,12 +135,23 @@ const emitSelectedDate = (val: IDate) => {
 
 const currYear = ref(year);
 const currMonth = ref(Number(month));
-const tableHeader = computed(() => {
+
+const tableHeader = ref("");
+const initTableHeader = () => {
+	const { i18n } = useAttrs();
 	if (i18n === "zh") {
-		return currYear.value + "年" + timeFormat(currMonth.value) + "月";
+		tableHeader.value =
+			currYear.value + "年" + timeFormat(currMonth.value) + "月";
 	} else {
-		return currYear.value + " " + i18nMonths[timeFormat(currMonth.value)][i18n];
+		tableHeader.value =
+			currYear.value + " " + i18nMonths[timeFormat(currMonth.value)][i18n];
 	}
+};
+onUpdated(() => {
+	initTableHeader();
+});
+onMounted(() => {
+	initTableHeader();
 });
 const beforeClick = (params: string) => {
 	if (params === "year") {
@@ -187,6 +204,7 @@ if (props.modelValue) {
 	&-panel {
 		display: flex;
 		border: 1px solid var(--border-color);
+		background-color: #fff;
 		&-table {
 			padding: 5px 10px 10px;
 		}
