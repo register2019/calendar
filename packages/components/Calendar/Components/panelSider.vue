@@ -5,7 +5,7 @@
       v-for="item in props.pickerOptions"
       @click="clickShorts(item)"
     >
-      {{ item.text() }}
+      {{ computedText(item.text) }}
     </div>
   </div>
 </template>
@@ -22,6 +22,14 @@ const emit = defineEmits(["selectedPickerOptions"]);
 
 const clickShorts = (item: PickerOptions) => {
   emit("selectedPickerOptions", item);
+};
+
+const computedText = (text: () => string | string) => {
+  if (typeof text === "string") {
+    return text;
+  } else {
+    return text();
+  }
 };
 </script>
 

@@ -128,6 +128,34 @@ const disabledDate = {
 	range: ["2022-11-06 00:00:00", "2022-11-16 00:00:00"],
 };
 ```
+#### i18n国际化
+```html
+<DefaultCalendar
+	v-model="defaultValue"
+	type="DateTime"
+	timeType="Select"
+	:i18n="i18nGlobal"
+	:picker-options="pickerOptions"
+/>
+```
+```js
+const i18nGlobal = ref('zh')
+// 使用vue-i18n需要国际化的内容需要写成函数形式
+const pickerOptions = [
+  {
+    text: "today",
+    value: () => new Date().getTime(),
+  },
+  {
+    text: () => t("yestorday"),
+    value: () => new Date().getTime() - 3600 * 1000 * 24,
+  },
+  {
+    text: () => t("beforeWeek"),
+    value: () => new Date().getTime() - 3600 * 1000 * 24 * 7,
+  },
+];
+```
 
 | 参数           | 描述                                                                     | 类型    | 默认值              |
 | -------------- | ------------------------------------------------------------------------| ------- | ------------------- |
@@ -140,3 +168,4 @@ const disabledDate = {
 | rangeSeparator | 类型为 DatePicker 或 DateTimePicker 时 分隔符可自定义                      | String  | 至                  |
 | format         | 用于格式化选中日期的类型 支持 yyyy-MM-DD（HH:mm:ss、HH:mm、HH）              | String  | yyyy-MM-DD HH:mm:ss |
 | pickerFormat   | 用于格式化 TimeType 为 Picker 时的时间显示格式 支持 HH:mm:ss、HH:mm、HH      | String  | HH:mm:ss            |
+| i18n           | 用于国际化文本内容                                                        | string | 中文-'zh' 英文-'en' 默认为中文          |

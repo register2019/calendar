@@ -11,7 +11,7 @@ export type CalendarPanelList = {
 };
 
 export type PickerOptions = {
-  text: () => string;
+  text: () => string | string;
   value: () => number[] | number;
 };
 
