@@ -5,17 +5,19 @@
       v-for="item in props.pickerOptions"
       @click="clickShorts(item)"
     >
-      {{ item.text }}
+      {{ item.text() }}
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { watch } from "vue";
 import { PickerOptions } from "../constants";
 type Props = {
   pickerOptions?: PickerOptions[];
 };
 const props = defineProps<Props>();
+
 const emit = defineEmits(["selectedPickerOptions"]);
 
 const clickShorts = (item: PickerOptions) => {
