@@ -129,14 +129,24 @@ const i18nCancelBtn = ref("");
 const i18nSubmitBtn = ref("");
 const initSeparator = () => {
   const { i18n } = useAttrs();
+  if (i18n) {
+    i18nCancelBtn.value = i18nFooterBtn.cancel[i18n as string];
+    i18nSubmitBtn.value = i18nFooterBtn.submit[i18n as string];
 
-  i18nCancelBtn.value = i18nFooterBtn.cancel[i18n as string];
-  i18nSubmitBtn.value = i18nFooterBtn.submit[i18n as string];
-
-  if (rangeSeparator === "至") {
-    computedRangeSeparator.value = i18nFooterBtn.to[i18n as string];
+    if (rangeSeparator === "至") {
+      computedRangeSeparator.value = i18nFooterBtn.to[i18n as string];
+    } else {
+      computedRangeSeparator.value = rangeSeparator;
+    }
   } else {
-    computedRangeSeparator.value = rangeSeparator;
+    i18nCancelBtn.value = i18nFooterBtn.cancel.zh;
+    i18nSubmitBtn.value = i18nFooterBtn.submit.zh;
+
+    if (rangeSeparator === "至") {
+      computedRangeSeparator.value = i18nFooterBtn.to.zh;
+    } else {
+      computedRangeSeparator.value = rangeSeparator;
+    }
   }
 };
 onMounted(() => {

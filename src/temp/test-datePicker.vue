@@ -14,7 +14,8 @@
 
 <script lang="ts" setup>
 import { ref, reactive, watch, computed } from "vue";
-import i18n from "./locale";
+import i18n from "../locale";
+const defaultValue = ref(new Date(2000, 10, 10, 8, 30));
 const pickerOptions = [
   {
     text: "今天",

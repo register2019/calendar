@@ -151,5 +151,6 @@ $borderUI: 1px solid var(--border-color);
 .dc-date-picker-panel {
   display: flex;
   border: $borderUI;
+  background-color: #fff;
 }
 </style>
