@@ -5,16 +5,17 @@
 		<input type="text" class="dc-input" v-model="endDateTime" />
 	</div>
 	<Teleport to="body">
+		<!-- themeGlobal === 'dark' ? 'dark' : 'light' -->
 		<div
-			:class="['dc-calendar', themeGlobal === 'dark' ? 'dark' : 'light']"
+			:class="['dc-calendar', props.theme === 'dark' ? 'dark' : 'light']"
 			:style="calendarStyle"
 			v-show="calendarPanel"
 			ref="calendarRef"
 		>
 			<div style="display: flex; border-bottom: 1px solid #ebeef5">
 				<PanelSider
-					v-if="pickerOptions && pickerOptions.length !== 0"
-					:pickerOptions="pickerOptions"
+					v-if="props.pickerOptions && props.pickerOptions.length !== 0"
+					:pickerOptions="props.pickerOptions"
 					v-bind="$attrs"
 					@selected-picker-options="selectedPickerOptions"
 				/>
@@ -24,7 +25,7 @@
 							v-model:date="panelStartDate"
 							v-model:time="panelStartTime"
 							:inputIsDisabled="inputIsDisabled"
-							:timeType="timeType"
+							:timeType="props.timeType"
 							@update-input-position="updateInputPosition"
 							v-bind="$attrs"
 						/>
@@ -33,14 +34,14 @@
 							v-model:date="panelEndDate"
 							v-model:time="panelEndTime"
 							:inputIsDisabled="inputIsDisabled"
-							:timeType="timeType"
+							:timeType="props.timeType"
 							@update-input-position="updateInputPosition"
 							v-bind="$attrs"
 						/>
 					</div>
 					<PickerComponents
-						:modelValue="modelValue"
-						:pickerOptions="pickerOptions"
+						:modelValue="props.modelValue"
+						:pickerOptions="props.pickerOptions"
 						:selectedDateList="selectedDateList"
 						v-bind="$attrs"
 						@date-range="getDateRange"
@@ -67,7 +68,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import { ref, CSSProperties, useAttrs, onMounted, onUpdated } from "vue";
+import { ref, CSSProperties, useAttrs, onMounted, onUpdated, watch } from "vue";
 import { onClickOutside, useElementBounding } from "@vueuse/core";
 import {
 	dateFormat,
@@ -76,6 +77,7 @@ import {
 	determineTheDateFormat,
 	getTimeUtils,
 	i18nFooterBtn,
+	global,
 } from "../../../utils";
 import PanelInput from "../Components/panelInput.vue";
 import PanelSider from "../Components/panelSider.vue";
@@ -110,51 +112,52 @@ type Props = {
 	pickerOptions?: PickerOptions[];
 	rangeSeparator?: string;
 	format?: string;
+	theme?: string;
 };
-const { modelValue, timeType, pickerOptions, rangeSeparator, format } =
-	withDefaults(defineProps<Props>(), {
-		modelValue: (): Date[] => [],
-		timeType: "Picker",
-		rangeSeparator: "至",
-		format: "yyyy-MM-DD HH:mm:ss",
-	});
+const props = withDefaults(defineProps<Props>(), {
+	modelValue: (): Date[] => [],
+	timeType: "Picker",
+	rangeSeparator: "至",
+	format: "yyyy-MM-DD HH:mm:ss",
+});
 
 const emit = defineEmits(["update:modelValue", "onClick"]);
 
-if (pickerOptions && pickerOptions.length > 0) {
+if (props.pickerOptions && props.pickerOptions.length > 0) {
 	calendarStyle.value.width = "782px";
 }
+
+watch(
+	() => props.theme,
+	(val) => {
+		global.theme = val!;
+	}
+);
 
 const computedRangeSeparator = ref("");
 const i18nCancelBtn = ref("");
 const i18nSubmitBtn = ref("");
-const themeGlobal = ref("");
-const initSeparator = () => {
-	const { i18n, theme } = useAttrs();
 
-	if (theme === "dark") {
-		themeGlobal.value = "dark";
-	} else {
-		themeGlobal.value = "light";
-	}
+const initSeparator = () => {
+	const { i18n } = useAttrs();
 
 	if (i18n) {
 		i18nCancelBtn.value = i18nFooterBtn.cancel[i18n as string];
 		i18nSubmitBtn.value = i18nFooterBtn.submit[i18n as string];
 
-		if (rangeSeparator === "至") {
+		if (props.rangeSeparator === "至") {
 			computedRangeSeparator.value = i18nFooterBtn.to[i18n as string];
 		} else {
-			computedRangeSeparator.value = rangeSeparator;
+			computedRangeSeparator.value = props.rangeSeparator;
 		}
 	} else {
 		i18nCancelBtn.value = i18nFooterBtn.cancel.zh;
 		i18nSubmitBtn.value = i18nFooterBtn.submit.zh;
 
-		if (rangeSeparator === "至") {
+		if (props.rangeSeparator === "至") {
 			computedRangeSeparator.value = i18nFooterBtn.to.zh;
 		} else {
-			computedRangeSeparator.value = rangeSeparator;
+			computedRangeSeparator.value = props.rangeSeparator;
 		}
 	}
 };
@@ -192,7 +195,7 @@ const initSelectedDateList = (val: number[]) => {
 
 const computedSelection = (val: boolean) => {
 	if (val) {
-		if (timeType === "Select") {
+		if (props.timeType === "Select") {
 			if (attrs.selectOptions) {
 				panelStartTime.value = (attrs.selectOptions as SelectOptions).start;
 				panelEndTime.value = (attrs.selectOptions as SelectOptions).start;
@@ -250,11 +253,11 @@ const openCalendar = () => {
 
 	if (startDateTime.value && endDateTime.value) {
 		const midStartDateTime =
-			format === "yyyy-MM-DD HH"
+			props.format === "yyyy-MM-DD HH"
 				? startDateTime.value + ":00"
 				: startDateTime.value;
 		const midEndDateTime =
-			format === "yyyy-MM-DD HH"
+			props.format === "yyyy-MM-DD HH"
 				? endDateTime.value + ":00"
 				: endDateTime.value;
 		initSelectedDateList([
@@ -295,8 +298,8 @@ const updateInputPosition = () => {
 
 const panelDateTimeFormat = () => {
 	const { leftHour, leftMinu, leftSeco, rightHour, rightMinu, rightSeco } =
-		initCalendarPanel(modelValue);
-	if (timeType === "Select") {
+		initCalendarPanel(props.modelValue);
+	if (props.timeType === "Select") {
 		panelStartTime.value = leftHour + ":" + leftMinu;
 		panelEndTime.value = rightHour + ":" + rightMinu;
 	} else {
@@ -382,23 +385,23 @@ const inputDateTimeFormat = (formatType: string) => {
 	}
 };
 
-if (modelValue && modelValue.length === 2) {
+if (props.modelValue && props.modelValue.length === 2) {
 	initSelectedDateList([
-		dateToTimeStamp(modelValue[0]),
-		dateToTimeStamp(modelValue[1]),
+		dateToTimeStamp(props.modelValue[0]),
+		dateToTimeStamp(props.modelValue[1]),
 	]);
 
 	panelDateTimeFormat();
 
-	inputDateTimeFormat(format);
+	inputDateTimeFormat(props.format);
 }
 const cancelBtn = () => {
 	calendarPanel.value = false;
 };
 
 const submitBtn = () => {
-	if (format) {
-		inputDateTimeFormat(format);
+	if (props.format) {
+		inputDateTimeFormat(props.format);
 	}
 	calendarPanel.value = false;
 };

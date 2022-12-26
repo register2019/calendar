@@ -1,5 +1,5 @@
 <template>
-	<div :class="['picker', themeGlobal === 'dark' ? 'dark' : 'light']">
+	<div :class="['picker', global.theme === 'dark' ? 'dark' : 'light']">
 		<div
 			class="picker-item"
 			v-for="item in props.pickerOptions"
@@ -11,7 +11,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUpdated, ref, useAttrs } from "vue";
+import { computed, onMounted, onUpdated, ref, useAttrs, watch } from "vue";
+import { global } from "../../../utils";
 import { PickerOptions } from "../constants";
 
 type Props = {
@@ -24,29 +25,6 @@ const emit = defineEmits(["selectedPickerOptions"]);
 const clickShorts = (item: PickerOptions) => {
 	emit("selectedPickerOptions", item);
 };
-
-const themeGlobal = ref("");
-const initTheme = () => {
-	const { theme } = useAttrs();
-
-	if (theme === "dark") {
-		themeGlobal.value = "dark";
-	} else {
-		themeGlobal.value = "light";
-	}
-};
-const isMounted = ref(false);
-onUpdated(() => {
-	if (!isMounted.value) {
-		initTheme();
-	} else {
-		isMounted.value = false;
-	}
-});
-onMounted(() => {
-	isMounted.value = true;
-	initTheme();
-});
 
 const computedText = (text: () => string | string) => {
 	if (typeof text === "string") {
