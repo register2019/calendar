@@ -1,6 +1,6 @@
 <template>
 	<div class="dc-picker">
-		<div class="dc-picker-left">
+		<div :class="['dc-picker-left', themeGlobal === 'dark' ? 'dark' : 'light']">
 			<div class="header">
 				<span>
 					<span @click="clickBefore('year')">&lt;&lt;</span>
@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, computed, useAttrs } from "vue";
+import { ref, watch, computed, useAttrs, onUpdated, onMounted } from "vue";
 import {
 	dateToTimeStamp,
 	getCurrPageDays,
@@ -153,6 +153,29 @@ const clickAfter = (type: string) => {
 	}
 	updateTable(startYear.value, startMonth.value, endYear.value, endMonth.value);
 };
+
+const themeGlobal = ref("");
+const initTheme = () => {
+	const { theme } = useAttrs();
+
+	if (theme === "dark") {
+		themeGlobal.value = "dark";
+	} else {
+		themeGlobal.value = "light";
+	}
+};
+const isMounted = ref(false);
+onUpdated(() => {
+	if (!isMounted.value) {
+		initTheme();
+	} else {
+		isMounted.value = false;
+	}
+});
+onMounted(() => {
+	isMounted.value = true;
+	initTheme();
+});
 
 const selectedDateList = ref<SelectedDateList[]>([]);
 const emitSelectedDate = (val: IDate, category: string) => {
@@ -289,7 +312,6 @@ $border: 1px solid var(--border-color);
 	display: flex;
 	width: 100%;
 	padding: 10px;
-	background-color: #fff;
 	&-left,
 	&-right {
 		width: 50%;
@@ -302,8 +324,11 @@ $border: 1px solid var(--border-color);
 			user-select: none;
 		}
 	}
-	&-left {
-		border-right: $border;
-	}
+}
+.light {
+	border-right: 1px solid #e4e7ed;
+}
+.dark {
+	border-right: 1px solid #414243;
 }
 </style>

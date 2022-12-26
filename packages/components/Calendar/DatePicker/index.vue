@@ -6,10 +6,18 @@
 	</div>
 	<Teleport to="body">
 		<div v-show="isShowPanel">
-			<div :style="calendarStyle" class="dc-date-picker-panel" ref="panelRef">
+			<div
+				:style="calendarStyle"
+				:class="[
+					'dc-date-picker-panel',
+					themeGlobal === 'dark' ? 'dark' : 'light',
+				]"
+				ref="panelRef"
+			>
 				<PanelSider
 					v-if="props.pickerOptions && props.pickerOptions.length !== 0"
 					:pickerOptions="props.pickerOptions"
+					v-bind="$attrs"
 					@selected-picker-options="selectedPickerOptions"
 				/>
 				<PickerComponents
@@ -62,9 +70,12 @@ const props = withDefaults(defineProps<Props>(), {
 const computedRangeSeparator = ref("");
 
 const emit = defineEmits(["onClick"]);
+const themeGlobal = ref("");
 
 const initSeparator = () => {
 	const { i18n, theme } = useAttrs();
+
+	themeGlobal.value = theme as string;
 	if (i18n) {
 		if (props.rangeSeparator === "至") {
 			computedRangeSeparator.value = i18nFooterBtn.to[i18n as string];
@@ -75,10 +86,16 @@ const initSeparator = () => {
 		computedRangeSeparator.value = props.rangeSeparator;
 	}
 };
+const isMounted = ref(false);
 onUpdated(() => {
-	initSeparator();
+	if (!isMounted.value) {
+		initSeparator();
+	} else {
+		isMounted.value = false;
+	}
 });
 onMounted(() => {
+	isMounted.value = true;
 	initSeparator();
 });
 
@@ -155,6 +172,13 @@ $borderUI: 1px solid var(--border-color);
 .dc-date-picker-panel {
 	display: flex;
 	border: $borderUI;
+}
+.dark {
 	background-color: var(--base-dark-bg-color);
+	color: var(--base-light-bg-color);
+}
+.light {
+	background-color: var(--base-light-bg-color);
+	color: var(--base-dark-bg-color);
 }
 </style>
