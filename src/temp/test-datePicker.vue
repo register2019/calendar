@@ -46,7 +46,6 @@ const themeGlobal = ref("dark");
 const i18nGlobal = ref("zh");
 const changeLang = () => {
 	themeGlobal.value = themeGlobal.value === "dark" ? "light" : "dark";
-	console.log("------->", themeGlobal.value);
 
 	// i18nGlobal.value = i18nGlobal.value === "zh" ? "en" : "zh";
 	// i18n.global.locale = i18nGlobal.value === "zh" ? "zh" : "en";
