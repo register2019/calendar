@@ -1,12 +1,7 @@
 <template>
 	<div>
 		<DefaultCalendar
-			v-model="defaultValue"
-			type="DateTime"
-			timeType="Select"
-			format="yyyy-MM-DD HH"
-			pickerFormat="yyyy-MM-DD HH"
-			:i18n="i18nGlobal"
+			type="DatePicker"
 			:theme="themeGlobal"
 			:picker-options="pickerOptions"
 			:selectOptions="selectOptions"
@@ -20,7 +15,6 @@
 <script lang="ts" setup>
 import { ref, reactive, watch, computed } from "vue";
 import i18n from "./locale";
-const defaultValue = ref(new Date(2000, 10, 10, 8, 30));
 const pickerOptions = [
 	{
 		text: "今天",
@@ -48,8 +42,8 @@ const disabledDate = {
 	range: ["2022-11-06 00:00:00", "2022-11-16 00:00:00"],
 };
 
-const i18nGlobal = ref("zh");
 const themeGlobal = ref("dark");
+const i18nGlobal = ref("zh");
 const changeLang = () => {
 	themeGlobal.value = themeGlobal.value === "dark" ? "light" : "dark";
 

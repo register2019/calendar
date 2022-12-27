@@ -21,7 +21,6 @@
 		/>
 	</div>
 	<Teleport to="body">
-		<!-- themeGlobal === 'dark' ? 'dark' : 'light' -->
 		<div
 			:class="['dc-calendar', props.theme === 'dark' ? 'dark' : 'light']"
 			:style="calendarStyle"

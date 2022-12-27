@@ -1,5 +1,9 @@
 <template>
-	<div class="dc-date-picker-input" ref="inputRef" @click="openPanel">
+	<div
+		:class="['dc-date-picker-input', props.theme === 'dark' ? 'dark' : 'light']"
+		ref="inputRef"
+		@click="openPanel"
+	>
 		<DefaultInput v-model="startDateInput" class="borderUI" />
 		<span>{{ computedRangeSeparator }}</span>
 		<DefaultInput v-model="endDateInput" class="borderUI" />
@@ -43,7 +47,15 @@ import {
 	useElementBounding,
 	useWindowSize,
 } from "@vueuse/core";
-import { ref, CSSProperties, nextTick, watch } from "vue";
+import {
+	ref,
+	CSSProperties,
+	nextTick,
+	watch,
+	useAttrs,
+	onUpdated,
+	onMounted,
+} from "vue";
 import { dateFormat, global, i18nFooterBtn } from "../../../utils";
 import DefaultInput from "../../Input/src/input.vue";
 import PickerComponents from "../Components/picker-components.vue";
@@ -73,6 +85,30 @@ watch(
 );
 
 const computedRangeSeparator = ref("");
+const initSeparator = () => {
+	const { i18n } = useAttrs();
+	if (i18n) {
+		if (props.rangeSeparator === "至") {
+			computedRangeSeparator.value = i18nFooterBtn.to[i18n as string];
+		} else {
+			computedRangeSeparator.value = props.rangeSeparator;
+		}
+	} else {
+		computedRangeSeparator.value = props.rangeSeparator;
+	}
+};
+const isMounted = ref(false);
+onUpdated(() => {
+	if (!isMounted.value) {
+		initSeparator();
+	} else {
+		isMounted.value = false;
+	}
+});
+onMounted(() => {
+	isMounted.value = true;
+	initSeparator();
+});
 
 const emit = defineEmits(["onClick"]);
 
@@ -139,6 +175,7 @@ $borderUI: 1px solid var(--border-color);
 	align-items: center;
 	width: 350px;
 	border: $borderUI;
+	border-radius: 5px;
 	span {
 		margin: 0 6px;
 	}
@@ -149,6 +186,7 @@ $borderUI: 1px solid var(--border-color);
 .dc-date-picker-panel {
 	display: flex;
 	border: $borderUI;
+	border-radius: 5px;
 }
 .dark {
 	background-color: var(--base-dark-bg-color);
