@@ -152,6 +152,9 @@ watch(
 	() => props.theme,
 	(val) => {
 		global.theme = val!;
+	},
+	{
+		immediate: true,
 	}
 );
 
