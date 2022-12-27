@@ -128,7 +128,9 @@ const disabledDate = {
 	range: ["2022-11-06 00:00:00", "2022-11-16 00:00:00"],
 };
 ```
-#### i18n国际化
+
+#### i18n 国际化
+
 ```html
 <DefaultCalendar
 	v-model="defaultValue"
@@ -138,34 +140,36 @@ const disabledDate = {
 	:picker-options="pickerOptions"
 />
 ```
+
 ```js
-const i18nGlobal = ref('zh')
+const i18nGlobal = ref("zh");
 // 使用vue-i18n需要国际化的内容需要写成函数形式
 const pickerOptions = [
-  {
-    text: "today",
-    value: () => new Date().getTime(),
-  },
-  {
-    text: () => t("yestorday"),
-    value: () => new Date().getTime() - 3600 * 1000 * 24,
-  },
-  {
-    text: () => t("beforeWeek"),
-    value: () => new Date().getTime() - 3600 * 1000 * 24 * 7,
-  },
+	{
+		text: "today",
+		value: () => new Date().getTime(),
+	},
+	{
+		text: () => t("yestorday"),
+		value: () => new Date().getTime() - 3600 * 1000 * 24,
+	},
+	{
+		text: () => t("beforeWeek"),
+		value: () => new Date().getTime() - 3600 * 1000 * 24 * 7,
+	},
 ];
 ```
 
-| 参数           | 描述                                                                     | 类型    | 默认值              |
-| -------------- | ------------------------------------------------------------------------| ------- | ------------------- |
-| unlinkPanels   | 可选 是否取消左右 日期面板的联动                                        		 | boolean | false               |
-| timeType       | 日期面板时间类型 可选 Picker 和 Select                                     | string  | Picker              |
-| pickerOptions  | 设置快捷选项                                                              | Array   | ~                   |
-| selectOptions  | 当 timeType 为 Select 时 用于设置 TimeSelect 的开始、结束及间隔时间          | Object  | ~                   |
-| type           | 日历面板的类型 目前支持 DateTimePicker、DateTime、Date、DatePicker          | String  | DateTimePicker      |
-| disabledDate   | 禁用日期 支持 before、after、today、range 四种类型                          | Object  | ~                   |
-| rangeSeparator | 类型为 DatePicker 或 DateTimePicker 时 分隔符可自定义                      | String  | 至                  |
-| format         | 用于格式化选中日期的类型 支持 yyyy-MM-DD（HH:mm:ss、HH:mm、HH）              | String  | yyyy-MM-DD HH:mm:ss |
-| pickerFormat   | 用于格式化 TimeType 为 Picker 时的时间显示格式 支持 HH:mm:ss、HH:mm、HH      | String  | HH:mm:ss            |
-| i18n           | 用于国际化文本内容                                                        | string | 中文-'zh' 英文-'en' 默认为中文          |
+| 参数           | 描述                                                                    | 类型    | 默认值                         |
+| -------------- | ----------------------------------------------------------------------- | ------- | ------------------------------ |
+| unlinkPanels   | 可选 是否取消左右 日期面板的联动                                        | boolean | false                          |
+| timeType       | 日期面板时间类型 可选 Picker 和 Select                                  | string  | Picker                         |
+| pickerOptions  | 设置快捷选项                                                            | Array   | ~                              |
+| selectOptions  | 当 timeType 为 Select 时 用于设置 TimeSelect 的开始、结束及间隔时间     | Object  | ~                              |
+| type           | 日历面板的类型 目前支持 DateTimePicker、DateTime、Date、DatePicker      | String  | DateTimePicker                 |
+| disabledDate   | 禁用日期 支持 before、after、today、range 四种类型                      | Object  | ~                              |
+| rangeSeparator | 类型为 DatePicker 或 DateTimePicker 时 分隔符可自定义                   | String  | 至                             |
+| format         | 用于格式化选中日期的类型 支持 yyyy-MM-DD（HH:mm:ss、HH:mm、HH）         | String  | yyyy-MM-DD HH:mm:ss            |
+| pickerFormat   | 用于格式化 TimeType 为 Picker 时的时间显示格式 支持 HH:mm:ss、HH:mm、HH | String  | HH:mm:ss                       |
+| i18n           | 用于国际化文本内容                                                      | string  | 中文-'zh' 英文-'en' 默认为中文 |
+| theme          | 设置主题 目前支持 light 和 dark 模式                                    | string  | light                          |
