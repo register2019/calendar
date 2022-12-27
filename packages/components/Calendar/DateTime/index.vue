@@ -16,12 +16,7 @@
 					@selected-picker-options="selectedPickerOptions"
 				/>
 				<div class="dc-dialog-layout-content">
-					<div
-						:class="[
-							'dc-date-time-dialog-input',
-							`border-bottom-${props.theme}`,
-						]"
-					>
+					<div class="dc-date-time-dialog-input">
 						<PanelInput
 							v-bind="$attrs"
 							v-model:date="inputDate"
@@ -29,7 +24,9 @@
 							:timeType="props.timeType"
 						/>
 					</div>
-					<div class="dc-date-time-dialog-header">
+					<div
+						:class="['dc-date-time-dialog-header', `border-top-${props.theme}`]"
+					>
 						<div class="dc-date-time-dialog-header-before">
 							<span @click="clickBefore('year')">&lt;&lt; </span>
 							<span
@@ -435,7 +432,7 @@ $border-dark: 1px solid var(--border-dark-color);
 		&-header {
 			display: flex;
 			justify-content: space-between;
-			margin: 10px 15px;
+			padding: 10px 15px;
 			cursor: pointer;
 			user-select: none;
 		}
@@ -450,12 +447,7 @@ $border-dark: 1px solid var(--border-dark-color);
 		}
 	}
 }
-.border-bottom-light {
-	border-bottom: $border-light;
-}
-.border-bottom-dark {
-	border-bottom: $border-dark;
-}
+
 .border-top-light {
 	border-top: $border-light;
 }
