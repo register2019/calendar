@@ -1,8 +1,24 @@
 <template>
-	<div @click="openCalendar" class="dc-calendar-input" ref="calendarInput">
-		<input type="text" class="dc-input" v-model="startDateTime" />
+	<div
+		@click="openCalendar"
+		:class="[
+			'dc-calendar-input',
+			`dc-calendar-input-${props.theme}`,
+			props.theme === 'dark' ? 'dark' : 'light',
+		]"
+		ref="calendarInput"
+	>
+		<input
+			type="text"
+			:class="['dc-input', props.theme === 'dark' ? 'dark' : 'light']"
+			v-model="startDateTime"
+		/>
 		<span>{{ computedRangeSeparator }}</span>
-		<input type="text" class="dc-input" v-model="endDateTime" />
+		<input
+			type="text"
+			:class="['dc-input', props.theme === 'dark' ? 'dark' : 'light']"
+			v-model="endDateTime"
+		/>
 	</div>
 	<Teleport to="body">
 		<!-- themeGlobal === 'dark' ? 'dark' : 'light' -->
@@ -123,6 +139,7 @@ const props = withDefaults(defineProps<Props>(), {
 	timeType: "Picker",
 	rangeSeparator: "至",
 	format: "yyyy-MM-DD HH:mm:ss",
+	theme: "light",
 });
 
 const emit = defineEmits(["update:modelValue", "onClick"]);
@@ -412,7 +429,7 @@ const submitBtn = () => {
 </script>
 
 <style lang="scss" scoped>
-$common-border: 1px solid #ebeef5;
+$common-border: 1px solid var(--border-color);
 .dc-input {
 	outline: none;
 	border: none;
@@ -432,10 +449,16 @@ $common-border: 1px solid #ebeef5;
 }
 
 .dc-calendar-input {
-	border: 1px solid #dcdfe6;
 	padding: 5px;
 	min-width: 320px;
 	display: inline-flex;
+	border-radius: 5px;
+	&-light {
+		border: 1px solid var(--border-light-color);
+	}
+	&-dark {
+		border: 1px solid var(--border-dark-color);
+	}
 
 	span {
 		margin: 0 15px;
