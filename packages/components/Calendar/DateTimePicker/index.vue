@@ -12,7 +12,11 @@
 			v-show="calendarPanel"
 			ref="calendarRef"
 		>
-			<div style="display: flex; border-bottom: 1px solid #ebeef5">
+			<div
+				:class="
+					props.theme === 'dark' ? 'border-bottom-dark' : 'border-bottom-light'
+				"
+			>
 				<PanelSider
 					v-if="props.pickerOptions && props.pickerOptions.length !== 0"
 					:pickerOptions="props.pickerOptions"
@@ -443,6 +447,7 @@ $common-border: 1px solid #ebeef5;
 
 	&-header {
 		padding: 5px;
+		margin: 10px 0;
 		display: table;
 		&-separator {
 			margin: 0 10px 0 15px;
@@ -462,6 +467,14 @@ $common-border: 1px solid #ebeef5;
 .light {
 	background-color: var(--base-light-bg-color);
 	color: var(--base-dark-bg-color);
+}
+.border-bottom-light {
+	display: flex;
+	border-bottom: 1px solid var(--border-light-color);
+}
+.border-bottom-dark {
+	display: flex;
+	border-bottom: 1px solid var(--border-dark-color);
 }
 
 .dc-calendar-content-left-top-icon,

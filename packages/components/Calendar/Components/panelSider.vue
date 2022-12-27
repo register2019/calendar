@@ -46,9 +46,9 @@ const computedText = (text: () => string | string) => {
 	}
 }
 .light {
-	border-right: 1px solid #e4e7ed;
+	border-right: 1px solid var(--border-light-color);
 }
 .dark {
-	border-right: 1px solid #414243;
+	border-right: 1px solid var(--border-dark-color);
 }
 </style>

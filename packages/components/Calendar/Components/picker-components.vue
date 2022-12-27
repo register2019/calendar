@@ -1,6 +1,13 @@
 <template>
-	<div class="dc-picker">
-		<div :class="['dc-picker-left', themeGlobal === 'dark' ? 'dark' : 'light']">
+	<div
+		:class="[
+			'dc-picker',
+			global.theme === 'dark' ? 'dc-picker-dark' : 'dc-picker-light',
+		]"
+	>
+		<div
+			:class="['dc-picker-left', global.theme === 'dark' ? 'dark' : 'light']"
+		>
 			<div class="header">
 				<span>
 					<span @click="clickBefore('year')">&lt;&lt;</span>
@@ -50,6 +57,7 @@ import {
 	i18nMonths,
 	IDate,
 	timeFormat,
+	global,
 } from "../../../utils";
 import { PickerOptions, SelectedDateList } from "../constants";
 import PanelTable from "./panelTable.vue";
@@ -153,29 +161,6 @@ const clickAfter = (type: string) => {
 	}
 	updateTable(startYear.value, startMonth.value, endYear.value, endMonth.value);
 };
-
-const themeGlobal = ref("");
-const initTheme = () => {
-	const { theme } = useAttrs();
-
-	if (theme === "dark") {
-		themeGlobal.value = "dark";
-	} else {
-		themeGlobal.value = "light";
-	}
-};
-const isMounted = ref(false);
-onUpdated(() => {
-	if (!isMounted.value) {
-		initTheme();
-	} else {
-		isMounted.value = false;
-	}
-});
-onMounted(() => {
-	isMounted.value = true;
-	initTheme();
-});
 
 const selectedDateList = ref<SelectedDateList[]>([]);
 const emitSelectedDate = (val: IDate, category: string) => {
@@ -308,10 +293,16 @@ watch(
 
 <style lang="scss" scoped>
 $border: 1px solid var(--border-color);
+$border-light: 1px solid var(--border-light-color);
+$border-dark: 1px solid var(--border-dark-color);
 .dc-picker {
 	display: flex;
-	width: 100%;
-	padding: 10px;
+	&-light {
+		border-top: $border-light;
+	}
+	&-dark {
+		border-top: $border-dark;
+	}
 	&-left,
 	&-right {
 		width: 50%;
@@ -325,10 +316,11 @@ $border: 1px solid var(--border-color);
 		}
 	}
 }
+
 .light {
-	border-right: 1px solid #e4e7ed;
+	border-right: $border-light;
 }
 .dark {
-	border-right: 1px solid #414243;
+	border-right: $border-dark;
 }
 </style>
