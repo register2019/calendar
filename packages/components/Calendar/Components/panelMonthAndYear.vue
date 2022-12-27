@@ -61,7 +61,7 @@ const dynamicComputedDate = (
 		text-align: center;
 		height: 36px;
 		line-height: 36px;
-		color: #606266;
+		color: var(--base-font-color);
 		margin: 0 auto;
 		user-select: none;
 		cursor: pointer;

@@ -221,7 +221,7 @@ if (props.modelValue) {
 	&-panel {
 		display: flex;
 		border: 1px solid var(--border-color);
-		background-color: #fff;
+		background-color: var(--white-color);
 		&-table {
 			padding: 5px 10px 10px;
 		}

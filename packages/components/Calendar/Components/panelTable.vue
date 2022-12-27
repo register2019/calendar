@@ -89,6 +89,21 @@ watch(
 	}
 );
 
+const disabledColor = ref("");
+watch(
+	() => global.theme,
+	(val) => {
+		if (val === "dark") {
+			disabledColor.value = "--disabled-bg-dark-color";
+		} else {
+			disabledColor.value = "--disabled-bg-light-color";
+		}
+	},
+	{
+		immediate: true,
+	}
+);
+
 const disabledTdUi = (td: IDate) => {
 	if (!attrs.disabledDate) return;
 	const { range, type } = attrs.disabledDate;
@@ -333,7 +348,7 @@ const selectedDate = (td: IDate) => {
 		border-radius: 50%;
 		display: inline-block;
 		background-color: var(--primary-color);
-		color: #fff;
+		color: var(--white-color);
 	}
 	&-th {
 		font-size: 14px;
@@ -353,10 +368,10 @@ const selectedDate = (td: IDate) => {
 	padding: 0;
 }
 .disabled div {
-	background-color: #f5f7fa;
+	background-color: var(v-bind(disabledColor));
 	opacity: 1;
 	cursor: not-allowed;
-	color: #c0c4cc;
+	color: var(--secondary-color);
 	height: 30px;
 	line-height: 30px;
 	padding: 3px;

@@ -416,7 +416,7 @@ $border-dark: 1px solid var(--border-dark-color);
 		width: 220px;
 	}
 	&-dialog {
-		border: 1px solid #ebeefa;
+		border: 1px solid var(--dialog-border-color);
 		border-radius: 5px;
 		&-dark {
 			background-color: var(--base-dark-bg-color);

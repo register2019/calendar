@@ -1,9 +1,12 @@
 :root {
 	--primary-color: #409eff;
 	--secondary-color: #c0c4cc;
+	--disabled-bg-light-color: #f5f7fa;
+	--disabled-bg-dark-color: #262727;
 	--bg-color: #f2f6fc;
 	--white-color: #ffffff;
 	--border-color: #ebeef5;
+	--dialog-border-color: #ebeefa;
 	--base-font-color: #606266;
 	--base-font-hover-color: #66b1ff;
 	--btn-border-color: #dcdfe6;
@@ -12,4 +15,5 @@
 	--border-light-color: #dcdfe6;
 	--border-dark-color: #4c4d4f;
 	--picker-dark-color: #2b2b2c;
+	--scrollbar-color: #eeeeee; // 滚动条颜色
 }

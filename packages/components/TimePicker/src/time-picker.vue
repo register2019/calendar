@@ -8,8 +8,16 @@
 			v-bind="$attrs"
 		/>
 
-		<div v-if="timePickerStatus" ref="timePickerRef" class="dc-outer">
-			<div class="dc-time-picker">
+		<div
+			v-if="timePickerStatus"
+			ref="timePickerRef"
+			:class="[
+				'dc-outer',
+				`dc-outer-${global.theme}`,
+				global.theme === 'dark' ? 'dark' : 'light',
+			]"
+		>
+			<div :class="['dc-time-picker', `dc-time-picker-${global.theme}`]">
 				<ul
 					class="dc-ul"
 					v-for="item in showUlNum"
@@ -44,8 +52,13 @@ export default {
 <script lang="ts" setup>
 import { onClickOutside } from "@vueuse/core";
 import { ref, watch, computed, nextTick } from "vue";
-
-import { getTimeUtils, selectedTime, ulList, timeFormat } from "../../../utils";
+import {
+	getTimeUtils,
+	selectedTime,
+	ulList,
+	timeFormat,
+	global,
+} from "../../../utils";
 import DefaultInput from "../../Input/src/input.vue";
 
 const timePickerStatus = ref(false);
@@ -205,15 +218,26 @@ const submitBtn = () => {
 }
 .dc-outer {
 	position: absolute;
-	background-color: #fff;
-	border: 1px solid #e4e7ed;
+	background-color: var(--white-color);
+	border-radius: 5px;
+	&-light {
+		border: 1px solid var(--border-light-color);
+	}
+	&-dark {
+		border: 1px solid var(--border-dark-color);
+	}
 }
 .dc-time-picker {
 	display: flex;
 	height: 170px;
 	width: v-bind(timePickerWidth);
 	overflow: hidden;
-	border-bottom: 1px solid #e4e7ed;
+	&-light {
+		border-bottom: 1px solid var(--border-light-color);
+	}
+	&-dark {
+		border-bottom: 1px solid var(--border-dark-color);
+	}
 }
 .dc-footer {
 	display: flex;
@@ -221,14 +245,13 @@ const submitBtn = () => {
 	margin: 10px 0;
 	&-cancel,
 	&-submit {
-		background-color: #fff;
 		font-size: 12px;
 		margin: 0 5px;
 		cursor: pointer;
 		letter-spacing: 5px;
 	}
 	&-submit {
-		color: #409eff;
+		color: var(--primary-color);
 	}
 }
 .dc-time-picker::before,
@@ -260,7 +283,7 @@ const submitBtn = () => {
 	width: 5px;
 }
 .dc-ul::-webkit-scrollbar-thumb {
-	background-color: #eeeeee;
+	background-color: var(--scrollbar-color);
 	border-radius: 10px;
 }
 .dc-ul::before,
@@ -283,5 +306,13 @@ const submitBtn = () => {
 	scroll-snap-align: center;
 	cursor: pointer;
 	user-select: none;
+}
+.dark {
+	background-color: var(--base-dark-bg-color);
+	color: var(--base-light-bg-color);
+}
+.light {
+	background-color: var(--base-light-bg-color);
+	color: var(--base-dark-bg-color);
 }
 </style>
