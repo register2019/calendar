@@ -45,6 +45,7 @@ if (props.size === "small") {
 	padding: v-bind(dynamicPadding);
 	font-size: v-bind(dynamicFontSize);
 	letter-spacing: 2px;
+	border-radius: 5px;
 	&.btn-default {
 		&-light {
 			color: var(--base-font-color);
