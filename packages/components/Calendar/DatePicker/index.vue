@@ -10,7 +10,7 @@
 				:style="calendarStyle"
 				:class="[
 					'dc-date-picker-panel',
-					themeGlobal === 'dark' ? 'dark' : 'light',
+					props.theme === 'dark' ? 'dark' : 'light',
 				]"
 				ref="panelRef"
 			>
@@ -43,15 +43,8 @@ import {
 	useElementBounding,
 	useWindowSize,
 } from "@vueuse/core";
-import {
-	ref,
-	CSSProperties,
-	nextTick,
-	useAttrs,
-	onUpdated,
-	onMounted,
-} from "vue";
-import { dateFormat, i18nFooterBtn } from "../../../utils";
+import { ref, CSSProperties, nextTick, watch } from "vue";
+import { dateFormat, global, i18nFooterBtn } from "../../../utils";
 import DefaultInput from "../../Input/src/input.vue";
 import PickerComponents from "../Components/picker-components.vue";
 import PanelSider from "../Components/panelSider.vue";
@@ -61,43 +54,27 @@ type Props = {
 	modelValue?: Date[];
 	rangeSeparator?: string;
 	pickerOptions?: PickerOptions[];
+	theme?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
 	rangeSeparator: "至",
+	theme: "light",
 });
+
+watch(
+	() => props.theme,
+	(val) => {
+		global.theme = val;
+	},
+	{
+		immediate: true,
+	}
+);
 
 const computedRangeSeparator = ref("");
 
 const emit = defineEmits(["onClick"]);
-const themeGlobal = ref("");
-
-const initSeparator = () => {
-	const { i18n, theme } = useAttrs();
-
-	themeGlobal.value = theme as string;
-	if (i18n) {
-		if (props.rangeSeparator === "至") {
-			computedRangeSeparator.value = i18nFooterBtn.to[i18n as string];
-		} else {
-			computedRangeSeparator.value = props.rangeSeparator;
-		}
-	} else {
-		computedRangeSeparator.value = props.rangeSeparator;
-	}
-};
-const isMounted = ref(false);
-onUpdated(() => {
-	if (!isMounted.value) {
-		initSeparator();
-	} else {
-		isMounted.value = false;
-	}
-});
-onMounted(() => {
-	isMounted.value = true;
-	initSeparator();
-});
 
 const panelRef = ref();
 const inputRef = ref();

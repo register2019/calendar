@@ -4,7 +4,7 @@
 	</div>
 	<Teleport to="body">
 		<div
-			class="dc-date-time-dialog"
+			:class="['dc-date-time-dialog', `dc-date-time-dialog-${props.theme}`]"
 			:style="dynamicPanelWidth"
 			v-show="isShowPanel"
 			ref="DateTimeRef"
@@ -16,7 +16,12 @@
 					@selected-picker-options="selectedPickerOptions"
 				/>
 				<div class="dc-dialog-layout-content">
-					<div class="dc-date-time-dialog-input">
+					<div
+						:class="[
+							'dc-date-time-dialog-input',
+							`border-bottom-${props.theme}`,
+						]"
+					>
 						<PanelInput
 							v-bind="$attrs"
 							v-model:date="inputDate"
@@ -84,7 +89,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="dc-date-time-dialog-footer">
+			<div :class="['dc-date-time-dialog-footer', `border-top-${props.theme}`]">
 				<DefaultButton
 					size="small"
 					type="text"
@@ -111,7 +116,7 @@ import {
 	useElementBounding,
 	useWindowSize,
 } from "@vueuse/core";
-import { ref, computed, CSSProperties, useAttrs } from "vue";
+import { ref, computed, CSSProperties, useAttrs, watch } from "vue";
 import {
 	dateTimeYear,
 	dateToTimeStamp,
@@ -122,6 +127,7 @@ import {
 	i18nMonths,
 	i18nDATETIMEMONTH,
 	i18nFooterBtn,
+	global,
 } from "../../../utils";
 import DefaultInput from "../../Input/src/input.vue";
 import PanelInput from "../Components/panelInput.vue";
@@ -147,13 +153,25 @@ type Props = {
 	modelValue?: Date;
 	timeType?: string;
 	i18n?: string;
+	theme?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
 	timeType: "Picker",
 	format: "yyyy-MM-DD HH:mm:ss",
 	i18n: "zh",
+	theme: "light",
 });
+
+watch(
+	() => props.theme,
+	(val) => {
+		global.theme = val;
+	},
+	{
+		immediate: true,
+	}
+);
 
 const emit = defineEmits(["onClick"]);
 const nearlyADecade = ref(dateTimeYear());
@@ -394,16 +412,25 @@ if (props.modelValue) {
 getTableData(currYear.value, currMonth.value);
 </script>
 <style lang="scss" scoped>
+$border-light: 1px solid var(--border-light-color);
+$border-dark: 1px solid var(--border-dark-color);
 .dc-date-time {
 	&-input {
 		width: 220px;
 	}
 	&-dialog {
 		border: 1px solid #ebeefa;
-		background-color: #fff;
+		border-radius: 5px;
+		&-dark {
+			background-color: var(--base-dark-bg-color);
+			color: var(--base-light-bg-color);
+		}
+		&-light {
+			background-color: var(--base-light-bg-color);
+			color: var(--base-dark-bg-color);
+		}
 		&-input {
 			padding: 10px 6px;
-			border-bottom: 1px solid #ebeefa;
 		}
 		&-header {
 			display: flex;
@@ -419,10 +446,21 @@ getTableData(currYear.value, currMonth.value);
 		&-footer {
 			display: flex;
 			justify-content: end;
-			border-top: 1px solid #ebeefa;
 			padding: 10px 15px;
 		}
 	}
+}
+.border-bottom-light {
+	border-bottom: $border-light;
+}
+.border-bottom-dark {
+	border-bottom: $border-dark;
+}
+.border-top-light {
+	border-top: $border-light;
+}
+.border-top-dark {
+	border-top: $border-dark;
 }
 .dc-dialog-layout {
 	display: flex;
