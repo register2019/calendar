@@ -156,6 +156,7 @@ type Props = {
 const props = withDefaults(defineProps<Props>(), {
 	timeType: "Picker",
 	format: "yyyy-MM-DD HH:mm:ss",
+	pickerFormat: "HH:mm:ss",
 	i18n: "zh",
 	theme: "light",
 });
@@ -397,8 +398,9 @@ const submitBtn = () => {
 
 if (props.modelValue) {
 	const { year, month, day, hour, minu, seco } = getTimeUtils(props.modelValue);
+
 	inputDate.value = year + "-" + month + "-" + day;
-	if (attrs.pickerFormat) panelTimeFormat(hour, minu, seco);
+	panelTimeFormat(hour, minu, seco);
 
 	if (props.format) inputDateTimeFormat(props.format);
 
