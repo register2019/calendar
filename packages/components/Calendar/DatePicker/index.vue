@@ -141,6 +141,7 @@ const selectedPickerOptions = (val: PickerOptions) => {
 			category: "click",
 		});
 	}
+	getDateRange(target);
 };
 
 if (props.pickerOptions) {
