@@ -9,12 +9,19 @@ import { DefaultComponents } from "default-calendar";
 app.use(DefaultComponents());
 ```
 
-#### type 为 DateTimePicker
+#### type 为 DateTimePicker、DatePicker
 
 ```html
 <DefaultCalendar
 	v-model="selectedTimeRange"
 	type="DateTimePicker"
+	@onClick="getSelectedTimeRange"
+	:pickerOptions="pickerOptions"
+	:selectOptions="selectOptions"
+/>
+<DefaultCalendar
+	v-model="selectedTimeRange"
+	type="DatePicker"
 	@onClick="getSelectedTimeRange"
 	:pickerOptions="pickerOptions"
 	:selectOptions="selectOptions"
@@ -35,6 +42,7 @@ const pickerOptions = [
 		value: () => {
 			const end = new Date().getTime();
 			const start = new Date().getTime() - 3600 * 1000 * 24 * 7;
+			return [start, end];
 		},
 	},
 ];
@@ -47,7 +55,7 @@ const selectOptions = {
 };
 ```
 
-#### type 为 DateTime
+#### type 为 DateTime、Date
 
 ```html
 <DefaultCalendar
@@ -57,6 +65,12 @@ const selectOptions = {
 	:picker-options="pickerOptions"
 	:selectOptions="selectOptions"
 	@onClick="getSelectedTime"
+/>
+<DefaultCalendar
+	v-model="defaultValue"
+	type="Date"
+	:pickerOptions="pickerOptions"
+	@onClick="getSelectedDate"
 />
 ```
 
@@ -88,21 +102,6 @@ const getSelectedTime = (val: number) => {
 ```
 
 #### type 为 Date
-
-```html
-<DefaultCalendar
-	v-model="defaultValue"
-	type="Date"
-	:pickerOptions="pickerOptions"
-	@onClick="getSelectedDate"
-/>
-```
-
-```typescript
-/**
- * pickerOptions、v-model、onClick同type为DateTime
- */
-```
 
 #### disabledDate 使用
 
