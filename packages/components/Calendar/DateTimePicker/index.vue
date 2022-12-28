@@ -136,6 +136,7 @@ type Props = {
 const props = withDefaults(defineProps<Props>(), {
 	modelValue: (): Date[] => [],
 	timeType: "Picker",
+	pickerFormat: "HH:mm:ss",
 	rangeSeparator: "至",
 	format: "yyyy-MM-DD HH:mm:ss",
 	theme: "light",
@@ -249,7 +250,9 @@ const selectedPickerOptions = (val: PickerOptions) => {
 	const target = val.value() as number[];
 	panelStartDate.value = dateFormat(target[0]);
 	panelEndDate.value = dateFormat(target[1]);
+
 	initSelectedDateList(target);
+	panelDateTimeFormat(target);
 };
 
 const getDateRange = (params: number[]) => {
@@ -288,7 +291,10 @@ const openCalendar = () => {
 			dateToTimeStamp(midEndDateTime),
 		]);
 
-		panelDateTimeFormat();
+		panelDateTimeFormat([
+			dateToTimeStamp(startDateTime.value),
+			dateToTimeStamp(endDateTime.value),
+		]);
 	} else {
 		initSelectedDateList([]);
 		panelStartDate.value = "";
@@ -319,9 +325,9 @@ const updateInputPosition = () => {
 	panelEndDate.value = dateFormat(selectedDateList.value[1].val);
 };
 
-const panelDateTimeFormat = () => {
+const panelDateTimeFormat = (modelValue: Date[] | number[]) => {
 	const { leftHour, leftMinu, leftSeco, rightHour, rightMinu, rightSeco } =
-		initCalendarPanel(props.modelValue);
+		initCalendarPanel(modelValue);
 	if (props.timeType === "Select") {
 		panelStartTime.value = leftHour + ":" + leftMinu;
 		panelEndTime.value = rightHour + ":" + rightMinu;
@@ -361,7 +367,7 @@ const inputDateTimeFormat = (formatType: string) => {
 	} = getTimeUtils(
 		dateFormat(selectedDateList.value[1].val) + " " + midPanelEndTime
 	);
-	if (formatType === "yyyy-MM-DD HH") {
+	if (formatType === "HH") {
 		startDateTime.value =
 			dateFormat(selectedDateList.value[0].val) + " " + startHour;
 		endDateTime.value =
@@ -370,7 +376,7 @@ const inputDateTimeFormat = (formatType: string) => {
 			dateToTimeStamp(startDateTime.value + ":00"),
 			dateToTimeStamp(endDateTime.value + ":00"),
 		]);
-	} else if (formatType === "yyyy-MM-DD HH:mm") {
+	} else if (formatType === "HH:mm") {
 		startDateTime.value =
 			dateFormat(selectedDateList.value[0].val) +
 			" " +
@@ -414,7 +420,7 @@ if (props.modelValue && props.modelValue.length === 2) {
 		dateToTimeStamp(props.modelValue[1]),
 	]);
 
-	panelDateTimeFormat();
+	panelDateTimeFormat(props.modelValue);
 
 	inputDateTimeFormat(props.format);
 }
@@ -423,9 +429,7 @@ const cancelBtn = () => {
 };
 
 const submitBtn = () => {
-	if (props.format) {
-		inputDateTimeFormat(props.format);
-	}
+	inputDateTimeFormat(props.pickerFormat);
 	calendarPanel.value = false;
 };
 </script>

@@ -171,15 +171,15 @@ watch(
 	() => props.modelValue,
 	(val) => {
 		inputRef.value = val;
-
-		if (props.pickerFormat === "HH:mm:ss") {
+		const { pickerFormat } = props;
+		if (pickerFormat === "HH:mm:ss" || pickerFormat === "") {
 			currHour.value = val.split(":")[0];
 			currMinu.value = val.split(":")[1];
 			currSeco.value = val.split(":")[2];
-		} else if (props.pickerFormat === "HH:mm") {
+		} else if (pickerFormat === "HH:mm") {
 			currHour.value = val.split(":")[0];
 			currMinu.value = val.split(":")[1];
-		} else if (props.pickerFormat === "HH") {
+		} else if (pickerFormat === "HH") {
 			currHour.value = val;
 		}
 	}

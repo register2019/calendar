@@ -56,7 +56,7 @@ export const dateTimeFormat = (
  * @param dateTime
  * @returns
  */
-export const initCalendarPanel = (dateTime: Date[]) => {
+export const initCalendarPanel = (dateTime: Date[] | number[]) => {
 	const {
 		year: leftYear,
 		month: leftMonth,
