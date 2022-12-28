@@ -371,7 +371,7 @@ const selectedDate = (td: IDate) => {
 	background-color: var(v-bind(disabledColor));
 	opacity: 1;
 	cursor: not-allowed;
-	color: var(--secondary-color);
+	color: var(--disabled-color);
 	height: 30px;
 	line-height: 30px;
 	padding: 3px;
