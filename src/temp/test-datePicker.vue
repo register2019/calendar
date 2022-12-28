@@ -17,16 +17,12 @@ import { ref, reactive, watch, computed } from "vue";
 import i18n from "../locale";
 const pickerOptions = [
 	{
-		text: "今天",
-		value: () => new Date().getTime(),
-	},
-	{
-		text: "昨天",
-		value: () => new Date().getTime() - 3600 * 1000 * 24,
-	},
-	{
-		text: "一周前",
-		value: () => new Date().getTime() - 3600 * 1000 * 24 * 7,
+		text: "最近一周",
+		value: () => {
+			const end = new Date().getTime();
+			const start = new Date().getTime() - 3600 * 1000 * 24 * 7;
+			return [start, end];
+		},
 	},
 ];
 const selectOptions = {
