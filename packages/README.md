@@ -41,7 +41,7 @@ const pickerOptions = [
 		text: "最近一周",
 		value: () => {
 			const end = new Date().getTime();
-			const start = new Date().getTime() - 3600 * 1000 * 24 * 7;
+			const start = new Date().getTime() - 3600 * 1000 * 24 * 6;
 			return [start, end];
 		},
 	},
@@ -100,8 +100,6 @@ const getSelectedTime = (val: number) => {
 	console.log(val);
 };
 ```
-
-#### type 为 Date
 
 #### disabledDate 使用
 
@@ -172,3 +170,4 @@ const pickerOptions = [
 | pickerFormat   | 用于格式化 TimeType 为 Picker 时的时间显示格式 支持 HH:mm:ss、HH:mm、HH | String  | HH:mm:ss                       |
 | i18n           | 用于国际化文本内容                                                      | string  | 中文-'zh' 英文-'en' 默认为中文 |
 | theme          | 设置主题 目前支持 light 和 dark 模式                                    | string  | light                          |
+| inputSize      | 用于设置 input 的大小 支持 normal、small                                | string  | normal                         |
