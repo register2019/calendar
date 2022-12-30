@@ -109,7 +109,7 @@ let showUlNum = computed(() => {
 		timePickerWidth.value = "139px";
 	} else {
 		pickerFormat = ["hour", "minu", "seco"];
-		ulWidth.value = "40px";
+		ulWidth.value = "52px";
 	}
 	return ulList.filter((item) => pickerFormat.includes(item.id));
 });
@@ -259,7 +259,7 @@ const submitBtn = () => {
 	content: "";
 	top: 40%;
 	position: absolute;
-	margin: -16px 12% 0 12%;
+	margin: -13px 12% 0 12%;
 	height: 32px;
 	z-index: 100;
 	left: 0;
