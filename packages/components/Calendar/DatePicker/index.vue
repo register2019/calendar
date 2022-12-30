@@ -172,7 +172,7 @@ const openPanel = () => {
 <style lang="scss" scoped>
 $borderUI: 1px solid var(--border-color);
 .dc-date-picker-input {
-	display: flex;
+	display: inline-flex;
 	align-items: center;
 	width: 350px;
 	border: $borderUI;

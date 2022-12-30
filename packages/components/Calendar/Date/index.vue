@@ -216,6 +216,7 @@ if (props.modelValue) {
 <style lang="scss" scoped>
 .dc-date {
 	&-input {
+		display: inline-flex;
 		width: 220px;
 	}
 	&-panel {
