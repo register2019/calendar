@@ -1,6 +1,6 @@
 <template>
 	<div @click="openDialog" class="dc-date-time-input" ref="dateTimeInputRef">
-		<DefaultInput v-model="selectedDateTime" />
+		<DefaultInput :size="props.inputSize" v-model="selectedDateTime" />
 	</div>
 	<Teleport to="body">
 		<div
@@ -151,6 +151,7 @@ type Props = {
 	timeType?: string;
 	i18n?: string;
 	theme?: string;
+	inputSize?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -159,6 +160,7 @@ const props = withDefaults(defineProps<Props>(), {
 	pickerFormat: "HH:mm:ss",
 	i18n: "zh",
 	theme: "light",
+	inputSize: "normal",
 });
 
 watch(

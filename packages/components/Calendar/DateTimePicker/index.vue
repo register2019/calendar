@@ -8,15 +8,15 @@
 		]"
 		ref="calendarInput"
 	>
-		<input
-			type="text"
-			:class="['dc-input', props.theme === 'dark' ? 'dark' : 'light']"
+		<DefaultInput
+			:class="['dc-input borderUI', props.theme === 'dark' ? 'dark' : 'light']"
+			:size="props.inputSize"
 			v-model="startDateTime"
 		/>
 		<span>{{ computedRangeSeparator }}</span>
-		<input
-			type="text"
-			:class="['dc-input', props.theme === 'dark' ? 'dark' : 'light']"
+		<DefaultInput
+			:class="['dc-input borderUI', props.theme === 'dark' ? 'dark' : 'light']"
+			:size="props.inputSize"
 			v-model="endDateTime"
 		/>
 	</div>
@@ -132,6 +132,7 @@ type Props = {
 	rangeSeparator?: string;
 	format?: string;
 	theme?: string;
+	inputSize?: string;
 };
 const props = withDefaults(defineProps<Props>(), {
 	modelValue: (): Date[] => [],
@@ -140,6 +141,7 @@ const props = withDefaults(defineProps<Props>(), {
 	rangeSeparator: "至",
 	format: "yyyy-MM-DD HH:mm:ss",
 	theme: "light",
+	inputSize: "normal",
 });
 
 const emit = defineEmits(["update:modelValue", "onClick"]);
@@ -448,7 +450,6 @@ $common-border: 1px solid var(--border-color);
 .dc-input {
 	outline: none;
 	border: none;
-	padding: 5px 0 0 5px;
 }
 .dc-table {
 	min-width: 291px;
@@ -464,10 +465,10 @@ $common-border: 1px solid var(--border-color);
 }
 
 .dc-calendar-input {
-	padding: 5px;
 	min-width: 320px;
 	display: inline-flex;
 	border-radius: 5px;
+	align-items: center;
 	&-light {
 		border: 1px solid var(--border-light-color);
 	}
@@ -477,6 +478,9 @@ $common-border: 1px solid var(--border-color);
 
 	span {
 		margin: 0 15px;
+	}
+	:deep(.borderUI) > input {
+		border: none;
 	}
 }
 

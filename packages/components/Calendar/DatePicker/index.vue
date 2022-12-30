@@ -4,9 +4,17 @@
 		ref="inputRef"
 		@click="openPanel"
 	>
-		<DefaultInput v-model="startDateInput" class="borderUI" />
+		<DefaultInput
+			v-model="startDateInput"
+			:size="props.inputSize"
+			class="borderUI"
+		/>
 		<span>{{ computedRangeSeparator }}</span>
-		<DefaultInput v-model="endDateInput" class="borderUI" />
+		<DefaultInput
+			v-model="endDateInput"
+			:size="props.inputSize"
+			class="borderUI"
+		/>
 	</div>
 	<Teleport to="body">
 		<div v-show="isShowPanel">
@@ -67,11 +75,13 @@ type Props = {
 	rangeSeparator?: string;
 	pickerOptions?: PickerOptions[];
 	theme?: string;
+	inputSize?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
 	rangeSeparator: "至",
 	theme: "light",
+	inputSize: "normal",
 });
 
 watch(

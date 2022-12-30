@@ -1,6 +1,6 @@
 <template>
 	<div class="dc-date-input" @click="openPanel" ref="inputRef">
-		<DefaultInput v-model="inputDate" />
+		<DefaultInput :size="props.inputSize" v-model="inputDate" />
 	</div>
 	<Teleport to="body">
 		<div
@@ -89,10 +89,12 @@ type Props = {
 	modelValue?: Date;
 	pickerOptions?: PickerOptions[];
 	theme?: string;
+	inputSize?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
 	theme: "light",
+	inputSize: "normal",
 });
 
 const openPanel = () => {
