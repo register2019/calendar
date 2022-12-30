@@ -2,6 +2,7 @@
 	<div>
 		<DefaultCalendar
 			type="DatePicker"
+			inputSize="normal"
 			:theme="themeGlobal"
 			:picker-options="pickerOptions"
 			:selectOptions="selectOptions"

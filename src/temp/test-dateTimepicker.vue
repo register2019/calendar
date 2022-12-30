@@ -7,6 +7,7 @@
 			timeType="Select"
 			format="yyyy-MM-DD HH"
 			pickerFormat="HH:mm"
+			inputSize="normal"
 			:i18n="i18nGlobal"
 			:theme="themeGlobal"
 			type="DateTimePicker"

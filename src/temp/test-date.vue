@@ -2,6 +2,7 @@
 	<DefaultCalendar
 		v-model="defaultValue"
 		type="Date"
+		inputSize="small"
 		:theme="themeGlobal"
 		:i18n="i18nGlobal"
 		:pickerOptions="pickerOptions"

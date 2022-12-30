@@ -8,6 +8,7 @@
 			format="yyyy-MM-DD HH"
 			pickerFormat="HH"
 			timeType="Select"
+			inputSize="small"
 			:picker-options="pickerOptions"
 			:selectOptions="selectOptions"
 			:disabledDate="disabledDate"
